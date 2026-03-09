@@ -21,11 +21,8 @@ jobs:
 
       - name: Inject API Key
         run: |
-          # 1. Directly replace the placeholder in app.js using a different delimiter
-          sed -i "s#GEMINI_API_KEY_PLACEHOLDER#${{ secrets.GEMSTONE_DIAMOND }}#g" app.js
-          
-          # 2. Also inject it into index.html as a backup
-          sed -i "s#</head>#<script>window.GOOGLE_AI_KEY = '${{ secrets.GEMSTONE_DIAMOND }}';</script></head>#g" index.html
+          # This replaces whatever is on the line containing 'GOOGLE_AI_KEY'
+          sed -i "s/const GOOGLE_AI_KEY = .*/const GOOGLE_AI_KEY = '${{ secrets.GEMSTONE_DIAMOND }}';/" app.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
