@@ -423,19 +423,53 @@ function init() {
 }
 
 // Modal Logic
+// Corrected Modal Logic to handle titles and icons
 function openModal(id) {
-     agent = agents.find(a => a.id === id);
-     content = document.getElementById('modal-content');
-    content.innerHTML = agent.demo;
-    document.getElementById('modal').classList.remove('hidden');
+    const agent = agents.find(a => a.id === id);
+    const modal = document.getElementById('modal');
+    const content = document.getElementById('modal-content');
     
+    // Set Modal Header info
+    document.getElementById('modal-title').innerText = agent.name;
+    document.getElementById('modal-icon').innerHTML = `<i data-lucide="${agent.icon}"></i>`;
+    
+    content.innerHTML = agent.demo;
+    modal.classList.remove('hidden');
+    
+    // Special Init for specific agents
     if(id === 'intel') fetchLiveNews();
+    
     lucide.createIcons();
 }
 
-function closeModal() {
-    document.getElementById('modal').classList.add('hidden');
+// Global Init - This MUST be called to render the grid!
+function initDashboard() {
+    const grid = document.getElementById('agent-grid');
+    if (!grid) return;
+
+    grid.innerHTML = agents.map(agent => `
+        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between group">
+            <div>
+                <div class="flex justify-between items-start mb-6">
+                    <div class="p-3 agent-icon rounded-xl text-blue-400 group-hover:text-blue-300 transition-colors border border-white/5">
+                        <i data-lucide="${agent.icon || 'zap'}"></i>
+                    </div>
+                    <span class="text-[9px] uppercase tracking-widest text-slate-500 font-bold bg-white/5 px-2 py-1 rounded">${agent.cat}</span>
+                </div>
+                <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">${agent.name}</h3>
+                <p class="text-xs text-slate-400 mt-2 leading-relaxed">${agent.desc}</p>
+            </div>
+            <button onclick="openModal('${agent.id}')" class="mt-8 w-full py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-blue-600 hover:border-blue-600 hover:text-white transition-all">
+                Launch Agent
+            </button>
+        </div>
+    `).join('');
+    
+    lucide.createIcons();
 }
+
+// Start the app
+document.addEventListener('DOMContentLoaded', initDashboard);
 
 // --- LOGIC ENGINES ---
 
@@ -811,3 +845,4 @@ function runReadout() {
     slide.classList.remove('hidden');
     lucide.createIcons();
 }
+
