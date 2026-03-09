@@ -6,154 +6,115 @@
     <title>WWT | Marketing Agentic Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-    body { background-color: #0b1120; color: #94a3b8; font-family: 'Public Sans', sans-serif; overflow-x: hidden; }
-    
-    .card {
-        background: #0f172a;
-        border-radius: 1rem;
-        border: 1px solid #1e293b;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth, reactive timing */
-    }
-
-    /* THE DESKTOP FIX: Side-by-side with breathing room */
-    @media (min-width: 1024px) {
-        #agent-grid {
-            display: flex !important;
-            flex-direction: row !important;
-            justify-content: center; /* Centers the whole row */
-            gap: 1.5rem; /* Space between buttons */
-            padding: 2rem 0;
-        }
-        .agent-button {
-            flex: 0 1 130px; /* Allows them to shrink slightly if needed */
-            height: 110px;
-        }
-    }
-
-    /* REAECTIVE MOVEMENTS */
-    .agent-button:hover {
-        transform: translateY(-8px) scale(1.05);
-        border-color: #3b82f6;
-        background: #1e293b;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(59, 130, 246, 0.1);
-    }
-
-    /* THE PHONE LOOK: Stays perfect */
-    @media (max-width: 1023px) {
-        #agent-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-    }
-
-    /* MORE STAGE SPACE */
-    #action-stage {
-        min-height: 350px; /* Increased for more room */
-        border: 2px dashed #1e293b;
-        background: #0b1120;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    #action-stage-wrapper.active {
-        border-color: #3b82f6;
-    }
-
-/* --- ADD THIS AT THE BOTTOM OF YOUR STYLE BLOCK --- */
-
-/* The Switch Container */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 38px;
-  height: 20px;
-}
-
-/* Hide default HTML checkbox */
-.switch input { opacity: 0; width: 0; height: 0; }
-
-/* The Slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #1e293b;
-  transition: .3s;
-  border-radius: 20px;
-  border: 1px solid #334155;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 14px; width: 14px;
-  left: 3px; bottom: 2px;
-  background-color: #94a3b8;
-  transition: .3s;
-  border-radius: 50%;
-}
-
-input:checked + .slider { background-color: #3b82f6; border-color: #60a5fa; }
-input:checked + .slider:before { transform: translateX(18px); background-color: white; }
-
-/* AI Mode Glow Effect */
-.ai-active-border {
-    border-color: #3b82f6 !important;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
-}
+        body { background-color: #f5f5f9; color: #697a8d; font-family: 'Public Sans', sans-serif; }
         
-</style>
+        /* Sneat Card Styling */
+        .card {
+            background: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);
+            transition: all 0.3s ease;
+            border: 1px solid #d9dee3;
+        }
+
+        /* Agent Button Grid Layout */
+        .agent-button {
+            width: 100%;
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            padding: 1rem;
+            text-align: center;
+        }
+        .agent-button:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(67, 89, 113, 0.2); }
+
+        /* Workspace Stage */
+        #action-stage {
+            min-height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s ease;
+        }
+        #action-stage-wrapper.active { border: 1.5px solid #696cff; }
+
+        /* Universal AI Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 38px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #d9dee3; transition: .4s; border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 14px; width: 14px;
+            left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #696cff; }
+        input:checked + .slider:before { transform: translateX(18px); }
+
+        /* AI Glow Effect */
+        .ai-active-border { border: 2px solid #696cff !important; box-shadow: 0 0 15px rgba(105, 108, 255, 0.15); }
+    </style>
 </head>
 <body class="p-4 md:p-8">
+
     <div class="max-w-6xl mx-auto space-y-6">
         
-        <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-white">WWT <span class="text-blue-500 font-light">Marketing Ops</span></h1>
-                <p class="text-[10px] uppercase tracking-widest text-slate-500">Agentic Workflow Proving Ground</p>
+                <h1 class="text-2xl font-bold text-[#566a7f]">WWT <span class="font-light">Marketing Ops</span></h1>
+                <p class="text-sm text-[#a1acb8]">Agentic Workflow Proving Ground</p>
             </div>
-            <div class="flex items-center gap-4">
-    <div class="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-800">
-        <i data-lucide="sparkles" id="universal-ai-icon" class="w-3.5 h-3.5 text-slate-500"></i>
-        <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400">AI Mode</span>
-        <label class="switch">
-            <input type="checkbox" id="universal-ai-toggle" onchange="toggleUniversalAI(this)">
-            <span class="slider"></span>
-        </label>
-    </div>
-    <span class="bg-blue-900/30 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase border border-blue-500/20">v2.0 Stable</span>
-</div>
+            
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-[#d9dee3] shadow-sm">
+                    <i data-lucide="sparkles" id="universal-ai-icon" class="w-4 h-4 text-[#a1acb8]"></i>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-[#697a8d]">AI Mode</span>
+                    <label class="switch">
+                        <input type="checkbox" id="universal-ai-toggle" onchange="toggleUniversalAI(this)">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <span class="bg-[#e7e7ff] text-[#696cff] px-3 py-1.5 rounded-md text-[10px] font-bold uppercase">v2.0 Stable</span>
+            </div>
         </div>
 
-        <div id="action-stage-wrapper" class="card p-6 mb-8 overflow-hidden">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-[10px] font-bold uppercase text-slate-500 tracking-widest">Active Workspace</h2>
-                <button onclick="clearStage()" class="clear-btn text-[10px] text-slate-400 hover:text-red-400 uppercase font-bold transition-colors">
-                    Clear Stage ✕
+        <div id="action-stage-wrapper" class="card p-6 mb-8">
+            <div class="flex items-center justify-between mb-6 border-b border-[#f0f2f4] pb-4">
+                <h2 class="text-xs font-bold uppercase text-[#a1acb8] tracking-widest">Active Workspace</h2>
+                <button onclick="clearStage()" class="text-[10px] font-bold uppercase text-[#ff3e1d] hover:bg-[#ffe0db] px-2 py-1 rounded transition-colors">
+                    Clear Workspace
                 </button>
             </div>
-            <div id="action-stage" class="rounded-xl p-8 flex items-center justify-center">
+            
+            <div id="action-stage" class="rounded-xl bg-[#f8f9fb] border-2 border-dashed border-[#d9dee3] p-8">
                 <div id="stage-placeholder" class="text-center">
-                    <div class="text-slate-700 mb-2"><i data-lucide="mouse-pointer-2" class="mx-auto w-8 h-8"></i></div>
-                    <p class="text-xs text-slate-500 uppercase tracking-tight italic">Select an agent from the switchboard</p>
+                    <div class="text-[#d9dee3] mb-3"><i data-lucide="layout-grid" class="mx-auto w-10 h-10"></i></div>
+                    <p class="text-sm font-medium text-[#a1acb8]">Ready for Deployment</p>
+                    <p class="text-[11px] text-[#c7cfd6]">Select an agent from the switchboard below</p>
                 </div>
                 <div id="stage-content" class="hidden w-full"></div>
             </div>
         </div>
 
-        <div class="flex justify-center mt-12 pb-20">
-            <div id="agent-grid" class="flex flex-wrap justify-center gap-4 w-full max-w-5xl">
+        <div class="space-y-4">
+            <h3 class="text-xs font-bold uppercase text-[#a1acb8] tracking-widest pl-1">Agent Switchboard</h3>
+            <div id="agent-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                 </div>
         </div>
 
     </div>
+
+    <footer class="max-w-6xl mx-auto mt-12 pt-6 border-t border-[#d9dee3] text-center">
+        <p class="text-[10px] text-[#a1acb8] uppercase tracking-widest font-bold">WWT Internal Use Only • March 2026</p>
+    </footer>
+
     <script src="app.js"></script>
 </body>
 </html>
-
-
-
-
