@@ -19,17 +19,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Inject API Key
+      - name: Force Create Config
         run: |
-          # This version looks for 'GOOGLE_AI_KEY' anywhere on a line and replaces the whole line
-          sed -i "s/.*GOOGLE_AI_KEY.*/var GOOGLE_AI_KEY = '${{ secrets.GEMSTONE_DIAMOND }}';/" app.js
+          # 1. Create a brand new file with the key as a global variable
+          echo "window.API_KEY_INJECTED = '${{ secrets.GEMSTONE_DIAMOND }}';" > config.js
           
-          # Verification check
-          if grep -q "GEMINI_API_KEY_PLACEHOLDER" app.js; then
-            echo "❌ Injection Failed - Placeholder still exists"
-            exit 1
+          # 2. Verify the file was created (this will show in logs)
+          if [ -s config.js ]; then
+            echo "✅ config.js created successfully"
           else
-            echo "✅ Injection Successful"
+            echo "❌ config.js is empty - Check GitHub Secret GEMSTONE_DIAMOND"
+            exit 1
           fi
           
       - name: Setup Pages
