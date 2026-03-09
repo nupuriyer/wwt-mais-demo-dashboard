@@ -177,5 +177,50 @@ async function runAIEmail() {
     }, 2000);
 }
 
+// --- GLOBAL STATE ---
+let AI_ENABLED = false;
+
+function toggleUniversalAI(el) {
+    AI_ENABLED = el.checked;
+    const icon = document.getElementById('universal-ai-icon');
+    const wrapper = document.getElementById('action-stage-wrapper');
+
+    if (AI_ENABLED) {
+        icon.classList.add('text-blue-400', 'animate-pulse');
+        wrapper.classList.add('ai-active-border'); // Optional: makes the stage glow when AI is on
+        console.log("Global AI Mode: ACTIVE");
+    } else {
+        icon.classList.remove('text-blue-400', 'animate-pulse');
+        wrapper.classList.remove('ai-active-border');
+        console.log("Global AI Mode: OFF");
+    }
+    
+    // If an agent is already open, refresh its view to show/hide AI bits
+    const activeAgentId = document.querySelector('.agent-button.active-ui')?.dataset?.id; 
+    if(activeAgentId) launchAgent(activeAgentId); 
+}
+
+// --- UPDATED UTM PROCESSOR ---
+async function processUTM() {
+    const url = document.getElementById('utm-url').value || "https://wwt.com";
+    const container = document.getElementById('utm-result-container');
+    const result = document.getElementById('utm-result');
+
+    container.classList.remove('hidden');
+
+    if (!AI_ENABLED) {
+        // MANUAL MODE DUMMY DATA
+        const src = document.getElementById('utm-src').value || "manual";
+        const med = document.getElementById('utm-med').value || "direct";
+        result.innerText = `${url}?utm_source=${src}&utm_medium=${med}&utm_campaign=standard-link`;
+    } else {
+        // AI MODE DUMMY DATA (Cost-saving placeholder)
+        result.innerHTML = "<span class='animate-pulse text-blue-400'>Gemini is analyzing WWT campaign standards...</span>";
+        
+        setTimeout(() => {
+            result.innerText = `${url}?utm_source=linkedin&utm_medium=social&utm_campaign=atc-genai-2026-launch`;
+        }, 1200);
+    }
+}
 
 
