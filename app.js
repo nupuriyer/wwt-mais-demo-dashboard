@@ -15,15 +15,15 @@ function init() {
     const grid = document.getElementById('agent-grid');
     if (!grid) return;
 
+    // Mapping agents to the new, cleaner button style
     grid.innerHTML = agents.map((agent) => {
-        // Clean, simple button template
         return `
-            <div class="agent-button card p-3 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-blue-500/50 hover:bg-slate-800/50 transition-all duration-300" 
+            <div class="agent-button card p-4 flex flex-col items-center justify-center text-center cursor-pointer group" 
                  onclick="launchAgent('${agent.id}')">
-                <div class="w-8 h-8 mb-2 rounded-lg bg-slate-800 text-slate-500 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
-                    <i data-lucide="${agent.icon}" class="w-4 h-4"></i>
+                <div class="w-10 h-10 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                    <i data-lucide="${agent.icon}" class="w-5 h-5"></i>
                 </div>
-                <h4 class="text-[9px] font-bold text-slate-300 uppercase tracking-tighter leading-tight">${agent.name}</h4>
+                <h4 class="text-[10px] font-bold text-slate-300 uppercase tracking-widest leading-none">${agent.name}</h4>
             </div>
         `;
     }).join('');
@@ -176,5 +176,6 @@ async function runAIEmail() {
         result.innerText = "Subject: Strategic Alignment on " + (document.getElementById('email-raw').value.split(' ')[0] || "Innovation") + "\n\nHi Team,\n\nFollowing up on our notes, I believe our ATC lab capabilities could significantly de-risk this deployment...";
     }, 2000);
 }
+
 
 
