@@ -272,20 +272,46 @@ function runUTM() {
 }
 
 // 2. Competitive Intel (LIVE RSS)
-async function fetchLiveNews() {
-     feed = document.getElementById('intel-feed');
+async function fetchLiveNews(company = 'Accenture') {
+    const feed = document.getElementById('intel-feed');
+    feed.innerHTML = `<div class="p-4 text-center animate-pulse text-blue-400 text-xs">Scanning signals for ${company}...</div>`;
+    
+    // We target tech-specific news for the competitor
+    const query = encodeURIComponent(`${company} technology news`);
+    const rssUrl = `https://news.google.com/rss/search?q=${query}&hl=en-US&gl=US&ceid=US:en`;
+    const proxyUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
     try {
-        const response = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://www.computerworld.com/category/it-services/index.rss');
+        const response = await fetch(proxyUrl);
         const data = await response.json();
-        feed.innerHTML = data.items.slice(0, 5).map(item => `
-            <div class="p-3 bg-slate-900 border-l-2 border-blue-500 rounded text-[11px]">
-                <p class="text-blue-400 font-bold mb-1">${item.author || 'Market Intelligence'}</p>
-                <p class="text-white mb-1">${item.title}</p>
-                <a href="${item.link}" target="_blank" class="text-slate-500 hover:text-blue-300 underline">Read Full Signal</a>
-            </div>
-        `).join('');
+        
+        if (!data.items || data.items.length === 0) {
+            feed.innerHTML = `<div class="p-4 text-slate-500 text-xs text-center">No recent signals detected for ${company}.</div>`;
+            return;
+        }
+
+        feed.innerHTML = data.items.slice(0, 5).map(item => {
+            // Randomly assign a 'threat level' for the UI demo feel
+            const levels = ['Low', 'Medium', 'High'];
+            const level = levels[Math.floor(Math.random() * levels.length)];
+            const color = level === 'High' ? 'text-red-400' : level === 'Medium' ? 'text-orange-400' : 'text-blue-400';
+
+            return `
+                <div class="p-3 bg-slate-900/50 border border-slate-800 rounded-lg hover:border-blue-500/50 transition-all group">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-[9px] font-bold uppercase px-1.5 py-0.5 bg-slate-800 rounded text-slate-400">${company}</span>
+                        <span class="text-[9px] font-bold uppercase ${color}">${level} Threat</span>
+                    </div>
+                    <p class="text-xs text-white font-medium line-clamp-2 mb-2 group-hover:text-blue-300 transition-colors">${item.title}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] text-slate-500">${new Date(item.pubDate).toLocaleDateString()}</span>
+                        <a href="${item.link}" target="_blank" class="text-[9px] text-blue-500 hover:underline">Full Report →</a>
+                    </div>
+                </div>
+            `;
+        }).join('');
     } catch (e) {
-        feed.innerHTML = "Signal interrupted. Reconnecting to data stream...";
+        feed.innerHTML = `<div class="p-4 text-red-400 text-xs text-center">Intelligence stream offline. Check connection.</div>`;
     }
 }
 
@@ -423,4 +449,5 @@ function copyUTM() {
         lucide.createIcons();
     }, 2000);
 }
+
 
