@@ -16,11 +16,9 @@ concurrency:
 
 jobs:
   deploy:
-    # --- THIS BLOCK FIXES THE 400 ERROR ---
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    # ---------------------------------------
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,15 +26,17 @@ jobs:
 
       - name: Inject API Key
         run: |
-          # This version finds the string even if it's inside single or double quotes
-          sed -i "s/GEMINI_API_KEY_PLACEHOLDER/${{ secrets.GEMSTONE_DIAMOND }}/g" app.js
+          # Matches the 'GEMINI_API_KEY_PLACEHOLDER' string currently in your app.js
+          # Using '#' as a delimiter is a best practice to avoid errors if the key has slashes
+          sed -i "s#GEMINI_API_KEY_PLACEHOLDER#${{ secrets.GEMSTONE_DIAMOND }}#g" app.js
           
-          # Verification: This will print "FOUND" or "NOT FOUND" in your GitHub Action logs
-          if grep -q "${{ secrets.GEMSTONE_DIAMOND }}" app.js; then
-            echo "✅ API Key Injection Successful"
-          else
-            echo "❌ API Key Injection Failed - Placeholder not found"
+          # Verification step: This checks if the placeholder is GONE.
+          # If it's still there, the build will fail and tell you why.
+          if grep -q "GEMINI_API_KEY_PLACEHOLDER" app.js; then
+            echo "❌ API Key Injection Failed - Placeholder still exists"
             exit 1
+          else
+            echo "✅ API Key Injection Successful"
           fi
 
       - name: Setup Pages
