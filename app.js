@@ -102,21 +102,35 @@ async function processUTM() {
         const med = (document.getElementById('utm-med').value || "direct").toLowerCase();
         text.innerText = `${url}?utm_source=${src}&utm_medium=${med}&utm_campaign=standard`;
     } else {
-        text.innerHTML = "<span class='animate-pulse text-blue-400'>Consulting Gemini for WWT Strategy...</span>";
+        text.innerHTML = "<span class='animate-pulse text-blue-400'>Consulting Gemini...</span>";
+        
         try {
-            const prompt = `Act as a WWT Marketing specialist. Suggest a professional lowercase hyphenated campaign name, source, and medium for URL ${url}. Return ONLY JSON: {"campaign": "...", "source": "...", "medium": "..."}`;
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_AI_KEY}`, {
+            // Using v1beta for better compatibility
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_AI_KEY}`;
+            
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: `Act as a WWT Marketing specialist. Suggest a professional lowercase hyphenated campaign name, source, and medium for URL ${url}. Return ONLY a raw JSON object: {"campaign": "...", "source": "...", "medium": "..."}` }] }]
+                })
             });
+
             const data = await response.json();
-            const ai = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim());
-            document.getElementById('utm-src').value = ai.source;
-            document.getElementById('utm-med').value = ai.medium;
-            text.innerText = `${url}?utm_source=${ai.source}&utm_medium=${ai.medium}&utm_campaign=${ai.campaign}`;
+            
+            if (data.error) throw new Error(data.error.message);
+
+            // Clean markdown and parse
+            const rawText = data.candidates[0].content.parts[0].text;
+            const cleanJson = JSON.parse(rawText.replace(/```json|```/g, "").trim());
+            
+            document.getElementById('utm-src').value = cleanJson.source;
+            document.getElementById('utm-med').value = cleanJson.medium;
+            text.innerText = `${url}?utm_source=${cleanJson.source}&utm_medium=${cleanJson.medium}&utm_campaign=${cleanJson.campaign}`;
+            
         } catch (e) {
-            text.innerText = "Error: Key failed or AI took too long.";
+            console.error("UTM AI Error:", e);
+            text.innerHTML = `<span class="text-red-400 text-[10px]">AI Error: ${e.message.includes('key') ? 'Invalid API Key' : 'Request Failed'}.</span>`;
         }
     }
     lucide.createIcons();
@@ -135,3 +149,4 @@ function clearStage() {
 
 // FORCE LOAD
 window.onload = init;
+
