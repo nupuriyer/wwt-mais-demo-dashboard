@@ -1,23 +1,64 @@
 const agents = [
     { 
-        id: 'utm', 
-        name: 'UTM Builder', 
-        cat: 'Digital Campaigns', 
-        icon: 'link', 
-        desc: 'Standardize campaign tracking instantly.',
-        demo: `
-            <div class="space-y-4">
-                <h3 class="text-xl font-bold">Live UTM Generator</h3>
-                <input id="utm-url" type="text" placeholder="Base URL (e.g. wwt.com/atc)" class="w-full bg-slate-800 border-slate-700 p-2 rounded text-white">
-                <div class="grid grid-cols-2 gap-2">
-                    <input id="utm-src" type="text" placeholder="Source" class="bg-slate-800 border-slate-700 p-2 rounded text-white">
-                    <input id="utm-med" type="text" placeholder="Medium" class="bg-slate-800 border-slate-700 p-2 rounded text-white">
-                </div>
-                <button onclick="runUTM()" class="w-full bg-blue-600 p-2 rounded font-bold hover:bg-blue-500">Generate Link</button>
-                <div id="utm-result" class="p-3 bg-black rounded text-green-400 font-mono text-xs break-all hidden"></div>
+    id: 'utm', 
+    name: 'UTM Builder', 
+    cat: 'Digital Campaigns', 
+    icon: 'link', 
+    desc: 'Standardize campaign tracking instantly.',
+    demo: `
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-white">Campaign Link Generator</h3>
+            
+            <div class="space-y-1">
+                <label class="text-[10px] uppercase text-slate-500 font-bold">Base Destination URL</label>
+                <input id="utm-url" type="text" placeholder="https://www.wwt.com/atc" 
+                    class="w-full bg-slate-900 border border-slate-700 p-2.5 rounded-lg text-white text-sm focus:border-blue-500 outline-none">
             </div>
-        `
-    },
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                    <label class="text-[10px] uppercase text-slate-500 font-bold">Source</label>
+                    <select id="utm-src" class="w-full bg-slate-900 border border-slate-700 p-2.5 rounded-lg text-white text-sm outline-none">
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="twitter">X / Twitter</option>
+                        <option value="newsletter">Email Newsletter</option>
+                        <option value="partner">Partner Site</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] uppercase text-slate-500 font-bold">Medium</label>
+                    <select id="utm-med" class="w-full bg-slate-900 border border-slate-700 p-2.5 rounded-lg text-white text-sm outline-none">
+                        <option value="social">Organic Social</option>
+                        <option value="paid">Paid Advertising</option>
+                        <option value="email">Direct Email</option>
+                        <option value="referral">Referral</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="space-y-1">
+                <label class="text-[10px] uppercase text-slate-500 font-bold">Campaign Name</label>
+                <input id="utm-cam" type="text" placeholder="e.g. atc-workshop-2026" 
+                    class="w-full bg-slate-900 border border-slate-700 p-2.5 rounded-lg text-white text-sm outline-none">
+            </div>
+
+            <button onclick="runUTM()" class="w-full bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2">
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+                Generate Standardized Link
+            </button>
+
+            <div id="utm-result-container" class="hidden space-y-2 animate-in fade-in slide-in-from-top-2">
+                <label class="text-[10px] uppercase text-green-500 font-bold">Ready to use:</label>
+                <div class="flex gap-2">
+                    <div id="utm-result" class="flex-1 p-3 bg-black/50 border border-green-900/30 rounded text-green-400 font-mono text-[11px] break-all"></div>
+                    <button onclick="copyUTM()" class="bg-slate-800 p-3 rounded-lg hover:bg-slate-700 text-white">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `
+},
     { 
         id: 'intel', 
         name: 'Competitive Intel', 
@@ -333,4 +374,39 @@ async function runAIEmail() {
         resultDiv.innerText = "Error: Make sure your API key is valid!";
     }
 
+}
+
+// 1. UTM Builder Logic
+function runUTM() {
+    const url = document.getElementById('utm-url').value || 'https://wwt.com/atc';
+    const src = document.getElementById('utm-src').value;
+    const med = document.getElementById('utm-med').value;
+    const cam = document.getElementById('utm-cam').value || 'agent-demo';
+    
+    // Clean URL and build params
+    const cleanUrl = url.split('?')[0];
+    const result = `${cleanUrl}?utm_source=${src}&utm_medium=${med}&utm_campaign=${cam.replace(/\s+/g, '-').toLowerCase()}`;
+    
+    const box = document.getElementById('utm-result');
+    const container = document.getElementById('utm-result-container');
+    
+    box.innerText = result;
+    container.classList.remove('hidden');
+    lucide.createIcons(); // Re-render icons for the copy button
+}
+
+function copyUTM() {
+    const text = document.getElementById('utm-result').innerText;
+    navigator.clipboard.writeText(text);
+    
+    // Visual feedback for the copy
+    const btn = event.currentTarget;
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-green-400"></i>';
+    lucide.createIcons();
+    
+    setTimeout(() => {
+        btn.innerHTML = originalContent;
+        lucide.createIcons();
+    }, 2000);
 }
