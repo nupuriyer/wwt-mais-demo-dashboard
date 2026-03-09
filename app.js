@@ -134,16 +134,17 @@ async function processUTM() {
     container.classList.remove('hidden');
 
     if (!AI_ENABLED) {
-        // --- MANUAL MODE (Dummy Data) ---
+        // --- MANUAL MODE (Standard Logic) ---
         const src = document.getElementById('utm-src').value || "manual";
         const med = document.getElementById('utm-med').value || "direct";
-        const cam = document.getElementById('utm-cam')?.value || "standard-link";
+        // Note: Using 'standard-link' as a fallback if cam field isn't in your HTML yet
+        const cam = "standard-link"; 
         
         const cleanUrl = url.split('?')[0];
-        resultDiv.innerText = `${cleanUrl}?utm_source=${src}&utm_medium=${med}&utm_campaign=${cam.replace(/\s+/g, '-').toLowerCase()}`;
+        resultDiv.innerText = `${cleanUrl}?utm_source=${src}&utm_medium=${med}&utm_campaign=${cam}`;
     } else {
         // --- AI MODE (Gemini Call) ---
-        resultDiv.innerHTML = "<span class='animate-pulse text-blue-400 font-bold'>Gemini is strategizing naming conventions...</span>";
+        resultDiv.innerHTML = "<span class='animate-pulse text-blue-600 font-bold'>Gemini is strategizing...</span>";
         
         const promptText = `Act as a WWT Marketing Ops specialist. The user wants a UTM link for this URL: ${url}. 
         Suggest a standardized, professional UTM campaign name (lowercase, hyphens). 
@@ -158,16 +159,19 @@ async function processUTM() {
             });
 
             const data = await response.json();
-            const aiResponse = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, ""));
+            // Clean the AI response of any markdown backticks before parsing
+            const cleanText = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+            const aiResponse = JSON.parse(cleanText);
             
-            // Auto-fill the inputs with AI suggestions
+            // Auto-fill the UI inputs with AI suggestions
             document.getElementById('utm-src').value = aiResponse.source;
             document.getElementById('utm-med').value = aiResponse.medium;
             
             resultDiv.innerText = `${url}?utm_source=${aiResponse.source}&utm_medium=${aiResponse.medium}&utm_campaign=${aiResponse.campaign}`;
         } catch (e) {
-            resultDiv.innerHTML = "<span class='text-red-400'>AI Offline. Reverting to manual link.</span>";
-            resultDiv.innerText = `${url}?utm_source=error&utm_medium=fix&utm_campaign=check-api-key`;
+            console.error("AI Error:", e);
+            resultDiv.innerHTML = "<span class='text-red-500 font-bold'>AI Offline. Reverting to manual link.</span>";
+            resultDiv.innerText = `${url}?utm_source=error&utm_medium=check-key&utm_campaign=fix`;
         }
     }
 }
@@ -280,31 +284,10 @@ function toggleUniversalAI(el) {
     if(activeAgentId) launchAgent(activeAgentId); 
 }
 
-// --- UPDATED UTM PROCESSOR ---
-async function processUTM() {
-    const url = document.getElementById('utm-url').value || "https://wwt.com";
-    const container = document.getElementById('utm-result-container');
-    const result = document.getElementById('utm-result');
-
-    container.classList.remove('hidden');
-
-    if (!AI_ENABLED) {
-        // MANUAL MODE DUMMY DATA
-        const src = document.getElementById('utm-src').value || "manual";
-        const med = document.getElementById('utm-med').value || "direct";
-        result.innerText = `${url}?utm_source=${src}&utm_medium=${med}&utm_campaign=standard-link`;
-    } else {
-        // AI MODE DUMMY DATA (Cost-saving placeholder)
-        result.innerHTML = "<span class='animate-pulse text-blue-400'>Gemini is analyzing WWT campaign standards...</span>";
-        
-        setTimeout(() => {
-            result.innerText = `${url}?utm_source=linkedin&utm_medium=social&utm_campaign=atc-genai-2026-launch`;
-        }, 1200);
-    }
-}
 
 // Start app
 document.addEventListener('DOMContentLoaded', init);
+
 
 
 
