@@ -339,26 +339,64 @@ const agents = [
     `
 },
     { 
-        id: 'readout', 
-        name: 'Readout + Rec', 
-        cat: 'Portfolio Marketing', 
-        icon: 'presentation', 
-        desc: 'Automate PPT summaries.',
-        demo: `
-            <div class="space-y-4">
-                <h3 class="text-xl font-bold">Executive Slide Generator</h3>
-                <p class="text-sm text-slate-400">Synthesizing campaign data into 1-page summary...</p>
-                <div class="aspect-video bg-white border border-slate-300 p-4 text-slate-800 shadow-2xl scale-95 origin-top">
-                    <div class="h-4 w-2/3 bg-blue-900 mb-4"></div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="h-20 bg-slate-100 rounded"></div><div class="h-20 bg-slate-100 rounded"></div>
-                    </div>
-                    <div class="mt-4 h-2 w-full bg-slate-200"></div>
-                </div>
-                <button class="w-full border border-slate-700 py-1 text-xs">Download .pptx (Simulated)</button>
+    id: 'readout', 
+    name: 'Readout + Rec', 
+    cat: 'Portfolio Marketing', 
+    icon: 'presentation', 
+    desc: 'Automate executive-ready PPT summaries and lab recommendations.',
+    demo: `
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-white">Executive Slide Generator</h3>
+            
+            <div class="space-y-1">
+                <label class="text-[10px] uppercase text-slate-500 font-bold">Project Name / Campaign Title</label>
+                <input id="readout-title" type="text" placeholder="e.g. FY26 Q1 AI Infrastructure Campaign" 
+                    class="w-full bg-slate-900 border border-slate-700 p-2.5 rounded-lg text-white text-xs outline-none focus:border-blue-500">
             </div>
-        `
-    }
+
+            <button onclick="runReadout()" class="w-full bg-slate-100 hover:bg-white text-slate-900 p-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2">
+                <i data-lucide="layout-template" class="w-4 h-4"></i>
+                Synthesize Executive Slide
+            </button>
+
+            <div id="slide-preview" class="hidden animate-in fade-in slide-in-from-bottom-8 duration-500">
+                <div class="aspect-video bg-white border-4 border-slate-200 p-6 text-slate-800 shadow-2xl rounded relative overflow-hidden">
+                    <div class="absolute top-0 left-0 right-0 h-10 bg-[#004a99] flex items-center px-4 justify-between">
+                        <span class="text-white text-[10px] font-bold uppercase tracking-widest">WWT Strategic Readout</span>
+                        <div class="w-12 h-4 bg-white/20 rounded"></div>
+                    </div>
+                    
+                    <div class="mt-8">
+                        <h4 id="slide-title-text" class="text-lg font-bold text-slate-900 border-b border-slate-200 pb-1 mb-4">Project Summary</h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="space-y-3">
+                                <div class="p-2 bg-slate-50 rounded">
+                                    <p class="text-[8px] text-slate-500 uppercase font-bold">Key Achievement</p>
+                                    <p class="text-[10px] font-medium">Validated Multi-Cloud AI Architecture via ATC Labs.</p>
+                                </div>
+                                <div class="p-2 bg-slate-50 rounded">
+                                    <p class="text-[8px] text-slate-500 uppercase font-bold">Pipeline Impact</p>
+                                    <p class="text-[10px] font-medium">$2.4M identified across 3 target verticals.</p>
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 p-3 rounded border border-blue-100">
+                                <p class="text-[8px] text-blue-800 uppercase font-bold mb-1">Strategic Recommendation</p>
+                                <ul class="text-[9px] text-slate-700 space-y-1 list-disc ml-3">
+                                    <li>Pivot toward "Edge-Inference" messaging.</li>
+                                    <li>Schedule 3 Cisco/Dell joint webinars.</li>
+                                    <li>Refresh ATC Lab sandbox for Q2.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="mt-4 w-full py-2 border border-dashed border-slate-700 text-slate-500 text-[10px] uppercase font-bold hover:text-white transition-colors">
+                    Download .pptx (Simulated Export)
+                </button>
+            </div>
+        </div>
+    `
+},
 ];
 
 // Initialize Dashboard
@@ -761,4 +799,15 @@ function copyEmail() {
     const text = document.getElementById('email-result').innerText;
     navigator.clipboard.writeText(text);
     alert("Draft copied!");
+}
+
+function runReadout() {
+    const titleInput = document.getElementById('readout-title').value || "Strategic Campaign Summary";
+    const slide = document.getElementById('slide-preview');
+    const slideTitle = document.getElementById('slide-title-text');
+    
+    // Simulate data crunching
+    slideTitle.innerText = titleInput;
+    slide.classList.remove('hidden');
+    lucide.createIcons();
 }
