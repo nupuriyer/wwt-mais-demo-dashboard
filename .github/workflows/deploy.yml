@@ -19,11 +19,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create Env File
+      - name: Inject API Key into HTML
         run: |
-          # Create a dedicated file for the API key
-          echo "window.GOOGLE_AI_KEY = '${{ secrets.GEMSTONE_DIAMOND }}';" > env.js
-          echo "✅ env.js created with secret."
+          # We inject a script tag directly into index.html before deployment
+          # This replaces the comment with the actual secret
+          sed -i "s##<script>window.GOOGLE_AI_KEY = '${{ secrets.GEMSTONE_DIAMOND }}';</script>#g" index.html
+          
+          # Debug check: verify if the injection happened
+          if grep -q "window.GOOGLE_AI_KEY" index.html; then
+            echo "✅ Injection Successful"
+          else
+            echo "❌ Injection Failed"
+            exit 1
+          fi
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
