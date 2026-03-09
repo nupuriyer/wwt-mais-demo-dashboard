@@ -1,5 +1,32 @@
 const agents = [
-    { id: 'utm', name: 'UTM Builder', cat: 'Digital Campaigns', icon: 'link', demo: `<div class="space-y-4"><h3 class="text-white font-bold">UTM Link Generator</h3><input id="utm-url" type="text" placeholder="https://wwt.com" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><button onclick="runUTM()" class="w-full bg-blue-600 p-3 rounded font-bold text-white">Generate</button><div id="utm-result-container" class="hidden p-4 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-blue-300 break-all"></div></div>` },
+    { id: 'utm', name: 'UTM Builder', cat: 'Digital Campaigns', icon: 'link', demo: `
+<div class="space-y-5">
+    <div class="flex items-center justify-between">
+        <h3 class="text-white font-bold">Campaign Link Builder</h3>
+        <div id="ai-indicator" class="${AI_ENABLED ? '' : 'hidden'} flex items-center gap-2 text-[10px] text-blue-400 font-bold uppercase tracking-widest">
+            <i data-lucide="sparkles" class="w-3 h-3"></i> AI Strategic Mode
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <input id="utm-url" type="text" placeholder="URL (e.g. wwt.com/atc)" 
+            class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white text-sm outline-none">
+        
+        <div class="grid grid-cols-2 gap-4">
+            <input id="utm-src" type="text" placeholder="Source" class="bg-slate-900 border border-slate-700 p-3 rounded-xl text-white text-sm">
+            <input id="utm-med" type="text" placeholder="Medium" class="bg-slate-900 border border-slate-700 p-3 rounded-xl text-white text-sm">
+        </div>
+    </div>
+
+    <button onclick="processUTM()" class="w-full ${AI_ENABLED ? 'bg-blue-600' : 'bg-slate-800'} p-4 rounded-xl font-bold text-white transition-all">
+        ${AI_ENABLED ? 'Generate with Gemini' : 'Generate Standard Link'}
+    </button>
+
+    <div id="utm-result-container" class="hidden p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+        <code id="utm-result" class="text-blue-200 text-xs break-all font-mono"></code>
+    </div>
+</div>
+` },
     { id: 'intel', name: 'Competitive Intel', cat: 'Brand/ATC/Services', icon: 'shield', demo: `<div class="space-y-4"><h3 class="text-white font-bold">Competitor Signal Scan</h3><input id="intel-comp" type="text" placeholder="Competitor Name" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><button onclick="fetchLiveNews(document.getElementById('intel-comp').value)" class="w-full bg-blue-600 p-3 rounded font-bold text-white">Scan</button><div id="intel-feed" class="space-y-2 mt-4 text-xs text-slate-400"></div></div>` },
     { id: 'seo', name: 'SEO Search Agent', cat: 'Growth/Search', icon: 'search', demo: `<div class="space-y-4"><h3 class="text-white font-bold">SEO Intent Analysis</h3><input id="seo-query" type="text" placeholder="Keyword" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><button onclick="runSEOScan()" class="w-full bg-blue-600 p-3 rounded font-bold text-white">Analyze</button><div id="seo-output" class="text-xs text-slate-400 mt-2"></div></div>` },
     { id: 'icp', name: 'ICP Agent', cat: 'Portfolio Marketing', icon: 'users', demo: `<div class="space-y-4"><h3 class="text-white font-bold">Buying Committee Mapper</h3><select id="icp-industry" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><option>Healthcare</option><option>Finance</option></select><button onclick="runICP()" class="w-full bg-purple-600 p-3 rounded font-bold text-white">Map Committee</button><div id="icp-result" class="hidden grid gap-2 mt-2"></div></div>` },
@@ -222,5 +249,6 @@ async function processUTM() {
         }, 1200);
     }
 }
+
 
 
