@@ -28,8 +28,11 @@ jobs:
 
       - name: Inject API Key
         run: |
-          # Use double quotes in sed to handle the shell variable correctly
-          sed -i "s|REPLACE_ME_WITH_KEY|${{ secrets.GEMSTONE_DIAMOND }}|g" app.js
+          # This looks for GEMINI_API_KEY_PLACEHOLDER and swaps it for the secret
+          sed -i "s/GEMINI_API_KEY_PLACEHOLDER/${{ secrets.GEMSTONE_DIAMOND }}/g" app.js
+          
+          # Debug step: This will show if the placeholder still exists (but won't show your real key)
+          grep "GOOGLE_AI_KEY" app.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
