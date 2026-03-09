@@ -1,3 +1,4 @@
+const GOOGLE_AI_KEY = 'REPLACE_ME_WITH_KEY';
 const agents = [
     { id: 'utm', name: 'UTM Builder', cat: 'Digital Campaigns', icon: 'link', demo: `
 <div class="space-y-5">
@@ -249,6 +250,7 @@ async function processUTM() {
         }, 1200);
     }
 }
+
 
 
 
