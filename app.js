@@ -1,4 +1,4 @@
-let GOOGLE_AI_KEY = 'GEMINI_API_KEY_PLACEHOLDER';
+var GOOGLE_AI_KEY = 'GEMINI_API_KEY_PLACEHOLDER';
 let AI_ENABLED = false;
 
 // 1. NINE AGENTS DEFINITION
@@ -157,6 +157,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
