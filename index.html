@@ -7,15 +7,28 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* Enhanced WWT Brand Styles */
         .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            background: rgba(15, 23, 42, 0.6); /* Slightly darker for better contrast */
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
+
         .glass-card:hover {
-            border-color: #00a3e0; /* WWT Blue */
-            transform: translateY(-5px);
+            border-color: #0073e6; /* WWT Action Blue */
+            box-shadow: 0 0 20px rgba(0, 115, 230, 0.2);
+        }
+
+        /* Custom Scrollbar for the Intel Feed */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
         }
     </style>
 </head>
