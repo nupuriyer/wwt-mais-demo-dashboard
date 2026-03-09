@@ -6,112 +6,63 @@
     <title>WWT | Marketing Agentic Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #f5f5f9; color: #697a8d; font-family: 'Public Sans', sans-serif; margin: 0; padding: 0; }
+        body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 1rem; }
         
-        /* Force Grid Layout for Switchboard */
+        /* Grid Brute Force */
         #agent-grid {
             display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important; /* 2 columns on mobile */
+            grid-template-columns: repeat(2, 1fr) !important;
             gap: 1rem !important;
-            width: 100% !important;
+            min-height: 100px;
         }
+        @media (min-width: 768px) { #agent-grid { grid-template-columns: repeat(5, 1fr) !important; } }
 
-        @media (min-width: 640px) {
-            #agent-grid { grid-template-columns: repeat(3, 1fr) !important; }
-        }
-
-        @media (min-width: 1024px) {
-            #agent-grid { grid-template-columns: repeat(5, 1fr) !important; }
-        }
-
-        /* Card & Button Styling */
-        .card {
-            background: #fff;
-            border-radius: 0.5rem;
-            box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);
-            border: 1px solid #d9dee3;
-        }
-
-        .agent-button {
-            transition: all 0.3s ease;
-            min-height: 110px;
-        }
-        .agent-button:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(67, 89, 113, 0.2); }
-
-        /* Universal AI Toggle Switch */
-        .switch { position: relative; display: inline-block; width: 38px; height: 20px; }
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #d9dee3; transition: .4s; border-radius: 20px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 14px; width: 14px;
-            left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
-        }
-        input:checked + .slider { background-color: #696cff; }
-        input:checked + .slider:before { transform: translateX(18px); }
-
-        /* Workspace Animation */
-        #action-stage { transition: all 0.4s ease; min-height: 200px; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #3b82f6; }
+        input:checked + .slider:before { transform: translateX(20px); }
     </style>
 </head>
-<body class="p-4 md:p-10">
-
-    <div class="max-w-6xl mx-auto space-y-6">
-        
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
+<body class="p-6 md:p-12">
+    <div class="max-w-6xl mx-auto space-y-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div>
-                <h1 class="text-2xl font-bold text-[#566a7f]">WWT <span class="font-light">Marketing Ops</span></h1>
-                <p class="text-sm text-[#a1acb8]">Agentic Workflow Proving Ground</p>
+                <h1 class="text-3xl font-bold text-white tracking-tight">WWT <span class="text-blue-500 font-light">Marketing Ops</span></h1>
+                <p class="text-slate-400">Agentic Proving Ground v2.0</p>
             </div>
-            
-            <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-[#d9dee3] shadow-sm">
-                    <i data-lucide="sparkles" id="universal-ai-icon" class="w-4 h-4 text-[#a1acb8]"></i>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-[#697a8d]">AI Mode</span>
-                    <label class="switch">
-                        <input type="checkbox" id="universal-ai-toggle" onchange="toggleUniversalAI(this)">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-                <span class="bg-[#e7e7ff] text-[#696cff] px-3 py-1.5 rounded-md text-[10px] font-bold uppercase">v2.0 Stable</span>
+            <div class="flex items-center gap-4 bg-slate-800/50 p-2 px-4 rounded-2xl border border-slate-700">
+                <i data-lucide="sparkles" id="universal-ai-icon" class="w-4 h-4 text-slate-500"></i>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">AI Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="universal-ai-toggle" onchange="toggleUniversalAI(this)">
+                    <span class="slider"></span>
+                </label>
             </div>
         </div>
 
-        <div id="action-stage-wrapper" class="card p-6">
-            <div class="flex items-center justify-between mb-6 border-b border-[#f0f2f4] pb-4">
-                <h2 class="text-xs font-bold uppercase text-[#a1acb8] tracking-widest">Active Workspace</h2>
-                <button onclick="clearStage()" class="text-[10px] font-bold uppercase text-[#ff3e1d] hover:bg-[#ffe0db] px-2 py-1 rounded transition-colors">
-                    Clear Workspace
-                </button>
-            </div>
-            
-            <div id="action-stage" class="rounded-xl bg-[#f8f9fb] border-2 border-dashed border-[#d9dee3] p-6 flex items-center justify-center">
+        <div id="action-stage-wrapper" class="card p-8">
+            <div id="action-stage" class="rounded-2xl bg-slate-900/50 border-2 border-dashed border-slate-700 p-8 min-h-[300px] flex items-center justify-center">
                 <div id="stage-placeholder" class="text-center">
-                    <div class="text-[#d9dee3] mb-3"><i data-lucide="layout-grid" class="mx-auto w-10 h-10"></i></div>
-                    <p class="text-sm font-medium text-[#a1acb8]">Ready for Deployment</p>
-                    <p class="text-[11px] text-[#c7cfd6]">Select an agent from the switchboard below</p>
+                    <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="layout-grid" class="w-8 h-8 text-slate-600"></i>
+                    </div>
+                    <p class="text-slate-500 font-medium">Select an agent from the board below</p>
                 </div>
                 <div id="stage-content" class="hidden w-full"></div>
             </div>
         </div>
 
-        <div class="space-y-4 pb-12">
-            <h3 class="text-xs font-bold uppercase text-[#a1acb8] tracking-widest pl-1">Agent Switchboard</h3>
-            <div id="agent-grid">
-                </div>
+        <div class="space-y-4">
+            <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Available Agents</h3>
+            <div id="agent-grid"></div>
         </div>
-
     </div>
-
-    <footer class="max-w-6xl mx-auto mt-10 pt-6 border-t border-[#d9dee3] text-center">
-        <p class="text-[10px] text-[#a1acb8] uppercase tracking-widest font-bold">WWT Internal Use Only • March 2026</p>
-    </footer>
-
     <script src="app.js"></script>
 </body>
 </html>
