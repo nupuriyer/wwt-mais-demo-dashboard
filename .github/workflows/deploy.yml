@@ -18,7 +18,7 @@ jobs:
 
       - name: Inject API Key
         run: |
-          sed -i "s/REPLACE_ME_WITH_KEY/${{ secrets.GEMINI_API_KEY }}/g" app.js
+          sed -i "s/REPLACE_ME_WITH_KEY/${{ secrets.GEMSTONE_DIAMOND }}/g" app.js
         # This 'sed' command finds the placeholder and replaces it with your secret
 
       - name: Setup Pages
