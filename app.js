@@ -60,22 +60,35 @@ const agents = [
     `
 },
     { 
-        id: 'intel', 
-        name: 'Competitive Intel', 
-        cat: 'Brand/ATC/Services', 
-        icon: 'shield', 
-        desc: 'Live signals from WWT rivals.',
-        demo: `
-            <div class="space-y-4">
-                <h3 class="text-xl font-bold">Rival Signal Feed</h3>
-                <p class="text-xs text-slate-400 italic">Scanning: Accenture, Dell, HPE, Cisco...</p>
-                <div id="intel-feed" class="space-y-2 max-h-60 overflow-y-auto">
-                    <div class="p-2 border-l-2 border-blue-500 bg-slate-800 text-sm italic">Accessing market wires...</div>
-                </div>
-                <button onclick="fetchLiveNews()" class="text-xs text-blue-400 underline">Refresh Feed</button>
+    id: 'intel', 
+    name: 'Competitive Intel', 
+    cat: 'Brand/ATC/Services', 
+    icon: 'shield', 
+    desc: 'Live signals from CDW, Presidio, and Accenture.',
+    demo: `
+        <div class="space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">Rival Signal Feed</h3>
+                <span class="animate-pulse flex items-center gap-1 text-[10px] text-green-500 font-bold uppercase">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Live
+                </span>
             </div>
-        `
-    },
+            
+            <div class="flex flex-wrap gap-2" id="rival-filters">
+                <button onclick="fetchLiveNews('Accenture')" class="text-[10px] px-2 py-1 bg-slate-800 rounded border border-slate-700 hover:border-blue-500 text-slate-300">Accenture</button>
+                <button onclick="fetchLiveNews('CDW')" class="text-[10px] px-2 py-1 bg-slate-800 rounded border border-slate-700 hover:border-blue-500 text-slate-300">CDW</button>
+                <button onclick="fetchLiveNews('Presidio')" class="text-[10px] px-2 py-1 bg-slate-800 rounded border border-slate-700 hover:border-blue-500 text-slate-300">Presidio</button>
+                <button onclick="fetchLiveNews('Insight Enterprises')" class="text-[10px] px-2 py-1 bg-slate-800 rounded border border-slate-700 hover:border-blue-500 text-slate-300">Insight</button>
+            </div>
+
+            <div id="intel-feed" class="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                <div class="p-8 text-center text-slate-500 text-xs italic">
+                    Select a rival above to scan market signals...
+                </div>
+            </div>
+        </div>
+    `
+},
     { 
         id: 'seo', 
         name: 'SEO Search Agent', 
@@ -410,3 +423,4 @@ function copyUTM() {
         lucide.createIcons();
     }, 2000);
 }
+
