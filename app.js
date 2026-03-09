@@ -1,127 +1,24 @@
 const agents = [
-    { 
-        id: 'utm', 
-        name: 'UTM Builder', 
-        cat: 'Digital Campaigns', 
-        icon: 'link', 
-        desc: 'Standardize campaign tracking instantly.', 
-        demo: `
-            <div class="space-y-4">
-                <div class="grid grid-cols-1 gap-4">
-                    <input id="utm-url" type="text" placeholder="Destination URL (e.g., wwt.com/atc)" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white text-sm">
-                    <div class="grid grid-cols-2 gap-4">
-                        <select id="utm-src" class="bg-slate-900 border border-slate-700 p-3 rounded text-white text-sm">
-                            <option value="linkedin">LinkedIn</option>
-                            <option value="twitter">X / Twitter</option>
-                            <option value="google">Google</option>
-                            <option value="newsletter">Newsletter</option>
-                        </select>
-                        <select id="utm-med" class="bg-slate-900 border border-slate-700 p-3 rounded text-white text-sm">
-                            <option value="social">Social</option>
-                            <option value="cpc">Paid Search</option>
-                            <option value="email">Email</option>
-                        </select>
-                    </div>
-                    <input id="utm-cam" type="text" placeholder="Campaign Name" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white text-sm">
-                </div>
-                <button onclick="runUTM()" class="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded font-bold transition-colors">Generate Tracking Link</button>
-                <div id="utm-result-container" class="hidden animate-in fade-in slide-in-from-bottom-2">
-                    <div class="flex items-center gap-2 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
-                        <code id="utm-result" class="text-blue-300 text-xs break-all flex-1 font-mono"></code>
-                        <button onclick="copyUTM()" class="p-2 hover:bg-blue-500/20 rounded text-blue-400"><i data-lucide="copy" class="w-4 h-4"></i></button>
-                    </div>
-                </div>
-            </div>`
-    },
-    { 
-        id: 'intel', 
-        name: 'Competitive Intel', 
-        cat: 'Brand/ATC/Services', 
-        icon: 'shield', 
-        desc: 'Live signals from rivals.', 
-        demo: `
-            <div class="space-y-4">
-                <div class="flex gap-2">
-                    <input id="intel-comp" type="text" placeholder="Competitor (e.g. Accenture)" class="flex-1 bg-slate-900 border border-slate-700 p-2 rounded text-white text-sm">
-                    <button onclick="fetchLiveNews(document.getElementById('intel-comp').value)" class="bg-blue-600 px-4 rounded text-white text-xs font-bold">Scan</button>
-                </div>
-                <div id="intel-feed" class="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
-                    <p class="text-slate-500 text-center text-xs py-8 italic">Enter a competitor name to stream real-time news signals.</p>
-                </div>
-            </div>`
-    },
-    { 
-        id: 'seo', 
-        name: 'SEO Search Agent', 
-        cat: 'Growth/Search', 
-        icon: 'search', 
-        desc: '2026 search trends.', 
-        demo: `
-            <div class="space-y-4">
-                <input id="seo-query" type="text" placeholder="Keyword Topic" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white text-sm">
-                <button onclick="runSEOScan()" class="w-full bg-blue-600 text-white p-3 rounded font-bold">Analyze Search Intent</button>
-                <div id="seo-output" class="text-xs text-slate-400 leading-relaxed"></div>
-            </div>`
-    },
-    { 
-        id: 'icp', 
-        name: 'ICP Agent', 
-        cat: 'Portfolio Marketing', 
-        icon: 'users', 
-        desc: 'Map buying committees.', 
-        demo: `
-            <div class="space-y-4">
-                <select id="icp-industry" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white text-sm">
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Finance">Financial Services</option>
-                    <option value="Manufacturing">Manufacturing</option>
-                    <option value="Public Sector">Public Sector</option>
-                </select>
-                <button onclick="runICP()" class="w-full bg-purple-600 text-white p-3 rounded font-bold">Map Buying Committee</button>
-                <div id="icp-result" class="hidden grid grid-cols-1 gap-2 mt-4"></div>
-            </div>`
-    },
-    { 
-        id: 'industry', 
-        name: 'Industry Content', 
-        cat: 'Portfolio Marketing', 
-        icon: 'file-text', 
-        desc: 'ATC-validated briefs.', 
-        demo: `
-            <div class="space-y-4">
-                <div class="grid grid-cols-2 gap-4">
-                    <input id="content-topic" type="text" placeholder="Topic (e.g. GenAI)" class="bg-slate-900 border border-slate-700 p-3 rounded text-white text-sm">
-                    <select id="content-persona" class="bg-slate-900 border border-slate-700 p-3 rounded text-white text-sm">
-                        <option>C-Level Executive</option>
-                        <option>Technical Architect</option>
-                        <option>Operations Director</option>
-                    </select>
-                </div>
-                <button onclick="runContent()" class="w-full bg-emerald-600 text-white p-3 rounded font-bold">Generate Strategic Brief</button>
-                <div id="content-output" class="hidden mt-4 p-6 bg-white rounded-lg shadow-inner text-slate-800 text-xs">
-                    <div id="brief-text"></div>
-                </div>
-            </div>`
-    },
-    { id: 'revenue', name: 'Marketing-to-Revenue', cat: 'Portfolio Marketing', icon: 'trending-up', desc: 'SFDC linking.', demo: `<div class="text-center py-10"><button onclick="simulateRevenue()" class="bg-blue-600 px-6 py-2 rounded font-bold text-white">Simulate Revenue Attribution</button><div id="drop-zone" class="mt-4"></div><div id="rev-analysis" class="hidden mt-4 text-xs text-blue-400 font-mono italic">Pipeline Sync Complete: $4.2M Attributed to ATC Lab Workshops.</div></div>` },
-    { id: 'email', name: 'Email Marketing', cat: 'Digital Campaigns', icon: 'mail', desc: 'Brand alignment.', demo: `<div class="space-y-4"><textarea id="email-raw" placeholder="Drop rough notes here..." class="w-full h-24 bg-slate-900 border border-slate-700 p-3 rounded text-white text-sm"></textarea><button onclick="runAIEmail()" class="w-full bg-blue-600 text-white p-3 rounded font-bold">Apply Brand Voice (Gemini)</button><div id="email-result-container" class="hidden mt-4"><div id="email-result" class="p-4 bg-slate-800 rounded border border-blue-500/30 text-xs text-slate-200 whitespace-pre-wrap"></div></div></div>` },
-    { id: 'reporting', name: 'Reporting Perf', cat: 'Portfolio Marketing', icon: 'bar-chart-2', desc: 'Campaign health.', demo: `<div class="p-4 bg-slate-900 rounded-lg border border-slate-800"><div class="flex justify-between mb-4"><h5 class="text-xs font-bold text-white uppercase">Weekly Telemetry</h5><button onclick="refreshReport()" class="text-[10px] text-blue-400 hover:underline">Refresh Data</button></div><div id="report-insight" class="text-xs text-slate-400 italic">Historical campaign data loaded. Press refresh for real-time AI insights.</div></div>` },
-    { id: 'readout', name: 'Readout + Rec', cat: 'Portfolio Marketing', icon: 'presentation', desc: 'PPT summaries.', demo: `<div class="space-y-4"><input id="readout-title" type="text" placeholder="Meeting Title" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white text-sm"><button onclick="runReadout()" class="w-full bg-indigo-600 text-white p-3 rounded font-bold">Generate Exec Slide</button><div id="slide-preview" class="hidden mt-4 p-8 bg-slate-800 border-4 border-slate-700 rounded shadow-2xl text-center"><h3 id="slide-title-text" class="text-xl font-bold text-white mb-2"></h3><p class="text-xs text-slate-500 uppercase tracking-widest">Confidential Internal Briefing</p></div></div>` }
+    { id: 'utm', name: 'UTM Builder', cat: 'Digital Campaigns', icon: 'link', demo: `<div class="space-y-4"><h3 class="text-white font-bold">UTM Link Generator</h3><input id="utm-url" type="text" placeholder="https://wwt.com" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><button onclick="runUTM()" class="w-full bg-blue-600 p-3 rounded font-bold text-white">Generate</button><div id="utm-result-container" class="hidden p-4 bg-blue-500/10 border border-blue-500/30 rounded text-xs text-blue-300 break-all"></div></div>` },
+    { id: 'intel', name: 'Competitive Intel', cat: 'Brand/ATC/Services', icon: 'shield', demo: `<div class="space-y-4"><h3 class="text-white font-bold">Competitor Signal Scan</h3><input id="intel-comp" type="text" placeholder="Competitor Name" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><button onclick="fetchLiveNews(document.getElementById('intel-comp').value)" class="w-full bg-blue-600 p-3 rounded font-bold text-white">Scan</button><div id="intel-feed" class="space-y-2 mt-4 text-xs text-slate-400"></div></div>` },
+    { id: 'seo', name: 'SEO Search Agent', cat: 'Growth/Search', icon: 'search', demo: `<div class="space-y-4"><h3 class="text-white font-bold">SEO Intent Analysis</h3><input id="seo-query" type="text" placeholder="Keyword" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><button onclick="runSEOScan()" class="w-full bg-blue-600 p-3 rounded font-bold text-white">Analyze</button><div id="seo-output" class="text-xs text-slate-400 mt-2"></div></div>` },
+    { id: 'icp', name: 'ICP Agent', cat: 'Portfolio Marketing', icon: 'users', demo: `<div class="space-y-4"><h3 class="text-white font-bold">Buying Committee Mapper</h3><select id="icp-industry" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><option>Healthcare</option><option>Finance</option></select><button onclick="runICP()" class="w-full bg-purple-600 p-3 rounded font-bold text-white">Map Committee</button><div id="icp-result" class="hidden grid gap-2 mt-2"></div></div>` },
+    { id: 'industry', name: 'Industry Content', cat: 'Portfolio Marketing', icon: 'file-text', demo: `<div class="space-y-4"><h3 class="text-white font-bold">AI Content Brief</h3><input id="content-topic" type="text" placeholder="Topic" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><button onclick="runContent()" class="w-full bg-emerald-600 p-3 rounded font-bold text-white">Generate</button><div id="content-output" class="hidden p-4 bg-white text-slate-800 rounded text-xs"></div></div>` },
+    { id: 'revenue', name: 'Marketing-to-Revenue', cat: 'Portfolio Marketing', icon: 'trending-up', demo: `<div class="text-center py-6"><button onclick="simulateRevenue()" class="bg-blue-600 px-6 py-2 rounded font-bold text-white">Sync Salesforce Pipeline</button><div id="rev-analysis" class="hidden mt-4 text-xs text-blue-400 font-mono italic">Pipeline Sync Complete: $4.2M Attributed.</div></div>` },
+    { id: 'email', name: 'Email Marketing', cat: 'Digital Campaigns', icon: 'mail', demo: `<div class="space-y-4"><h3 class="text-white font-bold">Brand Voice Optimizer</h3><textarea id="email-raw" class="w-full h-20 bg-slate-900 border border-slate-700 p-3 rounded text-white" placeholder="Paste draft here..."></textarea><button onclick="runAIEmail()" class="w-full bg-blue-600 p-3 rounded font-bold text-white">Apply WWT Voice</button><div id="email-result-container" class="hidden p-4 bg-slate-800 border border-blue-500/30 text-xs text-slate-200"></div></div>` },
+    { id: 'reporting', name: 'Reporting Perf', cat: 'Portfolio Marketing', icon: 'bar-chart-2', demo: `<div class="p-4 bg-slate-900 rounded border border-slate-800"><p id="report-insight" class="text-xs text-slate-400 italic">Ready for refresh.</p><button onclick="refreshReport()" class="mt-2 text-blue-400 text-[10px] uppercase font-bold">Run Performance Report</button></div>` },
+    { id: 'readout', name: 'Readout + Rec', cat: 'Portfolio Marketing', icon: 'presentation', demo: `<div class="space-y-4"><h3 class="text-white font-bold">Executive Slide Generator</h3><input id="readout-title" type="text" placeholder="Meeting Title" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><button onclick="runReadout()" class="w-full bg-indigo-600 p-3 rounded font-bold text-white">Create Slide</button><div id="slide-preview" class="hidden mt-4 p-6 bg-slate-800 border border-slate-700 rounded text-center"><h3 id="slide-title-text" class="text-white font-bold"></h3></div></div>` }
 ];
 
-// --- DASHBOARD INITIALIZATION (5+4 Grid) ---
+// --- INITIALIZATION ---
 function init() {
     const grid = document.getElementById('agent-grid');
     if (!grid) return;
 
-    grid.innerHTML = agents.map((agent, index) => {
-        let gridClasses = "bg-slate-900/40 border border-slate-800 p-4 rounded-xl flex flex-col items-center justify-center text-center group cursor-pointer hover:border-blue-500/50 hover:bg-slate-800/50 transition-all duration-300 w-full min-h-[110px]";
-        
-        // Offset the 6th element to start the second row properly
-        if (index === 5) gridClasses += " md:col-start-1 lg:col-start-1";
-
+    grid.innerHTML = agents.map((agent) => {
         return `
-            <div class="${gridClasses}" onclick="launchAgent('${agent.id}')">
+            <div class="agent-button card p-4 flex flex-col items-center justify-center text-center group cursor-pointer hover:border-blue-500/50 hover:bg-slate-800/50 transition-all duration-300" 
+                 onclick="launchAgent('${agent.id}')">
                 <div class="w-10 h-10 mb-2 rounded-lg bg-slate-800 text-slate-500 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
                     <i data-lucide="${agent.icon}" class="w-5 h-5"></i>
                 </div>
@@ -130,16 +27,18 @@ function init() {
             </div>
         `;
     }).join('');
+
     lucide.createIcons();
 }
 
-// --- WORKSPACE LOGIC ---
+// --- CORE WORKSPACE LOGIC ---
 function launchAgent(id) {
     const agent = agents.find(a => a.id === id);
     const placeholder = document.getElementById('stage-placeholder');
     const content = document.getElementById('stage-content');
     const wrapper = document.getElementById('action-stage-wrapper');
 
+    // UI State Swap
     placeholder.classList.add('hidden');
     content.classList.remove('hidden');
     wrapper.classList.add('active');
@@ -160,15 +59,25 @@ function launchAgent(id) {
     `;
 
     lucide.createIcons();
-    if(id === 'intel') fetchLiveNews();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function clearStage() {
-    document.getElementById('stage-placeholder').classList.remove('hidden');
-    document.getElementById('stage-content').classList.add('hidden');
-    document.getElementById('action-stage-wrapper').classList.remove('active');
+    const placeholder = document.getElementById('stage-placeholder');
+    const content = document.getElementById('stage-content');
+    const wrapper = document.getElementById('action-stage-wrapper');
+
+    // Reset UI State
+    content.classList.add('hidden');
+    content.innerHTML = '';
+    placeholder.classList.remove('hidden');
+    wrapper.classList.remove('active');
+    
+    console.log("Stage Cleared"); // For debugging
 }
+
+// Start app
+document.addEventListener('DOMContentLoaded', init);
 
 // --- LOGIC ENGINES ---
 
@@ -266,4 +175,3 @@ async function runAIEmail() {
     }, 2000);
 }
 
-document.addEventListener('DOMContentLoaded', init);
