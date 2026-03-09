@@ -105,20 +105,18 @@ async function processUTM() {
         text.innerHTML = "<span class='animate-pulse text-blue-400 font-bold'>Gemini is strategizing...</span>";
         
         try {
+            // 1. DYNAMIC KEY CHECK: Look everywhere for the key right when the button is clicked
+            const activeKey = window.API_KEY_INJECTED || window.GOOGLE_AI_KEY || GOOGLE_AI_KEY;
+
+            if (!activeKey || activeKey.includes('PLACEHOLDER') || activeKey.length < 10) {
+                throw new Error("API Key Missing. Check GitHub Secrets for GEMSTONE_DIAMOND.");
+            }
+
+            const modelId = "gemini-2.0-flash";
             const prompt = `Act as a WWT Marketing specialist. For the URL ${url}, suggest a professional lowercase hyphenated campaign name, source, and medium. Return ONLY a raw JSON object with these keys: campaign, source, medium.`;
             
-            // Force it to look at the window object where the GitHub Action injected the key
-            const getActiveKey = () => {
-                return window.GOOGLE_AI_KEY || GOOGLE_AI_KEY;
-            };
-            const modelId = "gemini-2.0-flash";
-            const activeKey = window.API_KEY_INJECTED || GOOGLE_AI_KEY;
-
-            if (!activeKey || activeKey.includes('PLACEHOLDER')) {
-                throw new Error("API Key not found. Ensure GEMSTONE_DIAMOND is set in GitHub Secrets.");
-            }
-            
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${activeKey}&_=${new Date().getTime()}`;
+            // 2. CACHE-BUSTED API URL
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${activeKey}&cb=${Date.now()}`;
 
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -132,8 +130,8 @@ async function processUTM() {
                 throw new Error(data.error.message);
             }
 
+            // 3. ROBUST DATA PARSING
             const rawText = data.candidates[0].content.parts[0].text;
-            // Enhanced JSON cleaning to handle markdown backticks or extra text
             const cleanJson = JSON.parse(rawText.replace(/```json|```/g, "").trim());
             
             document.getElementById('utm-src').value = cleanJson.source;
@@ -142,6 +140,7 @@ async function processUTM() {
             
         } catch (e) {
             console.error("UTM AI Error:", e);
+            // Show a helpful error message in the UI
             text.innerHTML = `<span class="text-red-400 text-[10px]">AI Offline: ${e.message}</span>`;
         }
     }
@@ -161,6 +160,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
