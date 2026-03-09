@@ -161,11 +161,3 @@ function clearStage() {
 
 window.onload = init;
 
-
-
-
-
-
-
-
-
