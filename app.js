@@ -191,8 +191,8 @@ function init() {
 
 // Modal Logic
 function openModal(id) {
-    const agent = agents.find(a => a.id === id);
-    const content = document.getElementById('modal-content');
+     agent = agents.find(a => a.id === id);
+     content = document.getElementById('modal-content');
     content.innerHTML = agent.demo;
     document.getElementById('modal').classList.remove('hidden');
     
@@ -208,18 +208,18 @@ function closeModal() {
 
 // 1. UTM Builder
 function runUTM() {
-    const url = document.getElementById('utm-url').value || 'https://wwt.com/atc';
-    const src = document.getElementById('utm-src').value || 'linkedin';
-    const med = document.getElementById('utm-med').value || 'social';
-    const result = `${url}?utm_source=${src}&utm_medium=${med}&utm_campaign=wwt_agent_demo`;
-    const box = document.getElementById('utm-result');
+     url = document.getElementById('utm-url').value || 'https://wwt.com/atc';
+     src = document.getElementById('utm-src').value || 'linkedin';
+     med = document.getElementById('utm-med').value || 'social';
+     result = `${url}?utm_source=${src}&utm_medium=${med}&utm_campaign=wwt_agent_demo`;
+     box = document.getElementById('utm-result');
     box.innerText = result;
     box.classList.remove('hidden');
 }
 
 // 2. Competitive Intel (LIVE RSS)
 async function fetchLiveNews() {
-    const feed = document.getElementById('intel-feed');
+     feed = document.getElementById('intel-feed');
     try {
         const response = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https://www.computerworld.com/category/it-services/index.rss');
         const data = await response.json();
@@ -298,7 +298,7 @@ init();
 // Replace this with your actual key for testing, 
 // but DON'T commit the key to a public GitHub repo! 
 // Use a text input in the UI for the demo instead.
-let GOOGLE_AI_KEY = ""; 
+const GOOGLE_AI_KEY = "REPLACE_ME_WITH_KEY"; 
 
 async function runAIEmail() {
     const rawContent = document.getElementById('email-raw').value;
@@ -332,4 +332,5 @@ async function runAIEmail() {
     } catch (e) {
         resultDiv.innerText = "Error: Make sure your API key is valid!";
     }
+
 }
