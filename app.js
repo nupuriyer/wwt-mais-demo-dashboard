@@ -90,22 +90,47 @@ const agents = [
     `
 },
     { 
-        id: 'seo', 
-        name: 'SEO Search Agent', 
-        cat: 'Marketing Ops', 
-        icon: 'search', 
-        desc: 'Pull real-time search trends.',
-        demo: `
-            <div class="space-y-4">
-                <h3 class="text-xl font-bold">SEO Trend Scraper</h3>
-                <div class="flex gap-2">
-                    <input id="seo-query" type="text" value="World Wide Technology" class="flex-1 bg-slate-800 border-slate-700 p-2 rounded text-white">
-                    <button onclick="runSEO()" class="bg-blue-600 px-4 rounded text-sm hover:bg-blue-500">Scrape</button>
+    id: 'seo', 
+    name: 'SEO Search Agent', 
+    cat: 'Growth/Search', 
+    icon: 'search', 
+    desc: 'Analyzing 2026 search trends and Answer Engine visibility.',
+    demo: `
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-white">2026 Search Intelligence</h3>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <div class="p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
+                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Top Intent Pillar</p>
+                    <p class="text-sm text-blue-400 font-bold">Cloud 3.0 & GPU-as-a-Service</p>
                 </div>
-                <div id="seo-results" class="space-y-1 text-sm text-blue-300 font-mono bg-black p-3 rounded min-h-[100px]">Enter a keyword to see live Google trends...</div>
+                <div class="p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
+                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Search Mode</p>
+                    <p class="text-sm text-green-400 font-bold">Conversational / Agentic</p>
+                </div>
             </div>
-        `
-    },
+
+            <div class="bg-slate-900 rounded-lg p-4 border border-slate-800">
+                <p class="text-xs text-slate-300 mb-3">Trending "WWT vs Rivals" Queries:</p>
+                <ul class="space-y-2" id="seo-trends">
+                    <li class="flex justify-between items-center text-[11px]">
+                        <span class="text-slate-400">"WWT ATC labs vs CDW solution center"</span>
+                        <span class="text-green-500">+140% 📈</span>
+                    </li>
+                    <li class="flex justify-between items-center text-[11px]">
+                        <span class="text-slate-400">"Accenture agentic AI vs WWT custom models"</span>
+                        <span class="text-green-500">+85% 📈</span>
+                    </li>
+                </ul>
+            </div>
+
+            <button onclick="runSEOScan()" class="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white rounded font-bold text-xs transition-colors">
+                Generate Content Strategy
+            </button>
+            <div id="seo-output" class="text-[10px] text-slate-400 italic"></div>
+        </div>
+    `
+},
     { 
         id: 'icp', 
         name: 'ICP Agent', 
@@ -449,5 +474,21 @@ function copyUTM() {
         lucide.createIcons();
     }, 2000);
 }
+
+function runSEOScan() {
+    const output = document.getElementById('seo-output');
+    output.innerHTML = "Scanning LLM citation frequency...";
+    
+    setTimeout(() => {
+        output.innerHTML = `
+            <div class="mt-2 p-3 bg-blue-500/10 border border-blue-500/30 rounded text-slate-200">
+                <strong>💡 Content Strategy Recommendation:</strong><br>
+                Create a "White Paper" titled: <span class="text-blue-300 italic">"The FinOps of AI Inference: Scaling Beyond the Public Cloud."</span><br><br>
+                <em>Why:</em> Search intent for "AI token cost optimization" is rising across CIO demographics in March 2026.
+            </div>
+        `;
+    }, 1500);
+}
+
 
 
