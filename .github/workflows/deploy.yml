@@ -28,8 +28,8 @@ jobs:
 
       - name: Inject API Key
         run: |
-          # Added quotes around the secret so JS treats it as a string
-          sed -i "s/REPLACE_ME_WITH_KEY/${{ secrets.GEMSTONE_DIAMOND }}/g" app.js
+          # Use double quotes in sed to handle the shell variable correctly
+          sed -i "s|REPLACE_ME_WITH_KEY|${{ secrets.GEMSTONE_DIAMOND }}|g" app.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
