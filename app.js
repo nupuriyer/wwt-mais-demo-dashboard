@@ -131,25 +131,36 @@ const agents = [
         </div>
     `
 },
-    { 
-        id: 'icp', 
-        name: 'ICP Agent', 
-        cat: 'Portfolio Marketing', 
-        icon: 'users', 
-        desc: 'Target profile identification.',
-        demo: `
-            <div class="space-y-4">
-                <h3 class="text-xl font-bold">Target Persona Mapper</h3>
-                <select id="icp-industry" class="w-full bg-slate-800 border-slate-700 p-2 rounded text-white">
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="Finance">Financial Services</option>
+   { 
+    id: 'icp', 
+    name: 'ICP Agent', 
+    cat: 'Portfolio Marketing', 
+    icon: 'users', 
+    desc: 'Map the 2026 buying committee for WWT verticals.',
+    demo: `
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-white">Target Persona Mapper</h3>
+            
+            <div class="space-y-1">
+                <label class="text-[10px] uppercase text-slate-500 font-bold">Select Industry Vertical</label>
+                <select id="icp-industry" class="w-full bg-slate-900 border border-slate-700 p-2.5 rounded-lg text-white text-sm outline-none focus:border-purple-500">
+                    <option value="Healthcare">Healthcare & Life Sciences</option>
+                    <option value="Finance">Financial Services (FSI)</option>
+                    <option value="Manufacturing">Smart Manufacturing / Industry 4.0</option>
                     <option value="Public Sector">Public Sector / Federal</option>
                 </select>
-                <button onclick="runICP()" class="w-full bg-purple-600 p-2 rounded font-bold hover:bg-purple-500">Map Buying Committee</button>
-                <div id="icp-result" class="grid grid-cols-1 gap-2 hidden"></div>
             </div>
-        `
-    },
+
+            <button onclick="runICP()" class="w-full bg-purple-600 hover:bg-purple-500 text-white p-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2">
+                <i data-lucide="users" class="w-4 h-4"></i>
+                Identify Buying Committee
+            </button>
+
+            <div id="icp-result" class="space-y-2 hidden animate-in fade-in slide-in-from-bottom-2">
+                </div>
+        </div>
+    `
+},
     { 
         id: 'industry', 
         name: 'Industry Content', 
@@ -488,6 +499,48 @@ function runSEOScan() {
             </div>
         `;
     }, 1500);
+}
+
+function runICP() {
+    const industry = document.getElementById('icp-industry').value;
+    const resDiv = document.getElementById('icp-result');
+    resDiv.classList.remove('hidden');
+    
+    const committees = {
+        'Healthcare': [
+            { role: 'Chief Medical AI Officer', pain: 'Model Bias & Patient Privacy', driver: 'ATC Lab Validation' },
+            { role: 'VP of Clinical Infrastructure', pain: 'Legacy EHR Latency', driver: 'Edge Computing' },
+            { role: 'Head of Bio-Informatics', pain: 'Genomics Data Silos', driver: 'High-Perf Storage' }
+        ],
+        'Finance': [
+            { role: 'Head of Algorithmic Risk', pain: 'Real-time Fraud Latency', driver: 'Low-Latency Networking' },
+            { role: 'Chief Sustainability Officer', pain: 'Data Center Energy Carbon', driver: 'Liquid Cooling (ATC)' },
+            { role: 'Director of Fintech Ops', pain: 'Cloud Sovereignty', driver: 'Hybrid Cloud Strategy' }
+        ],
+        'Manufacturing': [
+            { role: 'Director of Digital Twins', pain: 'OT/IT Convergence Gaps', driver: 'Industrial IoT' },
+            { role: 'VP of Supply Chain AI', pain: 'Predictive Accuracy', driver: 'Advanced Analytics' },
+            { role: 'Smart Factory Lead', pain: 'Private 5G Reliability', driver: 'Wireless Engineering' }
+        ],
+        'Public Sector': [
+            { role: 'Agency Chief Data Scientist', pain: 'Sovereign AI Compliance', driver: 'FedRAMP Solutions' },
+            { role: 'Mission Systems Lead', pain: 'Edge Intelligence at Sea/Field', driver: 'Ruggedized Compute' },
+            { role: 'Cyber Ops Director', pain: 'Zero Trust Maturity', driver: 'Security Architecture' }
+        ]
+    };
+
+    resDiv.innerHTML = committees[industry].map(p => `
+        <div class="bg-slate-900/80 border border-purple-500/20 p-3 rounded-lg hover:border-purple-500/50 transition-colors">
+            <div class="flex justify-between items-start mb-1">
+                <span class="text-xs font-bold text-white">${p.role}</span>
+                <span class="text-[9px] px-1.5 py-0.5 bg-purple-500/10 text-purple-400 rounded uppercase">High Influence</span>
+            </div>
+            <p class="text-[10px] text-slate-400"><span class="text-slate-500 italic font-semibold">Pain Point:</span> ${p.pain}</p>
+            <p class="text-[10px] text-purple-300 mt-1 font-mono"><span class="text-slate-500">WWT Lever:</span> ${p.driver}</p>
+        </div>
+    `).join('');
+    
+    lucide.createIcons();
 }
 
 
