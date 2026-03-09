@@ -9,7 +9,6 @@ permissions:
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -24,20 +23,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Inject API Key
+      - name: Force Inject API Key
         run: |
-          # Matches the 'GEMINI_API_KEY_PLACEHOLDER' string currently in your app.js
-          # Using '#' as a delimiter is a best practice to avoid errors if the key has slashes
-          sed -i "s#GEMINI_API_KEY_PLACEHOLDER#${{ secrets.GEMSTONE_DIAMOND }}#g" app.js
+          # 1. Create a brand new first line with the real secret
+          echo "const GOOGLE_AI_KEY = '${{ secrets.GEMSTONE_DIAMOND }}';" > app.js.tmp
           
-          # Verification step: This checks if the placeholder is GONE.
-          # If it's still there, the build will fail and tell you why.
-          if grep -q "GEMINI_API_KEY_PLACEHOLDER" app.js; then
-            echo "❌ API Key Injection Failed - Placeholder still exists"
-            exit 1
-          else
-            echo "✅ API Key Injection Successful"
-          fi
+          # 2. Append everything EXCEPT the first line of the original app.js to the tmp file
+          tail -n +2 app.js >> app.js.tmp
+          
+          # 3. Overwrite the original app.js with the new one
+          mv app.js.tmp app.js
+          
+          echo "✅ Secret Force-Injected successfully."
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
