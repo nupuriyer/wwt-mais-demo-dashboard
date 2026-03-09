@@ -209,25 +209,56 @@ const agents = [
     `
 },
     { 
-        id: 'revenue', 
-        name: 'Marketing-to-Revenue', 
-        cat: 'Portfolio Marketing', 
-        icon: 'trending-up', 
-        desc: 'Link activity to pipeline.',
-        demo: `
-            <div class="space-y-4 text-center">
-                <h3 class="text-xl font-bold">Revenue Impact Modeling</h3>
-                <div class="p-6 border-2 border-dashed border-slate-700 rounded-xl">
-                    <i data-lucide="upload-cloud" class="mx-auto mb-2 text-slate-500"></i>
-                    <p class="text-xs text-slate-400">Drag & Drop Salesforce Export (.csv)</p>
+    id: 'revenue', 
+    name: 'Marketing-to-Revenue', 
+    cat: 'Portfolio Marketing', 
+    icon: 'trending-up', 
+    desc: 'Link campaign activity to Salesforce pipeline and closed-won deals.',
+    demo: `
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-white">Revenue Attribution Model</h3>
+            
+            <div id="drop-zone" class="p-8 border-2 border-dashed border-slate-700 rounded-xl bg-slate-900/50 text-center group hover:border-blue-500 transition-all">
+                <i data-lucide="upload-cloud" class="mx-auto mb-2 text-slate-500 group-hover:text-blue-400"></i>
+                <p class="text-[10px] text-slate-400">Drag & Drop Salesforce Export (.csv)</p>
+                <p class="text-[9px] text-slate-600 uppercase mt-1">or click to browse</p>
+            </div>
+
+            <button onclick="simulateRevenue()" class="w-full bg-blue-600 hover:bg-blue-500 text-white p-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2">
+                <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                Analyze Pipeline Impact
+            </li>
+
+            <div id="rev-analysis" class="hidden space-y-4 animate-in fade-in slide-in-from-bottom-4">
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-[9px] text-slate-500 uppercase">Marketing-Influenced</p>
+                        <p class="text-lg font-bold text-green-400">$4.2M</p>
+                    </div>
+                    <div class="bg-slate-800 p-3 rounded border border-slate-700">
+                        <p class="text-[9px] text-slate-500 uppercase">Conversion Lift</p>
+                        <p class="text-lg font-bold text-blue-400">+22%</p>
+                    </div>
                 </div>
-                <button onclick="simulateRevenue()" class="w-full bg-blue-600 p-2 rounded font-bold">Process Sample Data</button>
-                <div id="rev-chart" class="h-32 bg-slate-800 rounded flex items-end justify-around p-2 hidden">
-                    <div class="w-8 bg-blue-500 h-1/2"></div><div class="w-8 bg-blue-400 h-3/4"></div><div class="w-8 bg-blue-300 h-full"></div>
+                
+                <div class="h-32 bg-slate-900 border border-slate-800 rounded flex items-end justify-around p-4 gap-2">
+                    <div class="w-full bg-blue-900/40 h-[40%] rounded-t-sm relative group">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[8px] text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Awareness</div>
+                    </div>
+                    <div class="w-full bg-blue-700/60 h-[65%] rounded-t-sm relative group">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[8px] text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">ATC Discovery</div>
+                    </div>
+                    <div class="w-full bg-blue-500 h-[85%] rounded-t-sm relative group">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[8px] text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">POC Stage</div>
+                    </div>
+                    <div class="w-full bg-green-500 h-full rounded-t-sm relative group">
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 text-[8px] text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity">Closed Won</div>
+                    </div>
                 </div>
             </div>
-        `
-    },
+        </div>
+    `
+},
     { 
         id: 'email', 
         name: 'Email Marketing', 
@@ -603,4 +634,22 @@ function runContent() {
     }, 1000);
 }
 
+function simulateRevenue() {
+    const dropZone = document.getElementById('drop-zone');
+    const analysis = document.getElementById('rev-analysis');
+    
+    dropZone.innerHTML = `
+        <div class="flex items-center justify-center gap-2 text-blue-400 animate-pulse">
+            <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+            <span class="text-xs font-bold">Mapping Leads to Opportunities...</span>
+        </div>
+    `;
+    lucide.createIcons();
+
+    setTimeout(() => {
+        dropZone.classList.add('hidden');
+        analysis.classList.remove('hidden');
+        lucide.createIcons();
+    }, 1800);
+}
 
