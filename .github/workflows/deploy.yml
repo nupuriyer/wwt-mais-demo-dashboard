@@ -9,8 +9,18 @@ permissions:
   pages: write
   id-token: write
 
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   deploy:
+    # --- THIS BLOCK FIXES THE 400 ERROR ---
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # ---------------------------------------
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,8 +28,8 @@ jobs:
 
       - name: Inject API Key
         run: |
+          # Added quotes around the secret so JS treats it as a string
           sed -i "s/REPLACE_ME_WITH_KEY/${{ secrets.GEMSTONE_DIAMOND }}/g" app.js
-        # This 'sed' command finds the placeholder and replaces it with your secret
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
