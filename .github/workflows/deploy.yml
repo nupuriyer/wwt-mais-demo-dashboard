@@ -19,18 +19,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Force Create Config
+      - name: Force Prepend API Key
         run: |
-          # 1. Create a brand new file with the key as a global variable
-          echo "window.API_KEY_INJECTED = '${{ secrets.GEMSTONE_DIAMOND }}';" > config.js
+          # 1. Create a temporary file with the global variable
+          echo "window.API_KEY_INJECTED = '${{ secrets.GEMSTONE_DIAMOND }}';" > app.js.tmp
           
-          # 2. Verify the file was created (this will show in logs)
-          if [ -s config.js ]; then
-            echo "✅ config.js created successfully"
-          else
-            echo "❌ config.js is empty - Check GitHub Secret GEMSTONE_DIAMOND"
-            exit 1
-          fi
+          # 2. Append your actual app.js content to that temporary file
+          cat app.js >> app.js.tmp
+          
+          # 3. Replace the original app.js with the combined version
+          mv app.js.tmp app.js
+          
+          echo "✅ Secret successfully glued to the top of app.js"
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
