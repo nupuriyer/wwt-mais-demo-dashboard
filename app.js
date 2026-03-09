@@ -399,110 +399,71 @@ const agents = [
 },
 ];
 
-// Initialize Dashboard
+// --- DASHBOARD INITIALIZATION (5+4 Grid) ---
 function init() {
     const grid = document.getElementById('agent-grid');
-    grid.innerHTML = agents.map(agent => `
-        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between">
-            <div>
-                <div class="flex justify-between items-start mb-4">
-                    <div class="p-3 bg-blue-600/20 rounded-lg text-blue-400">
-                        <i data-lucide="${agent.icon || 'zap'}"></i>
-                    </div>
-                    <span class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">${agent.cat}</span>
+    if (!grid) return;
+
+    grid.innerHTML = agents.map((agent, index) => {
+        // Centering logic: The 6th agent (index 5) starts a new row.
+        // On md screens (5 cols), we offset it by 1 to center the 4 items.
+        let gridClasses = "bg-slate-900/40 border border-slate-800 p-4 rounded-xl flex flex-col items-center justify-center text-center group cursor-pointer hover:border-blue-500/50 hover:bg-slate-800/50 transition-all duration-300";
+        
+        if (index === 5) gridClasses += " md:col-start-1 lg:col-start-1";
+
+        return `
+            <div class="${gridClasses}" onclick="launchAgent('${agent.id}')">
+                <div class="w-10 h-10 mb-3 rounded-lg bg-slate-800 text-slate-500 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                    <i data-lucide="${agent.icon}" class="w-5 h-5"></i>
                 </div>
-                <h3 class="text-lg font-bold text-white">${agent.name}</h3>
-                <p class="text-sm text-slate-400 mt-2 line-clamp-2">${agent.desc}</p>
+                <h4 class="text-[10px] font-bold text-slate-300 uppercase tracking-tighter leading-tight">${agent.name}</h4>
+                <p class="text-[8px] text-slate-600 mt-1 uppercase group-hover:text-slate-400 transition-colors">${agent.cat}</p>
             </div>
-            <button onclick="openModal('${agent.id}')" class="mt-6 w-full py-2 border border-slate-700 rounded-lg text-sm hover:bg-blue-600 hover:text-white transition">
-                Launch Agent
-            </button>
-        </div>
-    `).join('');
+        `;
+    }).join('');
     lucide.createIcons();
 }
 
-// Modal Logic
-// Corrected Modal Logic to handle titles and icons
-// --- WORKSPACE LOGIC: Launching into the TOP STAGE ---
+// --- WORKSPACE LOGIC ---
 function launchAgent(id) {
     const agent = agents.find(a => a.id === id);
-    const stagePlaceholder = document.getElementById('stage-placeholder');
-    const stageContent = document.getElementById('stage-content');
-    const stageWrapper = document.getElementById('action-stage');
+    const placeholder = document.getElementById('stage-placeholder');
+    const content = document.getElementById('stage-content');
+    const wrapper = document.getElementById('action-stage-wrapper');
 
-    // 1. UI Transition: Hide placeholder, show content area
-    stagePlaceholder.classList.add('hidden');
-    stageContent.classList.remove('hidden');
-    stageWrapper.classList.add('active', 'ring-2', 'ring-blue-500/20');
+    placeholder.classList.add('hidden');
+    content.classList.remove('hidden');
+    wrapper.classList.add('ring-2', 'ring-blue-500/20', 'border-blue-500/30');
 
-    // 2. Inject the Agent UI into the Stage
-    stageContent.innerHTML = `
-        <div class="flex flex-col md:flex-row gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
+    content.innerHTML = `
+        <div class="flex flex-col md:flex-row gap-8 animate-in fade-in slide-in-from-top-4 duration-500">
             <div class="flex-1">
-                <div class="mb-4 flex items-center gap-3">
-                    <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                        <i data-lucide="${agent.icon}" class="w-5 h-5"></i>
-                    </div>
+                <div class="mb-6 flex items-center gap-4">
+                    <div class="p-3 bg-blue-600/20 text-blue-400 rounded-xl"><i data-lucide="${agent.icon}"></i></div>
                     <div>
                         <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">${agent.cat}</span>
-                        <h3 class="text-lg font-bold text-[#566a7f]">${agent.name}</h3>
+                        <h3 class="text-2xl font-bold text-white">${agent.name}</h3>
                     </div>
                 </div>
-                <div class="bg-white border border-slate-100 rounded-xl p-6 shadow-sm">
+                <div class="bg-[#0b1120] border border-slate-800 rounded-2xl p-8 shadow-2xl">
                     ${agent.demo}
                 </div>
             </div>
         </div>
     `;
 
-    // 3. Re-run Lucide to render icons inside the new HTML
     lucide.createIcons();
-
-    // 4. Special Handlers (RSS Feed for Intel or UTM logic)
     if(id === 'intel') fetchLiveNews();
-    
-    // 5. Scroll to top so the user sees the active tool immediately
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function clearStage() {
     document.getElementById('stage-placeholder').classList.remove('hidden');
     document.getElementById('stage-content').classList.add('hidden');
-    document.getElementById('action-stage').classList.remove('active', 'ring-2', 'ring-blue-500/20');
+    document.getElementById('action-stage-wrapper').classList.remove('ring-2', 'ring-blue-500/20', 'border-blue-500/30');
 }
 
-// --- GRID LOGIC: The 5 + 4 Switchboard ---
-function initSneatDashboard() {
-    const grid = document.getElementById('agent-grid');
-    if (!grid) return;
-
-    grid.innerHTML = agents.map((agent, index) => {
-        // Force the 6th agent to start a new row on desktop (5-col grid)
-        // and center the bottom row by using col-start
-        let gridClasses = "card p-4 flex flex-col items-center justify-center text-center group cursor-pointer hover:bg-slate-50 border border-transparent hover:border-blue-100 w-full min-w-[140px]";
-        
-        if (index === 5) {
-            // This moves the 6th agent to the first column of the second row
-            // On a 5-column grid, we can offset it by 1 to center the row of 4
-            gridClasses += " md:col-start-1 lg:col-start-1"; 
-        }
-
-        return `
-            <div class="${gridClasses}" onclick="launchAgent('${agent.id}')">
-                <div class="w-12 h-12 mb-3 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center group-hover:bg-[#004a99] group-hover:text-white transition-all duration-300">
-                    <i data-lucide="${agent.icon}" class="w-6 h-6"></i>
-                </div>
-                <h4 class="text-[10px] font-bold text-[#566a7f] uppercase tracking-tighter leading-tight">${agent.name}</h4>
-            </div>
-        `;
-    }).join('');
-
-    lucide.createIcons();
-}
-
-// Start the Dashboard on load
-document.addEventListener('DOMContentLoaded', initSneatDashboard);
+// --- Keep your specific Logic Engines (runUTM, fetchLiveNews, etc.) here ---
 
 // --- LOGIC ENGINES ---
 
@@ -880,4 +841,4 @@ function runReadout() {
 }
 
 
-
+document.addEventListener('DOMContentLoaded', init);
