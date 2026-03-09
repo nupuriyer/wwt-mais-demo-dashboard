@@ -275,22 +275,52 @@ const agents = [
         `
     },
     { 
-        id: 'reporting', 
-        name: 'Reporting Perf', 
-        cat: 'Portfolio Marketing', 
-        icon: 'bar-chart-2', 
-        desc: 'Revenue-centric visualization.',
-        demo: `
-            <div class="space-y-4">
-                <h3 class="text-xl font-bold">Campaign Health readout</h3>
-                <div class="grid grid-cols-2 gap-2 text-center">
-                    <div class="bg-slate-800 p-2 rounded"><p class="text-[10px] text-slate-500">MQLs</p><p class="text-lg text-green-400">412</p></div>
-                    <div class="bg-slate-800 p-2 rounded"><p class="text-[10px] text-slate-500">CPL</p><p class="text-lg text-blue-400">$24.10</p></div>
-                </div>
-                <p class="text-[10px] text-slate-400 italic font-mono uppercase">Syncing with WWT Marketing Cloud...</p>
+    id: 'reporting', 
+    name: 'Reporting Perf', 
+    cat: 'Portfolio Marketing', 
+    icon: 'bar-chart-2', 
+    desc: 'Real-time campaign health and CPL tracking.',
+    demo: `
+        <div class="space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">Campaign Health Pulse</h3>
+                <span class="text-[10px] text-slate-500 font-mono">ID: WWT-MAR-2026</span>
             </div>
-        `
-    },
+            
+            <div class="grid grid-cols-3 gap-2">
+                <div class="bg-slate-900 border border-slate-800 p-2 rounded-lg text-center">
+                    <p class="text-[9px] text-slate-500 uppercase">MQLs</p>
+                    <p class="text-lg font-bold text-white">842</p>
+                    <p class="text-[8px] text-green-400 font-bold">+12.4%</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-2 rounded-lg text-center">
+                    <p class="text-[9px] text-slate-500 uppercase">Avg CPL</p>
+                    <p class="text-lg font-bold text-white">$18.40</p>
+                    <p class="text-[8px] text-blue-400 font-bold">-5.1%</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-2 rounded-lg text-center">
+                    <p class="text-[9px] text-slate-500 uppercase">Conv. Rate</p>
+                    <p class="text-lg font-bold text-white">3.2%</p>
+                    <p class="text-[8px] text-slate-500 font-bold">Stable</p>
+                </div>
+            </div>
+
+            <div class="p-3 bg-blue-500/5 border border-blue-500/20 rounded-lg">
+                <div class="flex items-center gap-2 mb-2">
+                    <i data-lucide="zap" class="w-3 h-3 text-blue-400"></i>
+                    <span class="text-[10px] font-bold text-blue-400 uppercase tracking-tight">AI Diagnostic Signal</span>
+                </div>
+                <p id="report-insight" class="text-[10px] text-slate-300 leading-tight">
+                    Performance is currently exceeding Q1 benchmarks. LinkedIn Sponsored Content (ATC Focus) is driving 60% of high-intent conversions.
+                </p>
+            </div>
+
+            <button onclick="refreshReport()" class="w-full py-2 border border-slate-700 hover:bg-slate-800 text-slate-400 rounded text-[10px] uppercase font-bold tracking-widest transition-all">
+                Sync with Marketing Cloud
+            </button>
+        </div>
+    `
+},
     { 
         id: 'readout', 
         name: 'Readout + Rec', 
@@ -651,5 +681,19 @@ function simulateRevenue() {
         analysis.classList.remove('hidden');
         lucide.createIcons();
     }, 1800);
+}
+
+function refreshReport() {
+    const insight = document.getElementById('report-insight');
+    insight.innerHTML = `<span class="animate-pulse">Fetching latest telemetry from WWT-Cloud...</span>`;
+    
+    setTimeout(() => {
+        const insights = [
+            "Signal Alert: 'Hybrid Cloud' campaign creative is reaching saturation. Recommend pivot to 'Liquid Cooling' assets.",
+            "Efficiency Gain: CPL has dropped below $20 for the first time this quarter due to better ICP targeting.",
+            "Channel Shift: Organic search citations for 'ATC Labs' are up 40%. Direct traffic is our strongest lead source today."
+        ];
+        insight.innerText = insights[Math.floor(Math.random() * insights.length)];
+    }, 1500);
 }
 
