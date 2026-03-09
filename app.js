@@ -294,3 +294,42 @@ function simulateRevenue() {
 }
 
 init();
+
+// Replace this with your actual key for testing, 
+// but DON'T commit the key to a public GitHub repo! 
+// Use a text input in the UI for the demo instead.
+let GOOGLE_AI_KEY = ""; 
+
+async function runAIEmail() {
+    const rawContent = document.getElementById('email-raw').value;
+    const resultDiv = document.getElementById('email-result');
+    
+    if (!GOOGLE_AI_KEY) {
+        GOOGLE_AI_KEY = prompt("Please enter your Gemini API Key for the Live AI Demo:");
+        if (!GOOGLE_AI_KEY) return;
+    }
+
+    resultDiv.classList.remove('hidden');
+    resultDiv.innerHTML = "<span class='animate-pulse text-blue-600'>Gemini is thinking...</span>";
+
+    const promptText = `You are a Marketing Director at WWT (World Wide Technology). 
+    Convert these rough notes into a professional, persuasive email for our partners. 
+    Notes: ${rawContent} 
+    Include a mention of our Advanced Technology Center (ATC).`;
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_AI_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: promptText }] }]
+            })
+        });
+
+        const data = await response.json();
+        const aiText = data.candidates[0].content.parts[0].text;
+        resultDiv.innerText = aiText;
+    } catch (e) {
+        resultDiv.innerText = "Error: Make sure your API key is valid!";
+    }
+}
