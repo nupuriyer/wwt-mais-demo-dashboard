@@ -260,20 +260,37 @@ const agents = [
     `
 },
     { 
-        id: 'email', 
-        name: 'Email Marketing', 
-        cat: 'Digital Campaigns', 
-        icon: 'mail', 
-        desc: 'AI-assisted copy consistency.',
-        demo: `
-            <div class="space-y-4">
-                <h3 class="text-xl font-bold">Tone Optimizer</h3>
-                <textarea id="email-raw" class="w-auto h-24 bg-slate-800 border-slate-700 p-2 rounded text-white text-xs w-full" placeholder="Paste rough notes here..."></textarea>
-                <button onclick="runEmail()" class="w-full bg-blue-600 p-2 rounded font-bold">Professionalize</button>
-                <div id="email-result" class="p-3 bg-slate-100 text-slate-800 rounded text-xs hidden italic"></div>
+    id: 'email', 
+    name: 'Email Marketing', 
+    cat: 'Digital Campaigns', 
+    icon: 'mail', 
+    desc: 'Professionalize campaign copy with WWT brand alignment.',
+    demo: `
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-white">WWT Tone Optimizer</h3>
+            
+            <div class="space-y-1">
+                <label class="text-[10px] uppercase text-slate-500 font-bold">Input: Rough Concept / Bullet Points</label>
+                <textarea id="email-raw" class="w-full h-24 bg-slate-900 border border-slate-700 p-3 rounded-lg text-white text-xs outline-none focus:border-blue-500" 
+                    placeholder="e.g. follow up on Cisco lab, mention 10% discount for Q3, invite to ATC..."></textarea>
             </div>
-        `
-    },
+
+            <div class="flex gap-2">
+                <button onclick="runAIEmail()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-2 text-xs">
+                    <i data-lucide="sparkles" class="w-3 h-3"></i> Professionalize (AI)
+                </button>
+            </div>
+
+            <div id="email-result-container" class="hidden animate-in fade-in zoom-in-95">
+                <label class="text-[10px] uppercase text-blue-400 font-bold">Optimized Draft:</label>
+                <div id="email-result" class="mt-1 p-4 bg-white text-slate-800 rounded-lg text-[11px] leading-relaxed font-serif shadow-xl min-h-[100px] whitespace-pre-wrap"></div>
+                <button onclick="copyEmail()" class="mt-2 w-full text-[9px] text-slate-500 hover:text-blue-400 flex items-center justify-center gap-1">
+                    <i data-lucide="copy" class="w-3 h-3"></i> Copy to Clipboard
+                </button>
+            </div>
+        </div>
+    `
+},
     { 
     id: 'reporting', 
     name: 'Reporting Perf', 
@@ -697,3 +714,51 @@ function refreshReport() {
     }, 1500);
 }
 
+async function runAIEmail() {
+    const rawContent = document.getElementById('email-raw').value;
+    const container = document.getElementById('email-result-container');
+    const resultDiv = document.getElementById('email-result');
+    
+    if (!rawContent) return alert("Please enter some notes first!");
+
+    container.classList.remove('hidden');
+    resultDiv.innerHTML = `
+        <div class="flex items-center gap-2 text-blue-600 italic">
+            <i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>
+            Applying WWT Brand Voice...
+        </div>
+    `;
+    lucide.createIcons();
+
+    // The Prompt for Gemini
+    const promptText = `You are a Senior Marketing Manager at WWT (World Wide Technology). 
+    Convert these rough notes into a professional, persuasive, and warm email for an enterprise client.
+    Notes: "${rawContent}"
+    Brand Constraints: 
+    - Mention the Advanced Technology Center (ATC) as a key differentiator.
+    - Professional but not stiff. 
+    - Focused on outcomes and partnership.
+    - Do not use placeholders like [Your Name]. Just provide the body text.`;
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_AI_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: promptText }] }]
+            })
+        });
+
+        const data = await response.json();
+        const aiText = data.candidates[0].content.parts[0].text;
+        resultDiv.innerText = aiText;
+    } catch (e) {
+        resultDiv.innerHTML = "<span class='text-red-500'>Error: AI connection failed. Check your API Key or Secret Injection.</span>";
+    }
+}
+
+function copyEmail() {
+    const text = document.getElementById('email-result').innerText;
+    navigator.clipboard.writeText(text);
+    alert("Draft copied!");
+}
