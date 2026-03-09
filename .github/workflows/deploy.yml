@@ -28,14 +28,15 @@ jobs:
 
       - name: Inject API Key
         run: |
-          # This command is more robust: it looks for the placeholder and replaces it regardless of quotes
-          sed -i 's/GEMINI_API_KEY_PLACEHOLDER/${{ secrets.GEMSTONE_DIAMOND }}/g' app.js
+          # This version finds the string even if it's inside single or double quotes
+          sed -i "s/GEMINI_API_KEY_PLACEHOLDER/${{ secrets.GEMSTONE_DIAMOND }}/g" app.js
           
-          # This check will show in your GitHub logs if the replacement actually happened
-          if grep -q "GEMINI_API_KEY_PLACEHOLDER" app.js; then
-            echo "Replacement FAILED"
+          # Verification: This will print "FOUND" or "NOT FOUND" in your GitHub Action logs
+          if grep -q "${{ secrets.GEMSTONE_DIAMOND }}" app.js; then
+            echo "✅ API Key Injection Successful"
           else
-            echo "Replacement SUCCESSFUL"
+            echo "❌ API Key Injection Failed - Placeholder not found"
+            exit 1
           fi
 
       - name: Setup Pages
