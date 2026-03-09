@@ -162,25 +162,52 @@ const agents = [
     `
 },
     { 
-        id: 'industry', 
-        name: 'Industry Content', 
-        cat: 'Portfolio Marketing', 
-        icon: 'file-text', 
-        desc: 'Accelerate content drafts.',
-        demo: `
-            <div class="space-y-4">
-                <h3 class="text-xl font-bold">WWT Content Drafter</h3>
-                <select id="content-topic" class="w-full bg-slate-800 border-slate-700 p-2 rounded text-white">
-                    <option>Multi-Cloud Strategy</option>
-                    <option>AI at the Edge</option>
-                    <option>Cyber Resilience</option>
-                    <option>ATC Lab Validation</option>
-                </select>
-                <button onclick="runContent()" class="w-full bg-green-600 p-2 rounded font-bold hover:bg-green-500">Draft Executive Brief</button>
-                <div id="content-output" class="p-4 bg-white text-slate-900 text-[10px] rounded shadow-inner hidden h-48 overflow-y-auto font-serif"></div>
+    id: 'industry', 
+    name: 'Industry Content', 
+    cat: 'Portfolio Marketing', 
+    icon: 'file-text', 
+    desc: 'Generate ATC-validated executive briefs for specific verticals.',
+    demo: `
+        <div class="space-y-4">
+            <h3 class="text-xl font-bold text-white">Executive Brief Drafter</h3>
+            
+            <div class="grid grid-cols-2 gap-2">
+                <div class="space-y-1">
+                    <label class="text-[10px] uppercase text-slate-500 font-bold">Topic</label>
+                    <select id="content-topic" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white text-xs outline-none">
+                        <option>Generative AI Governance</option>
+                        <option>Sustainable Data Centers</option>
+                        <option>Zero Trust Architecture</option>
+                        <option>Private 5G Deployment</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] uppercase text-slate-500 font-bold">Target Persona</label>
+                    <select id="content-persona" class="w-full bg-slate-900 border border-slate-700 p-2 rounded text-white text-xs outline-none">
+                        <option>C-Level Executive</option>
+                        <option>Technical Architect</option>
+                        <option>Operations Director</option>
+                    </select>
+                </div>
             </div>
-        `
-    },
+
+            <button onclick="runContent()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white p-3 rounded-lg font-bold transition-all flex items-center justify-center gap-2">
+                <i data-lucide="pen-tool" class="w-4 h-4"></i>
+                Draft Executive Brief
+            </button>
+
+            <div id="content-output" class="hidden animate-in zoom-in-95 duration-300">
+                <div class="bg-white p-6 rounded shadow-inner h-64 overflow-y-auto text-slate-900 font-serif leading-relaxed relative">
+                    <div id="brief-text" class="text-[11px]"></div>
+                    <div class="sticky bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                </div>
+                <button onclick="copyBrief()" class="mt-2 w-full text-[10px] text-slate-500 hover:text-emerald-400 flex items-center justify-center gap-1">
+                    <i data-lucide="copy" class="w-3 h-3"></i> Copy Draft to Clipboard
+                </button>
+            </div>
+        </div>
+    `
+},
     { 
         id: 'revenue', 
         name: 'Marketing-to-Revenue', 
@@ -543,5 +570,37 @@ function runICP() {
     lucide.createIcons();
 }
 
+function runContent() {
+    const topic = document.getElementById('content-topic').value;
+    const persona = document.getElementById('content-persona').value;
+    const outputContainer = document.getElementById('content-output');
+    const briefText = document.getElementById('brief-text');
+    
+    outputContainer.classList.remove('hidden');
+    briefText.innerHTML = `<p class="animate-pulse text-slate-400">Structuring narrative for ${persona}...</p>`;
+
+    setTimeout(() => {
+        const hooks = {
+            'C-Level Executive': `Focusing on ROI, market speed, and risk mitigation.`,
+            'Technical Architect': `Focusing on integration complexity, scalability, and API standards.`,
+            'Operations Director': `Focusing on uptime, resource allocation, and lifecycle management.`
+        };
+
+        briefText.innerHTML = `
+            <div class="border-b-2 border-emerald-800 mb-4 pb-2">
+                <h4 class="text-lg font-bold text-slate-900">STRATEGIC BRIEF: ${topic.toUpperCase()}</h4>
+                <p class="text-[9px] text-slate-500 uppercase tracking-widest font-sans">Prepared for: ${persona} • 2026 Internal Draft</p>
+            </div>
+            <p class="mb-3"><strong>The Challenge:</strong> In the 2026 landscape, ${topic} is no longer a technical choice but a business imperative. ${hooks[persona]}</p>
+            <p class="mb-3"><strong>The WWT Approach:</strong> We leverage the Advanced Technology Center (ATC) to bypass the "theory phase." By virtualizing your specific environment, we validate ${topic} across multi-vendor ecosystems before a single dollar of CAPEX is committed.</p>
+            <div class="bg-slate-50 p-3 border-l-4 border-emerald-500 mb-3">
+                <p class="italic text-slate-700">"The ATC allows us to simulate 1.5 million+ configurations, ensuring that ${topic} scales without breaking legacy dependencies."</p>
+            </div>
+            <p class="mb-3"><strong>Outcome:</strong> A reduction in deployment risk by 40% and a 2x acceleration in time-to-value for enterprise stakeholders.</p>
+            <p><strong>Next Steps:</strong> Schedule a 2-hour ATC Discovery Workshop to map your current architecture against these validated patterns.</p>
+        `;
+        lucide.createIcons();
+    }, 1000);
+}
 
 
