@@ -21,17 +21,17 @@ jobs:
 
       - name: Inject API Key
         run: |
-          # This replaces the line starting with 'var GOOGLE_AI_KEY' 
-          # It doesn't matter what the current value is
-          sed -i "s/^var GOOGLE_AI_KEY = .*/var GOOGLE_AI_KEY = '${{ secrets.GEMSTONE_DIAMOND }}';/" app.js
+          # This version looks for 'GOOGLE_AI_KEY' anywhere on a line and replaces the whole line
+          sed -i "s/.*GOOGLE_AI_KEY.*/var GOOGLE_AI_KEY = '${{ secrets.GEMSTONE_DIAMOND }}';/" app.js
           
-          # This check will now fail the build if the secret is empty
+          # Verification check
           if grep -q "GEMINI_API_KEY_PLACEHOLDER" app.js; then
-            echo "❌ Injection Failed"
+            echo "❌ Injection Failed - Placeholder still exists"
             exit 1
           else
             echo "✅ Injection Successful"
           fi
+          
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
