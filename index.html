@@ -115,7 +115,17 @@ input:checked + .slider:before { transform: translateX(18px); background-color: 
                 <h1 class="text-2xl font-bold text-white">WWT <span class="text-blue-500 font-light">Marketing Ops</span></h1>
                 <p class="text-[10px] uppercase tracking-widest text-slate-500">Agentic Workflow Proving Ground</p>
             </div>
-            <span class="bg-blue-900/30 text-blue-400 px-3 py-1 rounded-full text-[10px] font-bold uppercase border border-blue-500/20">v2.0 Stable</span>
+            <div class="flex items-center gap-4">
+    <div class="flex items-center gap-2 bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-800">
+        <i data-lucide="sparkles" id="universal-ai-icon" class="w-3.5 h-3.5 text-slate-500"></i>
+        <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400">AI Mode</span>
+        <label class="switch">
+            <input type="checkbox" id="universal-ai-toggle" onchange="toggleUniversalAI(this)">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <span class="bg-blue-900/30 text-blue-400 px-4 py-1.5 rounded-full text-[10px] font-bold uppercase border border-blue-500/20">v2.0 Stable</span>
+</div>
         </div>
 
         <div id="action-stage-wrapper" class="card p-6 mb-8 overflow-hidden">
@@ -143,6 +153,7 @@ input:checked + .slider:before { transform: translateX(18px); background-color: 
     <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
