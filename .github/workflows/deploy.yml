@@ -19,18 +19,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Force Prepend API Key
+      - name: Force Prepend & Verify
         run: |
-          # 1. Create a temporary file with the global variable
-          echo "window.API_KEY_INJECTED = '${{ secrets.GEMSTONE_DIAMOND }}';" > app.js.tmp
+          # 1. Create the inject line
+          echo "window.API_KEY_INJECTED = '${{ secrets.GEMSTONE_DIAMOND }}';" > inject.js
           
-          # 2. Append your actual app.js content to that temporary file
-          cat app.js >> app.js.tmp
+          # 2. Combine them
+          cat inject.js app.js > app.js.new
+          mv app.js.new app.js
           
-          # 3. Replace the original app.js with the combined version
-          mv app.js.tmp app.js
+          # 3. Verify the first line (GitHub will mask the actual key with ***)
+          head -n 1 app.js
           
-          echo "✅ Secret successfully glued to the top of app.js"
+          echo "✅ Injection step finished."
           
       - name: Setup Pages
         uses: actions/configure-pages@v4
