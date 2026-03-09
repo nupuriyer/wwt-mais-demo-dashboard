@@ -111,13 +111,16 @@ async function processUTM() {
             const getActiveKey = () => {
                 return window.GOOGLE_AI_KEY || GOOGLE_AI_KEY;
             };
+            const modelId = "gemini-2.0-flash";
             const activeKey = window.API_KEY_INJECTED || GOOGLE_AI_KEY;
 
             if (!activeKey || activeKey.includes('PLACEHOLDER')) {
                 throw new Error("API Key not found. Ensure GEMSTONE_DIAMOND is set in GitHub Secrets.");
             }
             
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${activeKey}`, {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${activeKey}&_=${new Date().getTime()}`;
+
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -158,6 +161,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
