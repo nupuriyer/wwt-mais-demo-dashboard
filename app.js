@@ -424,52 +424,80 @@ function init() {
 
 // Modal Logic
 // Corrected Modal Logic to handle titles and icons
-function openModal(id) {
+// --- WORKSPACE LOGIC: Launching into the TOP STAGE ---
+function launchAgent(id) {
     const agent = agents.find(a => a.id === id);
-    const modal = document.getElementById('modal');
-    const content = document.getElementById('modal-content');
-    
-    // Set Modal Header info
-    document.getElementById('modal-title').innerText = agent.name;
-    document.getElementById('modal-icon').innerHTML = `<i data-lucide="${agent.icon}"></i>`;
-    
-    content.innerHTML = agent.demo;
-    modal.classList.remove('hidden');
-    
-    // Special Init for specific agents
+    const stagePlaceholder = document.getElementById('stage-placeholder');
+    const stageContent = document.getElementById('stage-content');
+    const stageWrapper = document.getElementById('action-stage');
+
+    // 1. UI Transition: Hide placeholder, show content area
+    stagePlaceholder.classList.add('hidden');
+    stageContent.classList.remove('hidden');
+    stageWrapper.classList.add('active', 'ring-2', 'ring-blue-500/20');
+
+    // 2. Inject the Agent UI into the Stage
+    stageContent.innerHTML = `
+        <div class="flex flex-col md:flex-row gap-6 animate-in fade-in slide-in-from-top-4 duration-500">
+            <div class="flex-1">
+                <div class="mb-4 flex items-center gap-3">
+                    <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                        <i data-lucide="${agent.icon}" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">${agent.cat}</span>
+                        <h3 class="text-lg font-bold text-[#566a7f]">${agent.name}</h3>
+                    </div>
+                </div>
+                <div class="bg-white border border-slate-100 rounded-xl p-6 shadow-sm">
+                    ${agent.demo}
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 3. Re-run Lucide to render icons inside the new HTML
+    lucide.createIcons();
+
+    // 4. Special Handlers (RSS Feed for Intel or UTM logic)
     if(id === 'intel') fetchLiveNews();
     
-    lucide.createIcons();
+    // 5. Scroll to top so the user sees the active tool immediately
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Global Init - This MUST be called to render the grid!
-function initDashboard() {
+function clearStage() {
+    document.getElementById('stage-placeholder').classList.remove('hidden');
+    document.getElementById('stage-content').classList.add('hidden');
+    document.getElementById('action-stage').classList.remove('active', 'ring-2', 'ring-blue-500/20');
+}
+
+// --- GRID LOGIC: The 5 + 4 Switchboard ---
+function initSneatDashboard() {
     const grid = document.getElementById('agent-grid');
     if (!grid) return;
 
-    grid.innerHTML = agents.map(agent => `
-        <div class="glass-card p-6 rounded-2xl flex flex-col justify-between group">
-            <div>
-                <div class="flex justify-between items-start mb-6">
-                    <div class="p-3 agent-icon rounded-xl text-blue-400 group-hover:text-blue-300 transition-colors border border-white/5">
-                        <i data-lucide="${agent.icon || 'zap'}"></i>
-                    </div>
-                    <span class="text-[9px] uppercase tracking-widest text-slate-500 font-bold bg-white/5 px-2 py-1 rounded">${agent.cat}</span>
+    grid.innerHTML = agents.map((agent, index) => {
+        // This makes the 6th item (index 5) start a new row
+        // On medium screens, it helps keep the 5/4 balance
+        const rowBreakClass = index === 5 ? 'md:col-start-1' : '';
+        
+        return `
+            <div class="card p-4 flex flex-col items-center text-center group cursor-pointer hover:bg-slate-50 border border-transparent hover:border-blue-100 ${rowBreakClass}" 
+                 onclick="launchAgent('${agent.id}')">
+                <div class="w-12 h-12 mb-3 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center group-hover:bg-[#004a99] group-hover:text-white transition-all duration-300">
+                    <i data-lucide="${agent.icon}" class="w-6 h-6"></i>
                 </div>
-                <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition-colors">${agent.name}</h3>
-                <p class="text-xs text-slate-400 mt-2 leading-relaxed">${agent.desc}</p>
+                <h4 class="text-[11px] font-bold text-[#566a7f] uppercase tracking-tighter leading-tight">${agent.name}</h4>
             </div>
-            <button onclick="openModal('${agent.id}')" class="mt-8 w-full py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-blue-600 hover:border-blue-600 hover:text-white transition-all">
-                Launch Agent
-            </button>
-        </div>
-    `).join('');
-    
+        `;
+    }).join('');
+
     lucide.createIcons();
 }
 
-// Start the app
-document.addEventListener('DOMContentLoaded', initDashboard);
+// Start the Dashboard on load
+document.addEventListener('DOMContentLoaded', initSneatDashboard);
 
 // --- LOGIC ENGINES ---
 
@@ -845,4 +873,5 @@ function runReadout() {
     slide.classList.remove('hidden');
     lucide.createIcons();
 }
+
 
