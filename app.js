@@ -1,33 +1,34 @@
 const GOOGLE_AI_KEY = 'REPLACE_ME_WITH_KEY';
+
+// 1. GLOBAL STATE
+let AI_ENABLED = false;
+
 const agents = [
-    { id: 'utm', name: 'UTM Builder', cat: 'Digital Campaigns', icon: 'link', demo: `
-<div class="space-y-5">
-    <div class="flex items-center justify-between">
-        <h3 class="text-white font-bold">Campaign Link Builder</h3>
-        <div id="ai-indicator" class="${AI_ENABLED ? '' : 'hidden'} flex items-center gap-2 text-[10px] text-blue-400 font-bold uppercase tracking-widest">
-            <i data-lucide="sparkles" class="w-3 h-3"></i> AI Strategic Mode
-        </div>
-    </div>
-
-    <div class="space-y-4">
-        <input id="utm-url" type="text" placeholder="URL (e.g. wwt.com/atc)" 
-            class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white text-sm outline-none">
-        
-        <div class="grid grid-cols-2 gap-4">
-            <input id="utm-src" type="text" placeholder="Source" class="bg-slate-900 border border-slate-700 p-3 rounded-xl text-white text-sm">
-            <input id="utm-med" type="text" placeholder="Medium" class="bg-slate-900 border border-slate-700 p-3 rounded-xl text-white text-sm">
-        </div>
-    </div>
-
-    <button onclick="processUTM()" class="w-full ${AI_ENABLED ? 'bg-blue-600' : 'bg-slate-800'} p-4 rounded-xl font-bold text-white transition-all">
-        ${AI_ENABLED ? 'Generate with Gemini' : 'Generate Standard Link'}
-    </button>
-
-    <div id="utm-result-container" class="hidden p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
-        <code id="utm-result" class="text-blue-200 text-xs break-all font-mono"></code>
-    </div>
-</div>
-` },
+    { 
+        id: 'utm', 
+        name: 'UTM Builder', 
+        cat: 'Digital Campaigns', 
+        icon: 'link', 
+        demo: `
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-white">Campaign Link Builder</h3>
+                    <div id="ai-badge" class="hidden flex items-center gap-1 text-[10px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded-md border border-blue-500/30">
+                        <i data-lucide="sparkles" class="w-3 h-3"></i> AI STRATEGIC MODE
+                    </div>
+                </div>
+                <input id="utm-url" type="text" placeholder="https://www.wwt.com/atc" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-xl text-white outline-none focus:border-blue-500">
+                <div class="grid grid-cols-2 gap-4">
+                    <input id="utm-src" type="text" placeholder="Source (e.g. LinkedIn)" class="bg-slate-900 border border-slate-700 p-3 rounded-xl text-white text-sm">
+                    <input id="utm-med" type="text" placeholder="Medium (e.g. Social)" class="bg-slate-900 border border-slate-700 p-3 rounded-xl text-white text-sm">
+                </div>
+                <button onclick="processUTM()" id="utm-btn" class="w-full bg-slate-800 p-4 rounded-xl font-bold text-white transition-all hover:bg-slate-700">Generate Link</button>
+                <div id="utm-result-container" class="hidden p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+                    <code id="utm-result" class="text-blue-200 text-xs break-all font-mono"></code>
+                </div>
+            </div>
+        ` 
+    },
     { id: 'intel', name: 'Competitive Intel', cat: 'Brand/ATC/Services', icon: 'shield', demo: `<div class="space-y-4"><h3 class="text-white font-bold">Competitor Signal Scan</h3><input id="intel-comp" type="text" placeholder="Competitor Name" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><button onclick="fetchLiveNews(document.getElementById('intel-comp').value)" class="w-full bg-blue-600 p-3 rounded font-bold text-white">Scan</button><div id="intel-feed" class="space-y-2 mt-4 text-xs text-slate-400"></div></div>` },
     { id: 'seo', name: 'SEO Search Agent', cat: 'Growth/Search', icon: 'search', demo: `<div class="space-y-4"><h3 class="text-white font-bold">SEO Intent Analysis</h3><input id="seo-query" type="text" placeholder="Keyword" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><button onclick="runSEOScan()" class="w-full bg-blue-600 p-3 rounded font-bold text-white">Analyze</button><div id="seo-output" class="text-xs text-slate-400 mt-2"></div></div>` },
     { id: 'icp', name: 'ICP Agent', cat: 'Portfolio Marketing', icon: 'users', demo: `<div class="space-y-4"><h3 class="text-white font-bold">Buying Committee Mapper</h3><select id="icp-industry" class="w-full bg-slate-900 border border-slate-700 p-3 rounded text-white"><option>Healthcare</option><option>Finance</option></select><button onclick="runICP()" class="w-full bg-purple-600 p-3 rounded font-bold text-white">Map Committee</button><div id="icp-result" class="hidden grid gap-2 mt-2"></div></div>` },
@@ -43,7 +44,6 @@ function init() {
     const grid = document.getElementById('agent-grid');
     if (!grid) return;
 
-    // Mapping agents to the new, cleaner button style
     grid.innerHTML = agents.map((agent) => {
         return `
             <div class="agent-button card p-4 flex flex-col items-center justify-center text-center cursor-pointer group" 
@@ -59,22 +59,44 @@ function init() {
     lucide.createIcons();
 }
 
-// Ensure your clearStage and launchAgent functions remain below this...
+// 3. CORE FUNCTIONS
+function toggleUniversalAI(el) {
+    AI_ENABLED = el.checked;
+    const icon = document.getElementById('universal-ai-icon');
+    
+    // Update active UI elements if an agent is open
+    const badge = document.getElementById('ai-badge');
+    const btn = document.getElementById('utm-btn');
 
-// --- CORE WORKSPACE LOGIC ---
+    if (AI_ENABLED) {
+        icon?.classList.add('text-blue-400', 'animate-pulse');
+        badge?.classList.remove('hidden');
+        if(btn) {
+            btn.classList.replace('bg-slate-800', 'bg-blue-600');
+            btn.innerText = "Generate with Gemini";
+        }
+    } else {
+        icon?.classList.remove('text-blue-400', 'animate-pulse');
+        badge?.classList.add('hidden');
+        if(btn) {
+            btn.classList.replace('bg-blue-600', 'bg-slate-800');
+            btn.innerText = "Generate Link";
+        }
+    }
+}
+
 function launchAgent(id) {
     const agent = agents.find(a => a.id === id);
     const placeholder = document.getElementById('stage-placeholder');
     const content = document.getElementById('stage-content');
     const wrapper = document.getElementById('action-stage-wrapper');
 
-    // UI State Swap
     placeholder.classList.add('hidden');
     content.classList.remove('hidden');
     wrapper.classList.add('active');
 
     content.innerHTML = `
-        <div class="animate-in fade-in slide-in-from-top-4 duration-500">
+        <div class="max-w-2xl mx-auto">
             <div class="mb-6 flex items-center gap-4">
                 <div class="p-3 bg-blue-600/20 text-blue-400 rounded-xl"><i data-lucide="${agent.icon}"></i></div>
                 <div>
@@ -82,50 +104,80 @@ function launchAgent(id) {
                     <h3 class="text-xl font-bold text-white">${agent.name}</h3>
                 </div>
             </div>
-            <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 shadow-2xl">
+            <div class="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
                 ${agent.demo}
             </div>
         </div>
     `;
 
     lucide.createIcons();
+    // Re-check AI state to ensure the opened agent matches the global toggle
+    toggleUniversalAI(document.getElementById('universal-ai-toggle'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function clearStage() {
-    const placeholder = document.getElementById('stage-placeholder');
-    const content = document.getElementById('stage-content');
-    const wrapper = document.getElementById('action-stage-wrapper');
-
-    // Reset UI State
-    content.classList.add('hidden');
-    content.innerHTML = '';
-    placeholder.classList.remove('hidden');
-    wrapper.classList.remove('active');
-    
-    console.log("Stage Cleared"); // For debugging
+    document.getElementById('stage-content').classList.add('hidden');
+    document.getElementById('stage-placeholder').classList.remove('hidden');
+    document.getElementById('action-stage-wrapper').classList.remove('active');
 }
 
-// Start app
-document.addEventListener('DOMContentLoaded', init);
 
 // --- LOGIC ENGINES ---
 
-function runUTM() {
-    const url = document.getElementById('utm-url').value || 'https://wwt.com/atc';
-    const src = document.getElementById('utm-src').value;
-    const med = document.getElementById('utm-med').value;
-    const cam = document.getElementById('utm-cam').value || 'agent-demo';
-    const result = `${url.split('?')[0]}?utm_source=${src}&utm_medium=${med}&utm_campaign=${cam.replace(/\s+/g, '-').toLowerCase()}`;
-    document.getElementById('utm-result').innerText = result;
-    document.getElementById('utm-result-container').classList.remove('hidden');
-    lucide.createIcons();
+async function processUTM() {
+    const url = document.getElementById('utm-url').value || "https://wwt.com";
+    const resultDiv = document.getElementById('utm-result');
+    const container = document.getElementById('utm-result-container');
+    
+    // Show the result box immediately
+    container.classList.remove('hidden');
+
+    if (!AI_ENABLED) {
+        // --- MANUAL MODE (Dummy Data) ---
+        const src = document.getElementById('utm-src').value || "manual";
+        const med = document.getElementById('utm-med').value || "direct";
+        const cam = document.getElementById('utm-cam')?.value || "standard-link";
+        
+        const cleanUrl = url.split('?')[0];
+        resultDiv.innerText = `${cleanUrl}?utm_source=${src}&utm_medium=${med}&utm_campaign=${cam.replace(/\s+/g, '-').toLowerCase()}`;
+    } else {
+        // --- AI MODE (Gemini Call) ---
+        resultDiv.innerHTML = "<span class='animate-pulse text-blue-400 font-bold'>Gemini is strategizing naming conventions...</span>";
+        
+        const promptText = `Act as a WWT Marketing Ops specialist. The user wants a UTM link for this URL: ${url}. 
+        Suggest a standardized, professional UTM campaign name (lowercase, hyphens). 
+        Also suggest the best Source and Medium if they are empty. 
+        Return ONLY a JSON: {"campaign": "...", "source": "...", "medium": "..."}`;
+
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_AI_KEY}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
+            });
+
+            const data = await response.json();
+            const aiResponse = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, ""));
+            
+            // Auto-fill the inputs with AI suggestions
+            document.getElementById('utm-src').value = aiResponse.source;
+            document.getElementById('utm-med').value = aiResponse.medium;
+            
+            resultDiv.innerText = `${url}?utm_source=${aiResponse.source}&utm_medium=${aiResponse.medium}&utm_campaign=${aiResponse.campaign}`;
+        } catch (e) {
+            resultDiv.innerHTML = "<span class='text-red-400'>AI Offline. Reverting to manual link.</span>";
+            resultDiv.innerText = `${url}?utm_source=error&utm_medium=fix&utm_campaign=check-api-key`;
+        }
+    }
 }
 
+// Keep a simple copy function
 function copyUTM() {
     const text = document.getElementById('utm-result').innerText;
-    navigator.clipboard.writeText(text);
-    alert("Copied to clipboard!");
+    navigator.clipboard.writeText(text).then(() => {
+        alert("UTM Link Copied!");
+    });
 }
 
 async function fetchLiveNews(company = 'Accenture') {
@@ -251,6 +303,8 @@ async function processUTM() {
     }
 }
 
+// Start app
+document.addEventListener('DOMContentLoaded', init);
 
 
 
