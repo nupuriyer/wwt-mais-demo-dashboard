@@ -3,84 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WWT | Agentic Proving Ground</title>
+    <title>WWT | Marketing Agentic Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .glass-card {
-            background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        body { background-color: #f5f5f9; color: #697a8d; font-family: 'Public Sans', sans-serif; }
+        
+        /* Sneat-style Card */
+        .card {
+            background: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 6px 0 rgba(67, 89, 113, 0.12);
+            transition: all 0.2s ease-in-out;
+            border: none;
         }
-        .glass-card:hover {
-            border-color: #0073e6;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px -10px rgba(0, 115, 230, 0.3);
+        .card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px 0 rgba(67, 89, 113, 0.2); }
+
+        /* The Top Action Stage */
+        #action-stage {
+            min-height: 200px;
+            border: 2px dashed #d9dee3;
+            display: flex;
+            align-items: center;
+            justify-center;
+            transition: all 0.4s ease;
         }
-        .agent-icon {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        #action-stage.active { border: none; background: #fff; }
+
+        .btn-primary { background-color: #004a99; color: #fff; }
+        .btn-primary:hover { background-color: #003366; }
+        
+        .icon-box {
+            width: 42px; height: 42px;
+            border-radius: 0.375rem;
+            display: flex; align-items: center; justify-content: center;
         }
     </style>
 </head>
-<body class="bg-[#0f172a] text-slate-200 min-h-screen font-sans antialiased">
+<body class="p-4 md:p-8">
 
-    <header class="border-b border-white/5 p-6 bg-[#0f172a]/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center font-bold text-white shadow-lg shadow-blue-600/20">W</div>
-                <h1 class="text-xl font-bold tracking-tight text-white">Marketing <span class="text-blue-500">Agentic Proving Ground</span></h1>
+    <div class="max-w-6xl mx-auto space-y-6">
+        
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-[#566a7f]">WWT <span class="font-light">Marketing Ops</span></h1>
+                <p class="text-sm">Agentic Workflow Proving Ground</p>
             </div>
-            <div class="flex gap-4 items-center">
-                <div id="api-status" class="text-[10px] uppercase font-bold text-slate-500 tracking-widest flex items-center gap-2">
-                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Systems Ready
+            <div class="flex gap-2">
+                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase">v2.0 Stable</span>
+            </div>
+        </div>
+
+        <div id="action-stage-wrapper" class="card p-6 mb-8 overflow-hidden">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-sm font-bold uppercase text-[#a1acb8] tracking-widest">Active Workspace</h2>
+                <button onclick="clearStage()" class="text-xs text-red-400 hover:underline">Clear Workspace</button>
+            </div>
+            <div id="action-stage" class="rounded-xl p-8 bg-slate-50">
+                <div id="stage-placeholder" class="text-center">
+                    <div class="text-slate-300 mb-2"><i data-lucide="mouse-pointer-2" class="mx-auto w-8 h-8"></i></div>
+                    <p class="text-sm text-slate-400">Select an agent below to begin your workflow.</p>
                 </div>
-            </div>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto p-8">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
-            <div class="glass-card p-5 rounded-2xl">
-                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Active Agents</p>
-                <p class="text-3xl font-light text-white">09</p>
-            </div>
-            <div class="glass-card p-5 rounded-2xl">
-                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Engine Status</p>
-                <p class="text-3xl font-light text-blue-400 font-mono">LIVE</p>
-            </div>
-            <div class="glass-card p-5 rounded-2xl">
-                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Data Signals</p>
-                <p class="text-3xl font-light text-emerald-400">OPTIMIZED</p>
-            </div>
-            <div class="glass-card p-5 rounded-2xl">
-                <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Workflow</p>
-                <p class="text-3xl font-light text-purple-400 italic">Portfolio</p>
+                <div id="stage-content" class="hidden w-full"></div>
             </div>
         </div>
 
-        <div class="flex items-center gap-4 mb-8">
-            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em]">Operational Suite</span>
-            <div class="h-px bg-white/5 flex-1"></div>
-        </div>
-
-        <div id="agent-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="agent-grid" class="grid grid-cols-2 md:grid-cols-5 gap-4">
             </div>
-    </main>
 
-    <div id="modal" class="fixed inset-0 bg-[#0b1120]/95 hidden z-[100] flex items-center justify-center p-4 backdrop-blur-md">
-        <div class="bg-[#1e293b] w-full max-w-2xl rounded-3xl border border-white/10 shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
-            <div class="p-4 border-b border-white/5 bg-white/5 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <div id="modal-icon" class="p-2 bg-blue-600/20 rounded text-blue-400"></div>
-                    <h3 id="modal-title" class="font-bold text-white">Agent Action</h3>
-                </div>
-                <button onclick="closeModal()" class="text-slate-500 hover:text-white p-2">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            <div id="modal-content" class="p-8"></div>
-        </div>
     </div>
 
     <script src="app.js"></script>
