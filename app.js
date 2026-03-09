@@ -1,4 +1,4 @@
-const GOOGLE_AI_KEY = window.GOOGLE_AI_KEY || 'GEMINI_API_KEY_PLACEHOLDER'; 
+let GOOGLE_AI_KEY = 'GEMINI_API_KEY_PLACEHOLDER';
 let AI_ENABLED = false;
 
 // 1. NINE AGENTS DEFINITION
@@ -108,8 +108,14 @@ async function processUTM() {
             const prompt = `Act as a WWT Marketing specialist. For the URL ${url}, suggest a professional lowercase hyphenated campaign name, source, and medium. Return ONLY a raw JSON object with these keys: campaign, source, medium.`;
             
             // Force it to look at the window object where the GitHub Action injected the key
-            const activeKey = window.GOOGLE_AI_KEY || GOOGLE_AI_KEY;
-
+            const getActiveKey = () => {
+                return window.GOOGLE_AI_KEY || GOOGLE_AI_KEY;
+            };
+            const activeKey = getActiveKey();
+            // If it's still the placeholder, we know the injection failed before even trying the fetch
+            if (activeKey.includes('PLACEHOLDER')) {
+                throw new Error("API Key not found. Please check GitHub Secrets.");
+            }
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -151,6 +157,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
