@@ -107,7 +107,10 @@ async function processUTM() {
         try {
             const prompt = `Act as a WWT Marketing specialist. For the URL ${url}, suggest a professional lowercase hyphenated campaign name, source, and medium. Return ONLY a raw JSON object with these keys: campaign, source, medium.`;
             
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_AI_KEY}`, {
+            // Force it to look at the window object where the GitHub Action injected the key
+            const activeKey = window.GOOGLE_AI_KEY || GOOGLE_AI_KEY;
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${activeKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -148,5 +151,6 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
