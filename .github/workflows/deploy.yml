@@ -19,18 +19,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Force Inject API Key
+      - name: Inject API Key
         run: |
-          # 1. Create a temporary file with the script tag
-          echo "<script>window.GOOGLE_AI_KEY = '${{ secrets.GEMSTONE_DIAMOND }}';</script>" > index.html.tmp
+          # 1. Directly replace the placeholder in app.js using a different delimiter
+          sed -i "s#GEMINI_API_KEY_PLACEHOLDER#${{ secrets.GEMSTONE_DIAMOND }}#g" app.js
           
-          # 2. Append the rest of the original index.html to it
-          cat index.html >> index.html.tmp
-          
-          # 3. Overwrite the original
-          mv index.html.tmp index.html
-          
-          echo "✅ Injection Successful - Key is now at the top of index.html"
+          # 2. Also inject it into index.html as a backup
+          sed -i "s#</head>#<script>window.GOOGLE_AI_KEY = '${{ secrets.GEMSTONE_DIAMOND }}';</script></head>#g" index.html
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
