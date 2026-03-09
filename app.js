@@ -1,6 +1,7 @@
 const GOOGLE_AI_KEY = 'REPLACE_ME_WITH_KEY';
 let AI_ENABLED = false;
 
+// 1. NINE AGENTS DEFINITION
 const agents = [
     { id: 'utm', name: 'UTM Builder', cat: 'Digital', icon: 'link' },
     { id: 'intel', name: 'Competitor Intel', cat: 'Strategy', icon: 'shield' },
@@ -13,36 +14,32 @@ const agents = [
     { id: 'brand', name: 'Brand Guide', cat: 'Creative', icon: 'palette' }
 ];
 
+// 2. INITIALIZATION
 function init() {
-    console.log("Initializing Dashboard...");
     const grid = document.getElementById('agent-grid');
-    if (!grid) {
-        console.error("Critical Error: 'agent-grid' not found in HTML!");
-        return;
-    }
-
+    if (!grid) return;
     grid.innerHTML = agents.map(a => `
         <div class="agent-button card p-4 flex flex-col items-center justify-center text-center cursor-pointer group hover:bg-slate-800 transition-all" onclick="launchAgent('${a.id}')">
             <div class="w-10 h-10 mb-3 rounded-xl bg-slate-700 text-slate-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
                 <i data-lucide="${a.icon}" class="w-5 h-5"></i>
             </div>
-            <h4 class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">${a.name}</h4>
+            <h4 class="text-[10px] font-bold text-slate-300 uppercase tracking-widest leading-tight">${a.name}</h4>
         </div>
     `).join('');
-    
     lucide.createIcons();
 }
 
+// 3. UI LOGIC
 function toggleUniversalAI(el) {
     AI_ENABLED = el.checked;
     const icon = document.getElementById('universal-ai-icon');
     icon?.classList.toggle('text-blue-400', AI_ENABLED);
     icon?.classList.toggle('animate-pulse', AI_ENABLED);
     
-    // Auto-refresh the UTM button style if it's open
+    // Refresh UTM button if it's currently open
     const utmBtn = document.getElementById('utm-btn');
     if (utmBtn) {
-        utmBtn.className = `w-full p-4 rounded-xl font-bold text-white transition-all ${AI_ENABLED ? 'bg-blue-600 shadow-lg shadow-blue-500/20' : 'bg-slate-700'}`;
+        utmBtn.className = `w-full p-4 rounded-xl font-bold text-white transition-all ${AI_ENABLED ? 'bg-blue-600' : 'bg-slate-700'}`;
         utmBtn.innerText = AI_ENABLED ? "Generate with Gemini" : "Generate Standard Link";
     }
 }
@@ -65,8 +62,8 @@ function launchAgent(id) {
                 <div class="space-y-4">
                     <input id="utm-url" type="text" placeholder="https://wwt.com/atc" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl text-white outline-none focus:border-blue-500">
                     <div class="grid grid-cols-2 gap-4">
-                        <input id="utm-src" type="text" placeholder="Source" class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-white outline-none">
-                        <input id="utm-med" type="text" placeholder="Medium" class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-white outline-none">
+                        <input id="utm-src" type="text" placeholder="Source (e.g. LinkedIn)" class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-white outline-none">
+                        <input id="utm-med" type="text" placeholder="Medium (e.g. Social)" class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-white outline-none">
                     </div>
                 </div>
                 <button onclick="processUTM()" id="utm-btn" class="w-full p-4 rounded-xl font-bold text-white transition-all ${AI_ENABLED ? 'bg-blue-600' : 'bg-slate-700'}">
@@ -85,12 +82,13 @@ function launchAgent(id) {
                     <i data-lucide="${agent.icon}" class="w-10 h-10"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-white mb-2">${agent.name}</h3>
-                <p class="text-slate-400 max-w-sm mx-auto">This agent is currently undergoing logic training. Check back during the next sprint.</p>
+                <p class="text-slate-400 max-w-sm mx-auto">This agent is currently undergoing logic training. Check back soon.</p>
             </div>`;
     }
     lucide.createIcons();
 }
 
+// 4. THE CORE UTM LOGIC
 async function processUTM() {
     const url = document.getElementById('utm-url').value || "https://wwt.com";
     const box = document.getElementById('utm-res-box');
@@ -98,30 +96,31 @@ async function processUTM() {
     box.classList.remove('hidden');
 
     if (!AI_ENABLED) {
+        // --- MANUAL MODE ---
         const src = (document.getElementById('utm-src').value || "manual").toLowerCase();
         const med = (document.getElementById('utm-med').value || "direct").toLowerCase();
         text.innerText = `${url}?utm_source=${src}&utm_medium=${med}&utm_campaign=standard`;
     } else {
-        text.innerHTML = "<span class='animate-pulse text-blue-400'>Consulting Gemini...</span>";
+        // --- AI MODE ---
+        text.innerHTML = "<span class='animate-pulse text-blue-400 font-bold'>Gemini is strategizing...</span>";
         
         try {
-            // Using v1beta for better compatibility
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_AI_KEY}`;
+            const prompt = `Act as a WWT Marketing specialist. For the URL ${url}, suggest a professional lowercase hyphenated campaign name, source, and medium. Return ONLY a raw JSON object with these keys: campaign, source, medium.`;
             
-            const response = await fetch(apiUrl, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_AI_KEY}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: `Act as a WWT Marketing specialist. Suggest a professional lowercase hyphenated campaign name, source, and medium for URL ${url}. Return ONLY a raw JSON object: {"campaign": "...", "source": "...", "medium": "..."}` }] }]
-                })
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
 
             const data = await response.json();
             
-            if (data.error) throw new Error(data.error.message);
+            if (data.error) {
+                throw new Error(data.error.message);
+            }
 
-            // Clean markdown and parse
             const rawText = data.candidates[0].content.parts[0].text;
+            // Enhanced JSON cleaning to handle markdown backticks or extra text
             const cleanJson = JSON.parse(rawText.replace(/```json|```/g, "").trim());
             
             document.getElementById('utm-src').value = cleanJson.source;
@@ -130,16 +129,17 @@ async function processUTM() {
             
         } catch (e) {
             console.error("UTM AI Error:", e);
-            text.innerHTML = `<span class="text-red-400 text-[10px]">AI Error: ${e.message.includes('key') ? 'Invalid API Key' : 'Request Failed'}.</span>`;
+            text.innerHTML = `<span class="text-red-400 text-[10px]">AI Offline: ${e.message}</span>`;
         }
     }
     lucide.createIcons();
 }
 
 function copyUTM() {
-    navigator.clipboard.writeText(document.getElementById('utm-result').innerText);
-    // Subtle console log instead of alert for a cleaner feel
-    console.log("Copied to clipboard");
+    const content = document.getElementById('utm-result').innerText;
+    navigator.clipboard.writeText(content).then(() => {
+        alert("Link Copied!");
+    });
 }
 
 function clearStage() {
@@ -147,6 +147,4 @@ function clearStage() {
     document.getElementById('stage-placeholder').classList.remove('hidden');
 }
 
-// FORCE LOAD
 window.onload = init;
-
