@@ -478,17 +478,22 @@ function initSneatDashboard() {
     if (!grid) return;
 
     grid.innerHTML = agents.map((agent, index) => {
-        // This makes the 6th item (index 5) start a new row
-        // On medium screens, it helps keep the 5/4 balance
-        const rowBreakClass = index === 5 ? 'md:col-start-1' : '';
+        // Force the 6th agent to start a new row on desktop (5-col grid)
+        // and center the bottom row by using col-start
+        let gridClasses = "card p-4 flex flex-col items-center justify-center text-center group cursor-pointer hover:bg-slate-50 border border-transparent hover:border-blue-100 w-full min-w-[140px]";
         
+        if (index === 5) {
+            // This moves the 6th agent to the first column of the second row
+            // On a 5-column grid, we can offset it by 1 to center the row of 4
+            gridClasses += " md:col-start-1 lg:col-start-1"; 
+        }
+
         return `
-            <div class="card p-4 flex flex-col items-center text-center group cursor-pointer hover:bg-slate-50 border border-transparent hover:border-blue-100 ${rowBreakClass}" 
-                 onclick="launchAgent('${agent.id}')">
+            <div class="${gridClasses}" onclick="launchAgent('${agent.id}')">
                 <div class="w-12 h-12 mb-3 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center group-hover:bg-[#004a99] group-hover:text-white transition-all duration-300">
                     <i data-lucide="${agent.icon}" class="w-6 h-6"></i>
                 </div>
-                <h4 class="text-[11px] font-bold text-[#566a7f] uppercase tracking-tighter leading-tight">${agent.name}</h4>
+                <h4 class="text-[10px] font-bold text-[#566a7f] uppercase tracking-tighter leading-tight">${agent.name}</h4>
             </div>
         `;
     }).join('');
@@ -873,5 +878,6 @@ function runReadout() {
     slide.classList.remove('hidden');
     lucide.createIcons();
 }
+
 
 
