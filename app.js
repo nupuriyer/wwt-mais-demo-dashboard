@@ -63,6 +63,37 @@ const seoIntentDB = {
     }
 };
 
+const performanceDB = {
+    "q1-ai-launch": {
+        name: "Q1 Global AI Launch",
+        spend: 125000,
+        metrics: {
+            impressions: "1.2M",
+            clicks: "45K",
+            mqls: 850,
+            sqls: 120,
+            pipeline: 4200000,
+            revenue: 1100000
+        },
+        insight: "High efficiency in the 'Consideration' phase. 14% MQL-to-SQL conversion is 4% above benchmark.",
+        status: "High Performance"
+    },
+    "cyber-range-promo": {
+        name: "Cyber Range: Hands-on Demo",
+        spend: 85000,
+        metrics: {
+            impressions: "850K",
+            clicks: "12K",
+            mqls: 310,
+            sqls: 95,
+            pipeline: 2800000,
+            revenue: 650000
+        },
+        insight: "Lower top-of-funnel volume, but extremely high SQL quality. Leads from this campaign close 20% faster.",
+        status: "High Quality"
+    }
+};
+
 const utmHistory = [
     { raw: "LinkedIn / Paid Search", fixed: "linkedin / paid-search", url: "https://wwt.com?utm_source=linkedin&utm_medium=paid-search", changeLog: "Standardized & Hyphenated" },
     { raw: "FACEBOOK / Email_Newsletter", fixed: "facebook / email", url: "https://wwt.com?utm_source=facebook&utm_medium=email", changeLog: "Lowercased & Cleaned" },
@@ -274,6 +305,78 @@ function launchAgent(id) {
                 </div>
             </div>`;
         }
+
+        if (id === 'reporting') {
+        content.innerHTML = `
+            <div class="max-w-6xl mx-auto space-y-6">
+                <div class="flex items-center justify-between px-2">
+                    <div class="flex items-center gap-4">
+                        <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <h3 class="text-xl font-bold text-white tracking-tight">Performance Attribution Agent</h3>
+                    </div>
+                    <div class="bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-tighter">
+                        Single Source of Truth Active
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="runReporting('q1-ai-launch')" class="bg-slate-900 p-6 rounded-2xl border border-slate-800 hover:border-blue-500 transition-all text-left">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-widest">Active Campaign</span>
+                        <h4 class="text-white font-bold text-lg">Q1 Global AI Launch</h4>
+                    </button>
+                    <button onclick="runReporting('cyber-range-promo')" class="bg-slate-900 p-6 rounded-2xl border border-slate-800 hover:border-blue-500 transition-all text-left">
+                        <span class="text-xs text-slate-500 font-bold uppercase tracking-widest">Active Campaign</span>
+                        <h4 class="text-white font-bold text-lg">Cyber Range Demo Promo</h4>
+                    </button>
+                </div>
+
+                <div id="report-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase">Spend</p>
+                            <h2 id="rep-spend" class="text-2xl font-bold text-white mt-1"></h2>
+                        </div>
+                        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase">Total MQLs</p>
+                            <h2 id="rep-mql" class="text-2xl font-bold text-blue-400 mt-1"></h2>
+                        </div>
+                        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase">Pipeline ($)</p>
+                            <h2 id="rep-pipe" class="text-2xl font-bold text-green-400 mt-1"></h2>
+                        </div>
+                        <div class="bg-slate-950 border border-slate-800 p-5 rounded-2xl">
+                            <p class="text-[10px] font-bold text-slate-500 uppercase">ROI (Calculated)</p>
+                            <h2 id="rep-roi" class="text-2xl font-bold text-orange-400 mt-1"></h2>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+                        <div class="p-8 flex flex-col md:flex-row gap-10 items-center">
+                            <div class="flex-1 space-y-4">
+                                <div class="flex items-center gap-2">
+                                    <span id="rep-status" class="px-2 py-1 bg-green-500/10 text-green-500 text-[9px] font-black uppercase rounded"></span>
+                                    <h4 class="text-white font-bold">Marketing-to-Revenue Insight</h4>
+                                </div>
+                                <p id="rep-insight" class="text-slate-400 leading-relaxed font-medium"></p>
+                            </div>
+                            <div class="w-full md:w-64 bg-slate-950 p-6 rounded-2xl border border-slate-800">
+                                <h5 class="text-[10px] font-bold text-slate-500 uppercase mb-4">Conversion Health</h5>
+                                <div class="space-y-4">
+                                    <div>
+                                        <div class="flex justify-between text-[10px] mb-1"><span class="text-slate-400">MQL to SQL</span><span class="text-white">14.2%</span></div>
+                                        <div class="h-1.5 w-full bg-slate-800 rounded-full"><div class="h-full bg-blue-500 w-[14%] rounded-full"></div></div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-[10px] mb-1"><span class="text-slate-400">SQL to Opportunity</span><span class="text-white">32%</span></div>
+                                        <div class="h-1.5 w-full bg-slate-800 rounded-full"><div class="h-full bg-green-500 w-[32%] rounded-full"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
     
     lucide.createIcons();
 }
@@ -415,6 +518,25 @@ function runSEO(clusterId) {
     lucide.createIcons();
 }
 
+function runReporting(campaignId) {
+    const data = performanceDB[campaignId];
+    const resultArea = document.getElementById('report-result');
+    
+    document.getElementById('rep-spend').innerText = '$' + data.spend.toLocaleString();
+    document.getElementById('rep-mql').innerText = data.metrics.mqls;
+    document.getElementById('rep-pipe').innerText = '$' + (data.metrics.pipeline / 1000000).toFixed(1) + 'M';
+    
+    const roi = ((data.metrics.revenue - data.spend) / data.spend * 100).toFixed(0);
+    document.getElementById('rep-roi').innerText = roi + '%';
+    
+    document.getElementById('rep-status').innerText = data.status;
+    document.getElementById('rep-insight').innerText = data.insight;
+
+    resultArea.classList.remove('hidden');
+    lucide.createIcons();
+}
+
+
 function copyLine(text, btn) {
     navigator.clipboard.writeText(text);
     const original = btn.innerHTML;
@@ -438,6 +560,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
