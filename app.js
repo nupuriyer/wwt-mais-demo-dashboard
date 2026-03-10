@@ -159,6 +159,38 @@ const emailDraftDB = {
     }
 };
 
+const industryGapDB = {
+    "healthcare": {
+        industry: "Healthcare & Life Sciences",
+        gap: "Clinical Edge Computing",
+        trend: "74% increase in 'Hospital-at-Home' infrastructure searches.",
+        opportunity: "WWT has strong Edge labs but lacks a specific 'Clinical-at-the-Edge' reference architecture for remote patient monitoring.",
+        outline: {
+            title: "The Hospital Without Walls: Scaling Clinical AI to the Edge",
+            sections: [
+                "The shift from centralized Data Centers to bedside compute.",
+                "Reducing latency in real-time patient vitals monitoring.",
+                "Security: HIPAA compliance in a decentralized Edge network.",
+                "The ATC Blueprint: Validating Edge pods for hospital environments."
+            ]
+        }
+    },
+    "energy": {
+        industry: "Energy & Utilities",
+        gap: "Grid Modernization AI",
+        trend: "Surge in 'Renewable Integration' and 'Smart Grid Security' queries.",
+        opportunity: "High interest in Cisco/NVIDIA utility plays; WWT can lead by showing the 'Physical Truth' of grid simulations.",
+        outline: {
+            title: "Securing the Transition: AI-Driven Grid Resiliency",
+            sections: [
+                "Predictive maintenance for aging utility infrastructure.",
+                "Managing the load: Integrating renewables with AI forecasting.",
+                "Zero Trust for the Power Grid: Protecting Operational Technology (OT).",
+                "Case Study: Digital Twin simulation of a regional substation."
+            ]
+        }
+    }
+};
 
 const utmHistory = [
     { raw: "LinkedIn / Paid Search", fixed: "linkedin / paid-search", url: "https://wwt.com?utm_source=linkedin&utm_medium=paid-search", changeLog: "Standardized & Hyphenated" },
@@ -173,8 +205,10 @@ const agents = [
     { id: 'reporting', name: 'Performance Agent', cat: 'Revenue', icon: 'bar-chart-3' },
     { id: 'icp', name: 'ICP Agent', cat: 'Portfolio', icon: 'target' },
     { id: 'revenue', name: 'Revenue Intel', cat: 'Portfolio', icon: 'pie-chart' },
+    { id: 'industry', name: 'Industry Agent', cat: 'Portfolio', icon: 'factory' }, // New!
     { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail' }
 ];
+
 
 function init() {
     const grid = document.getElementById('agent-grid');
@@ -610,6 +644,63 @@ function launchAgent(id) {
             </div>`;
     }
 
+        if (id === 'industry') {
+        content.innerHTML = `
+            <div class="max-w-5xl mx-auto space-y-6">
+                <div class="flex items-center justify-between px-2">
+                    <div class="flex items-center gap-4">
+                        <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <h3 class="text-xl font-bold text-white tracking-tight">Industry Content Intelligence</h3>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl text-center space-y-6">
+                    <div class="flex justify-center gap-8">
+                        <div class="text-center group cursor-pointer" onclick="runIndustryAnalysis('healthcare')">
+                            <div class="w-16 h-16 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-center mb-3 group-hover:border-blue-500 transition-all">
+                                <i data-lucide="heart-pulse" class="w-8 h-8 text-blue-500"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Healthcare</span>
+                        </div>
+                        <div class="text-center group cursor-pointer" onclick="runIndustryAnalysis('energy')">
+                            <div class="w-16 h-16 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-center mb-3 group-hover:border-orange-500 transition-all">
+                                <i data-lucide="zap" class="w-8 h-8 text-orange-500"></i>
+                            </div>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Energy</span>
+                        </div>
+                    </div>
+                    <p class="text-slate-400 text-sm italic">Select an industry to identify high-value content white spaces.</p>
+                </div>
+
+                <div id="industry-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-1 space-y-4">
+                            <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl">
+                                <h5 class="text-blue-400 text-[10px] font-bold uppercase mb-4 tracking-widest">Market Gap Detected</h5>
+                                <h2 id="ind-gap" class="text-xl font-bold text-white mb-2"></h2>
+                                <p id="ind-trend" class="text-xs text-slate-400 leading-relaxed"></p>
+                            </div>
+                            <div class="bg-blue-600/10 border border-blue-500/20 p-6 rounded-2xl">
+                                <h5 class="text-blue-300 text-[10px] font-bold uppercase mb-2">The Opportunity</h5>
+                                <p id="ind-opp" class="text-white text-xs font-medium leading-relaxed"></p>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+                            <div class="bg-slate-950 px-6 py-3 border-b border-slate-800 flex justify-between items-center">
+                                <span class="text-[10px] font-bold text-slate-500 uppercase">AI-Generated Content Blueprint</span>
+                                <button class="text-[10px] font-bold text-blue-500 uppercase hover:text-blue-400">Export to Word</button>
+                            </div>
+                            <div class="p-8 space-y-6">
+                                <h3 id="ind-title" class="text-2xl font-bold text-white border-l-4 border-blue-600 pl-4"></h3>
+                                <div id="ind-sections" class="space-y-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
     lucide.createIcons();
 }
 
@@ -866,6 +957,28 @@ function simulatePush() {
     }, 2000);
 }
 
+function runIndustryAnalysis(key) {
+    const data = industryGapDB[key];
+    const resultArea = document.getElementById('industry-result');
+    
+    document.getElementById('ind-gap').innerText = data.gap;
+    document.getElementById('ind-trend').innerText = data.trend;
+    document.getElementById('ind-opp').innerText = data.opportunity;
+    document.getElementById('ind-title').innerText = data.outline.title;
+
+    const sectionsHTML = data.outline.sections.map((s, i) => `
+        <div class="flex gap-4 items-start">
+            <span class="text-blue-500 font-mono text-sm font-bold">0${i+1}</span>
+            <p class="text-slate-300 text-sm">${s}</p>
+        </div>
+    `).join('');
+    
+    document.getElementById('ind-sections').innerHTML = sectionsHTML;
+
+    resultArea.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+}
+
 function clearStage() {
     document.getElementById('stage-placeholder').classList.remove('hidden');
     document.getElementById('stage-content').classList.add('hidden');
@@ -894,6 +1007,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
