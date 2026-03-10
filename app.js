@@ -333,33 +333,38 @@ async function toggleUniversalAI(checkbox) {
 }
 
 // UNIVERSAL CALLER (Used by all agents)
+// Update this function in your app.js
 async function callGemini(prompt) {
     if (!SESSION_AI_KEY) return null;
-    try {
-        // Switching to the specific v1 resource path for 1.5 Flash
-        // OR use: https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${SESSION_AI_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-        });
-        
-        const data = await response.json();
-        
-        if (data.error) {
-            // If v1 still complains, the API key might be locked to v1beta. 
-            // This fallback handles both scenarios.
-            console.error("Gemini API Error:", data.error.message);
-            return null;
-        }
 
-        if (data.candidates && data.candidates[0].content) {
-            return data.candidates[0].content.parts[0].text;
+    try {
+        const genAI = new GoogleGenerativeAI(SESSION_AI_KEY);
+        
+        // FIX: Using 'gemini-2.0-flash' which is the 2026 Free Tier standard
+        // This resolves the "Model not found" 404 error.
+        const model = genAI.getGenerativeModel({ 
+            model: "gemini-2.0-flash" 
+        });
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        return response.text();
+        
+    } catch (error) {
+        console.error("Gemini API Primary Error:", error.message);
+        
+        // FALLBACK: Try the 'latest' alias if the specific version fails
+        try {
+            console.log("Attempting fallback to gemini-1.5-flash-latest...");
+            const genAI = new GoogleGenerativeAI(SESSION_AI_KEY);
+            const fallbackModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+            const result = await fallbackModel.generateContent(prompt);
+            const response = await result.response;
+            return response.text();
+        } catch (fallbackError) {
+            console.error("All Gemini models failed.");
+            throw fallbackError; // This triggers your 'catch' in runReadout/runIndustry
         }
-        return null;
-    } catch (e) {
-        console.error("Connection error:", e);
-        return null;
     }
 }
 
@@ -1351,15 +1356,22 @@ function simulatePush() {
     }, 2000);
 }
 
+// Ensure this matches your existing DB keys (e.g., 'cloud-migration', 'edge-computing')
 async function runIndustryAnalysis() {
     const selector = document.getElementById('industry-selector');
-    const key = selector.value;
+    
+    // FIX: Prevents the "null" crash. If no selector is found, it defaults to 'healthcare'.
+    // If a selector IS found, it uses the chosen value (healthcare or energy).
+    const key = selector ? selector.value : "healthcare"; 
+    
     const data = industryGapDB[key];
+    if (!data) return console.error("Industry key not found in DB:", key);
+
     const resultArea = document.getElementById('industry-result');
     const btn = document.querySelector('button[onclick="runIndustryAnalysis()"]');
 
-    // --- 1. POPULATE BASELINE (Immediate & Fail-safe) ---
-    // This runs instantly from your local DB
+    // --- 1. POPULATE BASELINE (Works 100% without AI) ---
+    // This injects your 'Energy' or 'Healthcare' dummy data immediately.
     document.getElementById('ind-gap').innerText = data.gap;
     document.getElementById('ind-trend').innerText = data.trend;
     document.getElementById('ind-opp').innerText = data.opportunity;
@@ -1367,44 +1379,43 @@ async function runIndustryAnalysis() {
 
     const sectionsContainer = document.getElementById('ind-sections');
     sectionsContainer.innerHTML = data.outline.sections.map((s, i) => `
-        <div class="flex gap-4 items-start">
+        <div class="flex gap-4 items-start py-1">
             <span class="text-blue-500 font-mono text-sm font-bold">0${i+1}</span>
-            <p class="text-slate-300 text-sm">${s}</p>
+            <p class="text-slate-300 text-sm leading-relaxed">${s}</p>
         </div>
     `).join('');
 
     resultArea.classList.remove('hidden');
 
-    // --- 2. AI ENHANCEMENT (Background Optimization) ---
+    // --- 2. AI ENHANCEMENT (Optional Layer) ---
     if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
-        const originalBtn = btn.innerHTML;
-        btn.innerHTML = `<i data-lucide="sparkles" class="w-3 h-3 animate-spin"></i> Analyzing...`;
+        const originalBtn = btn ? btn.innerHTML : null;
+        if (btn) btn.innerHTML = `<i data-lucide="sparkles" class="w-3 h-3 animate-spin"></i> Refining...`;
         
-        // Note: Using the prompt structure that matches your other modules
-        const context = `Gap: ${data.gap}. Trend: ${data.trend}. Opp: ${data.opportunity}.`;
+        // The prompt now includes the specific industry context (Energy vs Healthcare)
+        const context = `Industry: ${data.industry}. Gap: ${data.gap}. Trend: ${data.trend}. Opp: ${data.opportunity}.`;
         const prompt = `${INDUSTRY_AI_PROMPT}\n\nContext: ${context}`;
 
         try {
-            // Note: Ensure your callGemini uses 'gemini-2.0-flash' to avoid the 404 error
+            // Updated to 'gemini-2.0-flash' to fix the 404 error
             const aiResponse = await callGemini(prompt);
             
             if (aiResponse) {
                 const lines = aiResponse.split('\n');
-                const aiGap = lines.find(l => l.startsWith('Gap:'))?.replace('Gap:', '').trim();
-                const aiOpp = lines.find(l => l.startsWith('Opportunity:'))?.replace('Opportunity:', '').trim();
+                const aiGap = lines.find(l => l.includes('Gap:'))?.split('Gap:')[1]?.trim();
+                const aiOpp = lines.find(l => l.includes('Opportunity:'))?.split('Opportunity:')[1]?.trim();
 
                 if (aiGap) {
                     document.getElementById('ind-gap').innerHTML = `<span class="text-blue-400">✨ </span>${aiGap}`;
                 }
                 if (aiOpp) {
-                    document.getElementById('ind-opp').innerHTML = `<span class="text-blue-400 text-[10px] block mb-1">AI STRATEGIC OVERRIDE:</span>${aiOpp}`;
+                    document.getElementById('ind-opp').innerHTML = `<span class="text-blue-400 text-[10px] block mb-1 font-bold uppercase tracking-tight">AI Strategic Refinement:</span>${aiOpp}`;
                 }
-                // Optional: You could also layer in AI-generated steps here
             }
         } catch (e) {
-            console.warn("Industry AI Error - Model fallback to static DB active.");
+            console.warn("Industry AI Fallback: Using default DB content for " + key);
         }
-        btn.innerHTML = originalBtn;
+        if (btn) btn.innerHTML = originalBtn;
     }
 
     if (window.lucide) lucide.createIcons();
@@ -1412,24 +1423,30 @@ async function runIndustryAnalysis() {
 
 async function runReadout() {
     const selector = document.getElementById('readout-selector');
-    const key = selector.value;
+    
+    // FIX: Prevents the "null" crash. Defaults to the Mar 10 key if no selector found.
+    const key = selector ? selector.value : "weekly-ops-mar-10"; 
+    
     const data = readoutDB[key];
+    if (!data) return console.error("Readout key not found:", key);
+
     const resultArea = document.getElementById('readout-result');
     const btn = document.querySelector('button[onclick="runReadout()"]');
-    
+
     // --- 1. POPULATE BASELINE (Immediate & Fail-safe) ---
-    // Workstreams
+    
+    // Build Workstreams (The core status table)
     document.getElementById('readout-workstreams').innerHTML = data.workstreams.map(w => `
         <div class="flex items-start justify-between p-4 bg-slate-900/50 border border-slate-800 rounded-xl">
             <div>
                 <h6 class="text-white font-bold text-sm">${w.name}</h6>
                 <p id="ws-update-${w.name.replace(/\s+/g, '')}" class="text-xs text-slate-400 mt-1">${w.update}</p>
             </div>
-            <span class="text-[8px] font-black px-2 py-1 rounded border ${w.status === 'At Risk' ? 'border-red-500/50 text-red-500 bg-red-500/10' : 'border-emerald-500/50 text-emerald-500 bg-emerald-500/10'} uppercase">${w.status}</span>
+            <span class="text-[8px] font-black px-2 py-1 rounded border ${w.status === 'At Risk' ? 'border-red-500/50 text-red-500 bg-red-500/10' : 'border-emerald-500/50 text-emerald-500 bg-emerald-500/10'} uppercase tracking-widest">${w.status}</span>
         </div>
     `).join('');
 
-    // Recommendations
+    // Build Recommendations List
     const recsList = document.getElementById('readout-recs');
     recsList.innerHTML = data.recommendations.map(r => `
         <li class="flex items-start gap-3 text-xs text-slate-300">
@@ -1438,38 +1455,42 @@ async function runReadout() {
         </li>
     `).join('');
 
-    // Metrics
+    // Build Metrics Panel
     document.getElementById('readout-metrics').innerHTML = `
-        <div class="flex justify-between border-b border-indigo-400/30 pb-2"><span class="text-xs text-indigo-100">MQL Growth</span><span class="text-white font-bold">${data.metrics.mql_growth}</span></div>
-        <div class="flex justify-between border-b border-indigo-400/30 pb-2"><span class="text-xs text-indigo-100">ATC Tours</span><span class="text-white font-bold">${data.metrics.atc_tours}</span></div>
-        <div class="flex justify-between"><span class="text-xs text-indigo-100">Budget Spent</span><span class="text-white font-bold">${data.metrics.budget_utilization}</span></div>
+        <div class="flex justify-between border-b border-indigo-400/30 pb-2"><span class="text-xs text-indigo-100 italic">MQL Growth</span><span class="text-white font-bold">${data.metrics.mql_growth}</span></div>
+        <div class="flex justify-between border-b border-indigo-400/30 pb-2"><span class="text-xs text-indigo-100 italic">ATC Tours</span><span class="text-white font-bold">${data.metrics.atc_tours}</span></div>
+        <div class="flex justify-between"><span class="text-xs text-indigo-100 italic">Budget Spent</span><span class="text-white font-bold">${data.metrics.budget_utilization}</span></div>
     `;
 
+    // Reveal the container instantly
     resultArea.classList.remove('hidden');
 
-    // --- 2. AI ENHANCEMENT (Background Logic) ---
+    // --- 2. AI ENHANCEMENT (The Strategic Layer) ---
     if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
-        const originalBtn = btn.innerHTML;
-        btn.innerHTML = `<i data-lucide="sparkles" class="w-3 h-3 animate-spin"></i> Analyzing...`;
+        const originalBtn = btn ? btn.innerHTML : null;
+        if (btn) btn.innerHTML = `<i data-lucide="sparkles" class="w-3 h-3 animate-spin"></i> Synthesizing...`;
         
         try {
             const context = JSON.stringify(data);
-            const aiResponse = await callGemini(`${READOUT_AI_PROMPT}\n\nData: ${context}`);
+            const prompt = `${READOUT_AI_PROMPT}\n\nProject Data: ${context}`;
+            
+            // Using 'gemini-2.0-flash' to avoid the 404 error
+            const aiResponse = await callGemini(prompt);
             const aiData = JSON.parse(aiResponse);
 
             if (aiData) {
-                // Layer on the Power Moves
+                // Layer on AI "Power Moves" over the existing recs
                 recsList.innerHTML += aiData.powerMoves.map(pm => `
                     <li class="flex items-start gap-3 text-xs text-blue-300 bg-blue-500/10 p-2 rounded border border-blue-500/30 mt-2 animate-pulse">
                         <i data-lucide="zap" class="w-3 h-3 text-yellow-400 flex-shrink-0"></i>
-                        <span><b class="text-blue-400">AI STRATEGY:</b> ${pm}</span>
+                        <span><b class="text-blue-400 uppercase text-[9px]">AI Strategic Pivot:</b> ${pm}</span>
                     </li>
                 `).join('');
             }
         } catch (e) {
-            console.warn("Readout AI Fallback: Using default data.");
+            console.warn("Readout AI Fallback: Displaying March 10 operational data only.");
         }
-        btn.innerHTML = originalBtn;
+        if (btn) btn.innerHTML = originalBtn;
     }
 
     if (window.lucide) lucide.createIcons();
@@ -1494,6 +1515,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
