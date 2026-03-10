@@ -104,6 +104,7 @@ const agents = [
     { id: 'utm', name: 'UTM Builder', cat: 'Digital', icon: 'link' },
     { id: 'intel', name: 'Competitor Intel', cat: 'Strategy', icon: 'shield' },
     { id: 'seo', name: 'SEO Search', cat: 'Growth', icon: 'search' },
+    { id: 'reporting', name: 'Performance Agent', cat: 'Revenue', icon: 'bar-chart-3' },
     { id: 'social', name: 'Social Post', cat: 'Content', icon: 'share-2' },
     { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail' }
 ];
@@ -112,16 +113,24 @@ function init() {
     const grid = document.getElementById('agent-grid');
     if (grid) {
         grid.innerHTML = agents.map(a => `
-            <div class="agent-button card p-4 flex flex-col items-center justify-center text-center cursor-pointer group hover:bg-slate-800 transition-all" onclick="launchAgent('${a.id}')">
-                <div class="w-10 h-10 mb-3 rounded-xl bg-slate-700 text-slate-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+            <div class="agent-button card p-4 flex flex-col items-center justify-center text-center cursor-pointer group hover:bg-slate-800 transition-all border-slate-700 hover:border-blue-500" onclick="launchAgent('${a.id}')">
+                <div class="w-10 h-10 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
                     <i data-lucide="${a.icon}" class="w-5 h-5"></i>
                 </div>
                 <h4 class="text-[10px] font-bold text-slate-300 uppercase tracking-widest leading-tight">${a.name}</h4>
+                <span class="text-[8px] text-slate-500 mt-1 uppercase">${a.cat}</span>
             </div>
         `).join('');
     }
-    lucide.createIcons();
+    // Check if lucide is available before calling
+    if (window.lucide) {
+        lucide.createIcons();
+    }
 }
+
+// Call init when window loads
+window.onload = init;
+
 
 function launchAgent(id) {
     document.getElementById('stage-placeholder').classList.add('hidden');
@@ -560,6 +569,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
