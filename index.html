@@ -11,6 +11,27 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* Safety Fallback for Inputs if Tailwind Fails */
+        input, textarea, select {
+            color: #f1f5f9 !important; /* High contrast white/slate-50 */
+            background-color: #0f172a !important; /* Slate-900 background */
+            border: 1px solid #334155 !important; /* Slate-700 border */
+            padding: 12px !important;
+            border-radius: 8px !important;
+        }
+        
+        /* Ensure placeholder is visible but distinct */
+        input::placeholder {
+            color: #64748b !important; /* Slate-500 */
+            opacity: 1;
+        }
+        
+        /* Focus state for desktop accessibility */
+        input:focus {
+            border-color: #3b82f6 !important; /* WWT Blue */
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
         body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 1rem; }
         
@@ -70,3 +91,4 @@
     <script src="app.js"></script>
 </body>
 </html>
+
