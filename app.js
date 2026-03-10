@@ -1349,13 +1349,14 @@ function simulatePush() {
 }
 
 async function runIndustryAnalysis() {
-    const selector = document.getElementById('industry-selector'); // Or your specific trigger
+    const selector = document.getElementById('industry-selector');
     const key = selector.value;
     const data = industryGapDB[key];
     const resultArea = document.getElementById('industry-result');
     const btn = document.querySelector('button[onclick="runIndustryAnalysis()"]');
-    
-    // 1. POPULATE BASELINE (Immediate)
+
+    // --- 1. POPULATE BASELINE (Immediate & Fail-safe) ---
+    // This runs instantly from your local DB
     document.getElementById('ind-gap').innerText = data.gap;
     document.getElementById('ind-trend').innerText = data.trend;
     document.getElementById('ind-opp').innerText = data.opportunity;
@@ -1371,42 +1372,34 @@ async function runIndustryAnalysis() {
 
     resultArea.classList.remove('hidden');
 
-    // 2. AI ENHANCEMENT (The "Smart Refine")
-    if (AI_ENABLED && SESSION_AI_KEY) {
+    // --- 2. AI ENHANCEMENT (Background Optimization) ---
+    if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
         const originalBtn = btn.innerHTML;
-        btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 animate-spin"></i> Analyzing...`;
+        btn.innerHTML = `<i data-lucide="sparkles" class="w-3 h-3 animate-spin"></i> Analyzing...`;
         
-        const context = `Gap: ${data.gap}. Trend: ${data.trend}. Opp: ${data.opportunity}. Outline: ${data.outline.sections.join(', ')}`;
+        // Note: Using the prompt structure that matches your other modules
+        const context = `Gap: ${data.gap}. Trend: ${data.trend}. Opp: ${data.opportunity}.`;
         const prompt = `${INDUSTRY_AI_PROMPT}\n\nContext: ${context}`;
 
         try {
+            // Note: Ensure your callGemini uses 'gemini-2.0-flash' to avoid the 404 error
             const aiResponse = await callGemini(prompt);
+            
             if (aiResponse) {
-                // Parsing logic tailored to the prompt structure
                 const lines = aiResponse.split('\n');
                 const aiGap = lines.find(l => l.startsWith('Gap:'))?.replace('Gap:', '').trim();
                 const aiOpp = lines.find(l => l.startsWith('Opportunity:'))?.replace('Opportunity:', '').trim();
-                const aiOutlinePart = lines.find(l => l.startsWith('Outline:'))?.replace('Outline:', '').trim();
-                
+
                 if (aiGap) {
                     document.getElementById('ind-gap').innerHTML = `<span class="text-blue-400">✨ </span>${aiGap}`;
                 }
                 if (aiOpp) {
-                    document.getElementById('ind-opp').innerHTML = `<span class="text-blue-400 text-[10px] block mb-1">AI STRATEGY:</span>${aiOpp}`;
+                    document.getElementById('ind-opp').innerHTML = `<span class="text-blue-400 text-[10px] block mb-1">AI STRATEGIC OVERRIDE:</span>${aiOpp}`;
                 }
-                
-                if (aiOutlinePart) {
-                    const steps = aiOutlinePart.split(',').map(s => s.trim());
-                    sectionsContainer.innerHTML = steps.map((s, i) => `
-                        <div class="flex gap-4 items-start border-l border-blue-900/50 pl-2">
-                            <span class="text-blue-400 font-mono text-xs font-bold italic">AI-0${i+1}</span>
-                            <p class="text-slate-200 text-sm italic">${s}</p>
-                        </div>
-                    `).join('');
-                }
+                // Optional: You could also layer in AI-generated steps here
             }
         } catch (e) {
-            console.log("Industry Analysis AI Fallback active.");
+            console.warn("Industry AI Error - Model fallback to static DB active.");
         }
         btn.innerHTML = originalBtn;
     }
@@ -1415,14 +1408,14 @@ async function runIndustryAnalysis() {
 }
 
 async function runReadout() {
-    const selector = document.getElementById('readout-selector'); 
+    const selector = document.getElementById('readout-selector');
     const key = selector.value;
     const data = readoutDB[key];
     const resultArea = document.getElementById('readout-result');
     const btn = document.querySelector('button[onclick="runReadout()"]');
     
-    // 1. POPULATE BASELINE (Immediate Render)
-    // Map Workstreams
+    // --- 1. POPULATE BASELINE (Immediate & Fail-safe) ---
+    // Workstreams
     document.getElementById('readout-workstreams').innerHTML = data.workstreams.map(w => `
         <div class="flex items-start justify-between p-4 bg-slate-900/50 border border-slate-800 rounded-xl">
             <div>
@@ -1433,7 +1426,7 @@ async function runReadout() {
         </div>
     `).join('');
 
-    // Map Recommendations
+    // Recommendations
     const recsList = document.getElementById('readout-recs');
     recsList.innerHTML = data.recommendations.map(r => `
         <li class="flex items-start gap-3 text-xs text-slate-300">
@@ -1442,7 +1435,7 @@ async function runReadout() {
         </li>
     `).join('');
 
-    // Map Metrics
+    // Metrics
     document.getElementById('readout-metrics').innerHTML = `
         <div class="flex justify-between border-b border-indigo-400/30 pb-2"><span class="text-xs text-indigo-100">MQL Growth</span><span class="text-white font-bold">${data.metrics.mql_growth}</span></div>
         <div class="flex justify-between border-b border-indigo-400/30 pb-2"><span class="text-xs text-indigo-100">ATC Tours</span><span class="text-white font-bold">${data.metrics.atc_tours}</span></div>
@@ -1451,36 +1444,27 @@ async function runReadout() {
 
     resultArea.classList.remove('hidden');
 
-    // 2. AI ENHANCEMENT (Strategic Synthesis)
-    if (AI_ENABLED && SESSION_AI_KEY) {
+    // --- 2. AI ENHANCEMENT (Background Logic) ---
+    if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
         const originalBtn = btn.innerHTML;
-        btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 animate-spin"></i> Synthesizing...`;
+        btn.innerHTML = `<i data-lucide="sparkles" class="w-3 h-3 animate-spin"></i> Analyzing...`;
         
-        const context = JSON.stringify(data);
-        const prompt = `${READOUT_AI_PROMPT}\n\nProject Data: ${context}`;
-
         try {
-            const aiResponse = await callGemini(prompt);
-            const aiData = JSON.parse(aiResponse); // Assuming the AI follows JSON format
+            const context = JSON.stringify(data);
+            const aiResponse = await callGemini(`${READOUT_AI_PROMPT}\n\nData: ${context}`);
+            const aiData = JSON.parse(aiResponse);
 
             if (aiData) {
-                // Update Recommendations to "Power Moves"
-                recsList.innerHTML = aiData.powerMoves.map(pm => `
-                    <li class="flex items-start gap-3 text-xs text-blue-100 bg-blue-500/5 p-2 rounded-lg border border-blue-500/20">
-                        <i data-lucide="zap" class="w-4 h-4 text-yellow-400 flex-shrink-0"></i>
-                        <span><b class="text-blue-400">AI Power Move:</b> ${pm}</span>
+                // Layer on the Power Moves
+                recsList.innerHTML += aiData.powerMoves.map(pm => `
+                    <li class="flex items-start gap-3 text-xs text-blue-300 bg-blue-500/10 p-2 rounded border border-blue-500/30 mt-2 animate-pulse">
+                        <i data-lucide="zap" class="w-3 h-3 text-yellow-400 flex-shrink-0"></i>
+                        <span><b class="text-blue-400">AI STRATEGY:</b> ${pm}</span>
                     </li>
                 `).join('');
-
-                // Subtle update to workstream text if AI provided sharper versions
-                aiData.workstreams.forEach((update, index) => {
-                    const wsName = data.workstreams[index].name.replace(/\s+/g, '');
-                    const el = document.getElementById(`ws-update-${wsName}`);
-                    if (el) el.innerHTML = `<span class="italic text-slate-200">${update}</span>`;
-                });
             }
         } catch (e) {
-            console.log("Readout AI Optimization skipped.");
+            console.warn("Readout AI Fallback: Using default data.");
         }
         btn.innerHTML = originalBtn;
     }
@@ -1507,6 +1491,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
