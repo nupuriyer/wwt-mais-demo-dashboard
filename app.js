@@ -1496,16 +1496,20 @@ async function runReadout() {
 
 function runReporting() {
     // 1. SELECTOR & TARGETS
-    // We'll use a hardcoded default for the 'Report Type' to keep it simple
-    const resultArea = document.getElementById('readout-result'); // Sharing the readout area or its own container
+    const resultArea = document.getElementById('readout-result');
     const metricsContainer = document.getElementById('readout-metrics');
     
     console.log("🚀 Reporting Module: Initializing High-Level Synthesis...");
 
-    // 2. RENDER BASELINE REPORT (Desktop-Safe Colors)
-    // This provides immediate visual feedback
+    // FIX: Ensure the parent container is actually visible! 
+    // If you click Performance before Weekly Readout, it was staying hidden.
+    if (resultArea) {
+        resultArea.classList.remove('hidden');
+    }
+
+    // 2. RENDER BASELINE REPORT
     const reportingHTML = `
-        <div class="mt-6 p-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 animate-in fade-in zoom-in duration-500">
+        <div id="ai-performance-report" class="mt-6 p-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 animate-in fade-in zoom-in duration-500">
             <div class="flex items-center justify-between mb-4">
                 <h5 class="text-indigo-400 font-black text-[10px] uppercase tracking-[0.3em]">H1 Performance Synthesis</h5>
                 <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[8px] font-bold">READY FOR EXPORT</span>
@@ -1528,15 +1532,22 @@ function runReporting() {
         </div>
     `;
 
-    // Injecting into the main result area
+    // 3. SMART INJECTION
+    // Avoid double-posting if they click the button twice
+    const existingReport = document.getElementById('ai-performance-report');
+    if (existingReport) existingReport.remove();
+
     if (metricsContainer) {
         metricsContainer.insertAdjacentHTML('afterend', reportingHTML);
+    } else if (resultArea) {
+        // Fallback: if metricsContainer isn't there, just dump it in the result area
+        resultArea.innerHTML += reportingHTML;
     }
 
-    // 3. OPTIONAL: AI ANALYSIS (If you want to 'AI-ify' the report)
+    // 4. AI NARRATIVE (Optional)
     if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
         console.log("✨ Reporting: Applying AI Narrative Polish...");
-        // You can add a callGemini here later to generate a custom 'Executive Summary'
+        // This is where you'd callGemini to update the italic text above
     }
 
     if (window.lucide) lucide.createIcons();
@@ -1561,6 +1572,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
