@@ -132,6 +132,20 @@ const revenueDB = {
     }
 };
 
+const emailDraftDB = {
+    "sovereign-cloud": {
+        pageTitle: "Data Sovereignty & Sovereign Cloud Solutions",
+        url: "https://www.wwt.com/sovereign-cloud",
+        keyThemes: ["Regulatory Compliance", "Data Residency", "National Security", "Multi-Cloud Strategy"],
+        targetAudience: "CISO / IT Infrastructure Director",
+        draft: {
+            subject: "Ensuring Data Sovereignty in a Multi-Cloud World",
+            preview: "How WWT helps you navigate residency requirements without sacrificing cloud agility.",
+            body: "Hi [First_Name],\n\nAs regulatory landscapes shift, maintaining control over your data residency has moved from a 'nice-to-have' to a mission-critical priority. We just published a deep dive on how WWT is partnering with VMware and AWS to deliver Sovereign Cloud solutions that keep your data compliant and your infrastructure agile.\n\nWould you like to see how we've mapped these sovereignty requirements in the ATC?\n\nBest,\n[Your Name]"
+        }
+    }
+};
+
 const utmHistory = [
     { raw: "LinkedIn / Paid Search", fixed: "linkedin / paid-search", url: "https://wwt.com?utm_source=linkedin&utm_medium=paid-search", changeLog: "Standardized & Hyphenated" },
     { raw: "FACEBOOK / Email_Newsletter", fixed: "facebook / email", url: "https://wwt.com?utm_source=facebook&utm_medium=email", changeLog: "Lowercased & Cleaned" },
@@ -526,6 +540,52 @@ function launchAgent(id) {
             </div>`;
     }
 
+        if (id === 'email') {
+        content.innerHTML = `
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div class="flex items-center justify-between px-2">
+                    <div class="flex items-center gap-4">
+                        <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <h3 class="text-xl font-bold text-white tracking-tight">Email Campaign Agent</h3>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl space-y-4">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">Source Platform URL</label>
+                    <div class="flex gap-3">
+                        <input type="text" value="https://www.wwt.com/sovereign-cloud" readonly class="flex-1 bg-slate-950 border border-slate-800 p-3 rounded-xl text-blue-400 font-mono text-xs outline-none">
+                        <button onclick="runEmailDraft('sovereign-cloud')" class="px-6 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all flex items-center gap-2">
+                            <i data-lucide="wand-2" class="w-4 h-4"></i> Draft Special Send
+                        </button>
+                    </div>
+                </div>
+
+                <div id="email-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
+                        <div class="bg-slate-900 px-6 py-3 border-b border-slate-800 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase">Draft: Sovereign Cloud Special Send</span>
+                            <div class="flex gap-2">
+                                <div class="w-2 h-2 rounded-full bg-red-500/20"></div>
+                                <div class="w-2 h-2 rounded-full bg-yellow-500/20"></div>
+                                <div class="w-2 h-2 rounded-full bg-green-500/20"></div>
+                            </div>
+                        </div>
+                        <div class="p-8 space-y-4 font-serif text-slate-300">
+                            <p class="text-sm font-sans text-slate-500"><b class="text-slate-400 font-bold uppercase text-[10px]">Subject:</b> <span id="eml-subject"></span></p>
+                            <hr class="border-slate-800">
+                            <div id="eml-body" class="whitespace-pre-wrap leading-relaxed italic text-lg"></div>
+                        </div>
+                        <div class="bg-slate-900/50 p-4 border-t border-slate-800 flex justify-end gap-3">
+                             <button class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">Edit Content</button>
+                             <button onclick="simulatePush()" id="push-btn" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2">
+                                <i data-lucide="share-2" class="w-3 h-3"></i> Push to Marketo
+                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+    
     lucide.createIcons();
 }
 
@@ -730,6 +790,31 @@ function runRevenue(key) {
     if (window.lucide) lucide.createIcons();
 }
 
+function runEmailDraft(key) {
+    const data = emailDraftDB[key];
+    const resultArea = document.getElementById('email-result');
+    
+    document.getElementById('eml-subject').innerText = data.draft.subject;
+    document.getElementById('eml-body').innerText = data.draft.body;
+
+    resultArea.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+}
+
+function simulatePush() {
+    const btn = document.getElementById('push-btn');
+    btn.innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Syncing...`;
+    lucide.createIcons();
+    
+    setTimeout(() => {
+        btn.classList.remove('bg-emerald-600');
+        btn.classList.add('bg-slate-800');
+        btn.innerHTML = `<i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> Synced to Marketo Asset #9921`;
+        lucide.createIcons();
+        alert("Success: Email draft has been pushed as a Local Asset to Marketo 'Q1_Sovereign_Campaign'.");
+    }, 2000);
+}
+
 function clearStage() {
     document.getElementById('stage-placeholder').classList.remove('hidden');
     document.getElementById('stage-content').classList.add('hidden');
@@ -758,6 +843,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
