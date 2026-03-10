@@ -1,10 +1,26 @@
 var GOOGLE_AI_KEY = 'GEMINI_API_KEY_PLACEHOLDER';
 let AI_ENABLED = false;
 
-// 1. DATASET & AGENTS
+// 1. HARDCODED GOVERNANCE & INITIAL SEED
+const governanceMap = {
+    "linkedin": "linkedin",
+    "lnkd-post": "linkedin",
+    "paid search": "paid-search",
+    "google & bing": "google-and-bing",
+    "atc_promo_2026": "atc-promo-2026",
+    "email_newsletter": "email",
+    "web-referral": "referral",
+    "facebook": "facebook",
+    "strategy briefing 2.0": "strategy-briefing-v2",
+    "display ": "display"
+};
+
 const utmHistory = [
-    { url: "https://wwt.com/atc", src: "LinkedIn", med: "Paid_Social", camp: "atc-promo", fixedUrl: "https://wwt.com/atc?utm_source=linkedin&utm_medium=social&utm_campaign=atc-promo" },
-    { url: "https://wwt.com/labs", src: "FACEBOOK", med: "Email_Newsletter", camp: "labs-update", fixedUrl: "https://wwt.com/labs?utm_source=facebook&utm_medium=email&utm_campaign=labs-update" }
+    { raw: "LinkedIn / Paid_Social", fixed: "linkedin / social", url: "https://wwt.com?utm_source=linkedin&utm_medium=social", changed: true },
+    { raw: "FACEBOOK / Email_Newsletter", fixed: "facebook / email", url: "https://wwt.com?utm_source=facebook&utm_medium=email", changed: true },
+    { raw: "Google & Bing / Search", fixed: "google-and-bing / search", url: "https://wwt.com?utm_source=google-and-bing&utm_medium=search", changed: true },
+    { raw: "LNKD-Post / Organic", fixed: "linkedin / social", url: "https://wwt.com?utm_source=linkedin&utm_medium=social", changed: true },
+    { raw: "atc_promo_2026 / Banner", fixed: "atc-promo-2026 / display", url: "https://wwt.com?utm_source=atc-promo-2026&utm_medium=display", changed: true }
 ];
 
 const agents = [
@@ -12,14 +28,9 @@ const agents = [
     { id: 'intel', name: 'Competitor Intel', cat: 'Strategy', icon: 'shield' },
     { id: 'seo', name: 'SEO Search', cat: 'Growth', icon: 'search' },
     { id: 'social', name: 'Social Post', cat: 'Content', icon: 'share-2' },
-    { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail' },
-    { id: 'audit', name: 'Site Audit', cat: 'Technical', icon: 'file-text' },
-    { id: 'icp', name: 'ICP Analysis', cat: 'Marketing', icon: 'users' },
-    { id: 'event', name: 'Event Tracker', cat: 'Field', icon: 'calendar' },
-    { id: 'brand', name: 'Brand Guide', cat: 'Creative', icon: 'palette' }
+    { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail' }
 ];
 
-// 2. INITIALIZATION
 function init() {
     const grid = document.getElementById('agent-grid');
     if (grid) {
@@ -35,7 +46,6 @@ function init() {
     lucide.createIcons();
 }
 
-// 3. AGENT LAUNCHER
 function launchAgent(id) {
     document.getElementById('stage-placeholder').classList.add('hidden');
     const content = document.getElementById('stage-content');
@@ -44,34 +54,31 @@ function launchAgent(id) {
     if (id === 'utm') {
         content.innerHTML = `
             <div class="max-w-3xl mx-auto space-y-6">
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center px-2">
                     <div class="flex items-center gap-4">
                         <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                        <h3 class="text-xl font-bold text-white">UTM Strategic Governance</h3>
-                    </div>
-                    <div class="flex items-center gap-2 text-[10px] font-bold text-blue-400 uppercase tracking-widest ${AI_ENABLED ? '' : 'invisible'}">
-                        <i data-lucide="sparkles" class="w-3 h-3"></i> AI Enabled
+                        <h3 class="text-xl font-bold text-white tracking-tight">UTM Strategic Governance</h3>
                     </div>
                 </div>
                 
-                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4 shadow-xl">
-                    <input id="utm-url" type="text" placeholder="Landing Page URL" class="w-full bg-slate-800 border border-slate-700 p-3 rounded-xl text-slate-100 placeholder:text-slate-500 outline-none focus:border-blue-500 transition-all">
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 space-y-4 shadow-2xl">
+                    <input id="utm-url" type="text" placeholder="Landing Page URL" class="w-full bg-slate-950 border border-slate-800 p-3 rounded-xl text-slate-400 font-medium placeholder:text-slate-600 outline-none focus:border-blue-500 transition-all">
                     <div class="grid grid-cols-3 gap-4">
-                        <input id="utm-src" type="text" placeholder="Source" class="bg-slate-800 border border-slate-700 p-3 rounded-xl text-slate-100 placeholder:text-slate-500 outline-none">
-                        <input id="utm-med" type="text" placeholder="Medium" class="bg-slate-800 border border-slate-700 p-3 rounded-xl text-slate-100 placeholder:text-slate-500 outline-none">
-                        <input id="utm-camp" type="text" placeholder="Campaign" class="bg-slate-800 border border-slate-700 p-3 rounded-xl text-slate-100 placeholder:text-slate-500 outline-none">
+                        <input id="utm-src" type="text" placeholder="Source" class="bg-slate-950 border border-slate-800 p-3 rounded-xl text-slate-400 font-medium placeholder:text-slate-600 outline-none">
+                        <input id="utm-med" type="text" placeholder="Medium" class="bg-slate-950 border border-slate-800 p-3 rounded-xl text-slate-400 font-medium placeholder:text-slate-600 outline-none">
+                        <input id="utm-camp" type="text" placeholder="Campaign" class="bg-slate-950 border border-slate-800 p-3 rounded-xl text-slate-400 font-medium placeholder:text-slate-600 outline-none">
                     </div>
-                    <button onclick="processUTM()" id="utm-btn" class="w-full p-4 rounded-xl font-bold text-white transition-all ${AI_ENABLED ? 'bg-blue-600' : 'bg-slate-700'}">
+                    <button onclick="processUTM()" id="utm-btn" class="w-full p-4 rounded-xl font-bold text-white transition-all ${AI_ENABLED ? 'bg-blue-600 shadow-lg shadow-blue-900/20' : 'bg-slate-800'}">
                         ${AI_ENABLED ? 'Govern with Gemini' : 'Generate Standard Link'}
                     </button>
                 </div>
 
-                <div class="space-y-3">
-                    <div class="flex justify-between px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                        <span>Governance Feed</span>
-                        <span>Standardized Output</span>
+                <div class="space-y-4">
+                    <div class="flex justify-between px-4 text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
+                        <span>Audit Log: Inconsistency → Standard</span>
+                        <span>Copy</span>
                     </div>
-                    <div id="utm-history-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar"></div>
+                    <div id="utm-history-list" class="space-y-3 max-h-[420px] overflow-y-auto pr-2 custom-scrollbar"></div>
                 </div>
             </div>`;
         renderHistory();
@@ -79,78 +86,96 @@ function launchAgent(id) {
     lucide.createIcons();
 }
 
-// 4. GOVERNANCE ENGINE
-function standardize(text, fallback) {
-    if (!text) return fallback;
-    return text.toString()
-        .toLowerCase()
-        .trim()
-        .replace(/&/g, 'and')         // Replace ampersand
-        .replace(/\s+/g, '-')         // Replace spaces with hyphens
-        .replace(/[^a-z0-9-]/g, '')   // Remove special characters
-        .replace(/-+/g, '-');         // Remove double hyphens
+function govern(input, fallback) {
+    if (!input) return fallback;
+    const clean = input.trim().toLowerCase();
+    if (governanceMap[clean]) return governanceMap[clean];
+    return clean.replace(/&/g, 'and').replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-');
 }
 
 async function processUTM() {
     const rawUrl = document.getElementById('utm-url').value || "https://wwt.com";
-    const rawSrc = document.getElementById('utm-src').value;
-    const rawMed = document.getElementById('utm-med').value;
-    const rawCamp = document.getElementById('utm-camp').value;
+    const rawSrc = document.getElementById('utm-src').value || "Direct";
+    const rawMed = document.getElementById('utm-med').value || "None";
+    const rawCamp = document.getElementById('utm-camp').value || "General";
 
-    // Local Logic (Immediate Governance)
-    const fixedSrc = standardize(rawSrc, "direct");
-    const fixedMed = standardize(rawMed, "none");
-    const fixedCamp = standardize(rawCamp, "standard-promo");
-    
-    const finalUrl = `${rawUrl}${rawUrl.includes('?') ? '&' : '?'}utm_source=${fixedSrc}&utm_medium=${fixedMed}&utm_campaign=${fixedCamp}`;
+    const activeKey = window.API_KEY_INJECTED || window.GOOGLE_AI_KEY || GOOGLE_AI_KEY;
+    let finalSrc, finalMed, finalCamp;
 
-    utmHistory.push({
-        url: rawUrl,
-        src: rawSrc || "None",
-        med: rawMed || "None",
-        fixedUrl: finalUrl
+    if (AI_ENABLED && activeKey && !activeKey.includes('PLACEHOLDER')) {
+        try {
+            const prompt = `Act as a WWT Marketing specialist. For URL ${rawUrl}, suggest lowercase hyphenated: source, medium, campaign. Return JSON: {"source": "...", "medium": "...", "campaign": "..."}`;
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${activeKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            const data = await response.json();
+            const cleanJson = JSON.parse(data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim());
+            finalSrc = cleanJson.source;
+            finalMed = cleanJson.medium;
+            finalCamp = cleanJson.campaign;
+        } catch (e) {
+            finalSrc = govern(rawSrc, "direct");
+            finalMed = govern(rawMed, "none");
+            finalCamp = govern(rawCamp, "standard");
+        }
+    } else {
+        finalSrc = govern(rawSrc, "direct");
+        finalMed = govern(rawMed, "none");
+        finalCamp = govern(rawCamp, "standard");
+    }
+
+    const finalUrl = `${rawUrl}${rawUrl.includes('?') ? '&' : '?'}utm_source=${finalSrc}&utm_medium=${finalMed}&utm_campaign=${finalCamp}`;
+
+    utmHistory.unshift({
+        raw: `${rawSrc} / ${rawMed}`,
+        fixed: `${finalSrc} / ${finalMed}`,
+        url: finalUrl,
+        changed: (rawSrc.toLowerCase() !== finalSrc || rawMed.toLowerCase() !== finalMed)
     });
 
     renderHistory();
-    
-    // Clear inputs
     ['utm-src', 'utm-med', 'utm-camp'].forEach(id => document.getElementById(id).value = '');
 }
 
 function renderHistory() {
     const list = document.getElementById('utm-history-list');
     if (!list) return;
-    list.innerHTML = utmHistory.map((item, idx) => `
-        <div class="bg-slate-800/40 border border-slate-700 p-4 rounded-xl flex flex-col gap-3 group hover:border-blue-500/50 transition-all">
-            <div class="flex justify-between items-start">
-                <div class="flex flex-col">
-                    <span class="text-[10px] text-red-400 font-mono italic">Input: ${item.src} / ${item.med}</span>
-                    <span class="text-[11px] text-white font-mono break-all mt-1">${item.fixedUrl}</span>
+    list.innerHTML = utmHistory.map((item) => `
+        <div class="bg-slate-900/40 border ${item.changed ? 'border-blue-500/20 bg-blue-500/5' : 'border-slate-800'} p-4 rounded-xl flex items-center justify-between transition-all duration-500 animate-in fade-in slide-in-from-top-2">
+            <div class="flex flex-col gap-1.5 max-w-[85%]">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-[9px] text-slate-600 line-through decoration-red-900/50">${item.raw}</span>
+                    <i data-lucide="arrow-right" class="w-3 h-3 text-blue-500/50"></i>
+                    <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">${item.fixed}</span>
+                    ${item.changed ? '<span class="text-[7px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded font-black tracking-tighter">GOVERNED</span>' : ''}
                 </div>
-                <button onclick="copyLine('${item.fixedUrl}', this)" class="p-2 bg-slate-700 rounded-lg text-slate-300 hover:text-blue-400 transition-all">
-                    <i data-lucide="copy" class="w-4 h-4"></i>
-                </button>
+                <span class="text-[10px] text-slate-500 font-mono truncate opacity-80">${item.url}</span>
             </div>
+            <button onclick="copyLine('${item.url}', this)" class="ml-4 p-2.5 bg-slate-800 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition-all">
+                <i data-lucide="copy" class="w-4 h-4"></i>
+            </button>
         </div>
-    `).reverse().join('');
+    `).join('');
     lucide.createIcons();
 }
 
-// 5. UTILS
 function copyLine(text, btn) {
     navigator.clipboard.writeText(text);
-    const originalIcon = btn.innerHTML;
-    btn.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-green-400"></i>`;
+    const original = btn.innerHTML;
+    btn.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-green-500"></i>`;
     lucide.createIcons();
-    setTimeout(() => {
-        btn.innerHTML = originalIcon;
-        lucide.createIcons();
-    }, 2000);
+    setTimeout(() => { btn.innerHTML = original; lucide.createIcons(); }, 2000);
 }
 
 function toggleUniversalAI(el) {
     AI_ENABLED = el.checked;
-    launchAgent('utm');
+    const utmBtn = document.getElementById('utm-btn');
+    if (utmBtn) {
+        utmBtn.className = `w-full p-4 rounded-xl font-bold text-white transition-all ${AI_ENABLED ? 'bg-blue-600 shadow-lg shadow-blue-900/20' : 'bg-slate-800'}`;
+        utmBtn.innerText = AI_ENABLED ? "Govern with Gemini" : "Generate Standard Link";
+    }
 }
 
 function clearStage() {
