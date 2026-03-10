@@ -250,37 +250,51 @@ function init() {
     if (window.lucide) lucide.createIcons();
 }
 
-// 2. THE AI IGNITION SYSTEM
+// The Ignition Function
 async function toggleUniversalAI(checkbox) {
+    console.log("Toggle Clicked! State:", checkbox.checked); // DEBUG LINE
+
     const container = document.getElementById('ai-status-container');
     const dot = document.getElementById('ai-glow-dot');
     const icon = document.getElementById('universal-ai-icon');
 
     if (checkbox.checked) {
         const key = prompt("Enter WWT Agentic Master Key to enable Live AI Mode:");
+        
         if (key && key.trim().length > 20) {
             SESSION_AI_KEY = key;
-            // Visual Power-Up
-            if(container) container.classList.replace('border-slate-700', 'border-blue-500/50');
+            
+            // Visual Updates
+            if(container) {
+                container.classList.replace('border-slate-700', 'border-blue-500/50');
+                container.classList.add('shadow-[0_0_15px_rgba(59,130,246,0.3)]');
+            }
             if(dot) {
                 dot.classList.replace('bg-slate-600', 'bg-blue-400');
-                dot.classList.add('animate-pulse');
+                dot.classList.add('animate-pulse', 'shadow-[0_0_8px_rgba(96,165,250,0.8)]');
             }
-            console.log("AI ENGINE: ONLINE");
+            if(icon) icon.classList.replace('text-slate-500', 'text-blue-400');
+            
+            alert("🚀 AI Engine Online.");
         } else {
             checkbox.checked = false;
-            alert("Valid API Key required for Live Mode.");
+            alert("Invalid Key. Returning to Demo Mode.");
         }
     } else {
+        // Reset to Gray
         SESSION_AI_KEY = null;
-        if(container) container.classList.replace('border-blue-500/50', 'border-slate-700');
+        if(container) {
+            container.classList.replace('border-blue-500/50', 'border-slate-700');
+            container.classList.remove('shadow-[0_0_15px_rgba(59,130,246,0.3)]');
+        }
         if(dot) {
             dot.classList.replace('bg-blue-400', 'bg-slate-600');
-            dot.classList.remove('animate-pulse');
+            dot.classList.remove('animate-pulse', 'shadow-[0_0_8px_rgba(96,165,250,0.8)]');
         }
-        console.log("AI ENGINE: DEMO MODE");
+        if(icon) icon.classList.replace('text-blue-400', 'text-slate-500');
     }
 }
+
 
 // UNIVERSAL CALLER (Used by all agents)
 async function callGemini(prompt) {
@@ -1163,6 +1177,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
