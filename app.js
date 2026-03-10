@@ -1357,21 +1357,21 @@ function simulatePush() {
 }
 
 // Ensure this matches your existing DB keys (e.g., 'cloud-migration', 'edge-computing')
-async function runIndustryAnalysis() {
-    const selector = document.getElementById('industry-selector');
+// Add 'key' as a parameter so buttons can pass "energy" or "healthcare"
+async function runIndustryAnalysis(key) {
+    // 1. DYNAMIC KEY LOGIC
+    // If a key is passed (from a button), use it. 
+    // Otherwise, try to get it from a selector or default to healthcare.
+    const activeKey = key || (document.getElementById('industry-selector') ? document.getElementById('industry-selector').value : "healthcare");
     
-    // FIX: Prevents the "null" crash. If no selector is found, it defaults to 'healthcare'.
-    // If a selector IS found, it uses the chosen value (healthcare or energy).
-    const key = selector ? selector.value : "healthcare"; 
-    
-    const data = industryGapDB[key];
-    if (!data) return console.error("Industry key not found in DB:", key);
+    const data = industryGapDB[activeKey];
+    if (!data) return console.error("Industry key not found in DB:", activeKey);
 
     const resultArea = document.getElementById('industry-result');
-    const btn = document.querySelector('button[onclick="runIndustryAnalysis()"]');
+    // Find the button specifically for this industry or the generic trigger
+    const btn = document.querySelector(`button[onclick*="${activeKey}"]`) || document.querySelector('button[onclick="runIndustryAnalysis()"]');
 
-    // --- 1. POPULATE BASELINE (Works 100% without AI) ---
-    // This injects your 'Energy' or 'Healthcare' dummy data immediately.
+    // --- 2. POPULATE BASELINE (Baseline works instantly) ---
     document.getElementById('ind-gap').innerText = data.gap;
     document.getElementById('ind-trend').innerText = data.trend;
     document.getElementById('ind-opp').innerText = data.opportunity;
@@ -1387,17 +1387,15 @@ async function runIndustryAnalysis() {
 
     resultArea.classList.remove('hidden');
 
-    // --- 2. AI ENHANCEMENT (Optional Layer) ---
+    // --- 3. AI ENHANCEMENT ---
     if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
         const originalBtn = btn ? btn.innerHTML : null;
         if (btn) btn.innerHTML = `<i data-lucide="sparkles" class="w-3 h-3 animate-spin"></i> Refining...`;
         
-        // The prompt now includes the specific industry context (Energy vs Healthcare)
         const context = `Industry: ${data.industry}. Gap: ${data.gap}. Trend: ${data.trend}. Opp: ${data.opportunity}.`;
         const prompt = `${INDUSTRY_AI_PROMPT}\n\nContext: ${context}`;
 
         try {
-            // Updated to 'gemini-2.0-flash' to fix the 404 error
             const aiResponse = await callGemini(prompt);
             
             if (aiResponse) {
@@ -1413,7 +1411,7 @@ async function runIndustryAnalysis() {
                 }
             }
         } catch (e) {
-            console.warn("Industry AI Fallback: Using default DB content for " + key);
+            console.warn("Industry AI Fallback: Using default DB content for " + activeKey);
         }
         if (btn) btn.innerHTML = originalBtn;
     }
@@ -1563,6 +1561,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
