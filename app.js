@@ -39,6 +39,30 @@ const competitorIntelDB = {
     }
 };
 
+const seoIntentDB = {
+    "ai-infrastructure": {
+        topic: "AI Infrastructure & Agents",
+        organic: ["NVIDIA GTC 2026", "Agentic AI workflows", "AI compute costs"],
+        internal: ["NVIDIA GTC Watch Party", "Hands-on Lab: AI Proving Ground", "AI Project Canvas"],
+        insight: "Users are moving from 'What is AI?' (Organic) to 'How do I build it at WWT?' (Internal).",
+        action: "Create a 'GTC Recap' blog that links directly to the AI Proving Ground lab."
+    },
+    "cybersecurity": {
+        topic: "Cybersecurity & Zero Trust",
+        organic: ["Quantum-safe cryptography", "AI-driven phishing", "CISO playbook 2026"],
+        internal: ["Fortinet vs Palo Alto lab", "Cyber Range demo", "Infection Core workshop"],
+        insight: "Organic search is academic/fear-based. Internal search is highly tactical and vendor-comparison focused.",
+        action: "Launch a 'Comparison Guide' landing page for Fortinet vs. Palo Alto in the ATC."
+    },
+    "cloud-networking": {
+        topic: "Cloud & Multi-Cloud Networking",
+        organic: ["Sovereign cloud strategy", "Multi-cloud egress fees", "Azure vs AWS 2026"],
+        internal: ["Cisco Nexus Dashboard lab", "Equinix Cloud Exchange", "Cloud Transit Gateway"],
+        insight: "Internal users are searching for specific technical 'connectors' rather than broad strategy.",
+        action: "Develop a 'Technical Quick-Start Guide' for Multi-Cloud connectivity."
+    }
+};
+
 const utmHistory = [
     { raw: "LinkedIn / Paid Search", fixed: "linkedin / paid-search", url: "https://wwt.com?utm_source=linkedin&utm_medium=paid-search", changeLog: "Standardized & Hyphenated" },
     { raw: "FACEBOOK / Email_Newsletter", fixed: "facebook / email", url: "https://wwt.com?utm_source=facebook&utm_medium=email", changeLog: "Lowercased & Cleaned" },
@@ -181,6 +205,75 @@ function launchAgent(id) {
                 </div>
             </div>`;
             }
+
+        if (id === 'seo') {
+        content.innerHTML = `
+            <div class="max-w-6xl mx-auto space-y-6">
+                <div class="flex items-center justify-between px-2">
+                    <div class="flex items-center gap-4">
+                        <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <h3 class="text-xl font-bold text-white tracking-tight">Search Intent Bridge</h3>
+                    </div>
+                    <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-full">
+                        <i data-lucide="search" class="w-3 h-3 text-blue-400"></i>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">SEO Data Synced</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 block px-1">Select Topic Cluster</label>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button onclick="runSEO('ai-infrastructure')" class="p-4 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 font-bold hover:border-blue-500 transition-all text-left group">
+                            <span class="block text-xs opacity-50 mb-1 font-medium">Topic 01</span>
+                            AI & Infrastructure
+                        </button>
+                        <button onclick="runSEO('cybersecurity')" class="p-4 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 font-bold hover:border-blue-500 transition-all text-left group">
+                            <span class="block text-xs opacity-50 mb-1 font-medium">Topic 02</span>
+                            Cybersecurity
+                        </button>
+                        <button onclick="runSEO('cloud-networking')" class="p-4 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 font-bold hover:border-blue-500 transition-all text-left group">
+                            <span class="block text-xs opacity-50 mb-1 font-medium">Topic 03</span>
+                            Cloud Networking
+                        </button>
+                    </div>
+                </div>
+
+                <div id="seo-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+                            <div class="flex items-center gap-2 mb-6">
+                                <div class="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center text-blue-500">
+                                    <i data-lucide="globe" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-sm font-bold text-white uppercase tracking-tight">External Intent (Google)</h4>
+                            </div>
+                            <ul id="seo-organic" class="space-y-3"></ul>
+                        </div>
+
+                        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+                            <div class="flex items-center gap-2 mb-6">
+                                <div class="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center text-orange-500">
+                                    <i data-lucide="layout" class="w-4 h-4"></i>
+                                </div>
+                                <h4 class="text-sm font-bold text-white uppercase tracking-tight">Internal Intent (wwt.com)</h4>
+                            </div>
+                            <ul id="seo-internal" class="space-y-3"></ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-600 rounded-2xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-blue-900/20 shadow-2xl">
+                        <div class="flex-1 space-y-2 text-center md:text-left">
+                            <h5 class="text-blue-100 font-bold text-xs uppercase tracking-widest">The SEO Bridge Insight</h5>
+                            <p id="seo-insight" class="text-white text-xl font-bold leading-snug"></p>
+                        </div>
+                        <div class="w-full md:w-72 bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-xl space-y-3">
+                            <span class="text-[10px] font-bold text-blue-100 uppercase tracking-widest">Recommended Action</span>
+                            <p id="seo-action" class="text-white font-medium text-sm"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
     
     lucide.createIcons();
 }
@@ -297,6 +390,31 @@ function runCrawler() {
     lucide.createIcons();
 }
 
+function runSEO(clusterId) {
+    const data = seoIntentDB[clusterId];
+    const resultArea = document.getElementById('seo-result');
+    
+    // Clear & Populate lists
+    const orgList = document.getElementById('seo-organic');
+    const intList = document.getElementById('seo-internal');
+    
+    orgList.innerHTML = data.organic.map(item => `
+        <li class="flex items-center gap-3 text-slate-400 text-sm py-2 border-b border-slate-900">
+            <i data-lucide="trending-up" class="w-3 h-3 text-blue-500"></i> ${item}
+        </li>`).join('');
+        
+    intList.innerHTML = data.internal.map(item => `
+        <li class="flex items-center gap-3 text-slate-400 text-sm py-2 border-b border-slate-900">
+            <i data-lucide="mouse-pointer-2" class="w-3 h-3 text-orange-500"></i> ${item}
+        </li>`).join('');
+
+    document.getElementById('seo-insight').innerText = data.insight;
+    document.getElementById('seo-action').innerText = data.action;
+
+    resultArea.classList.remove('hidden');
+    lucide.createIcons();
+}
+
 function copyLine(text, btn) {
     navigator.clipboard.writeText(text);
     const original = btn.innerHTML;
@@ -320,5 +438,6 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
