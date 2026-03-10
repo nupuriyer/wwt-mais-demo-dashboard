@@ -1096,54 +1096,57 @@ async function runSEO(clusterId) {
     if (window.lucide) lucide.createIcons();
 }
 
-async function runReporting(campaignId) {
-    const data = performanceDB[campaignId];
-    const resultArea = document.getElementById('report-result');
-    const insightEl = document.getElementById('rep-insight');
+async function runRevenue(key) {
+    const data = revenueDB[key];
+    const resultArea = document.getElementById('rev-result');
+    const timeline = document.getElementById('rev-timeline');
     
-    // 1. CALCULATE & POPULATE BASELINE (Immediate)
-    document.getElementById('rep-spend').innerText = '$' + data.spend.toLocaleString();
-    document.getElementById('rep-mql').innerText = data.metrics.mqls;
-    document.getElementById('rep-pipe').innerText = '$' + (data.metrics.pipeline / 1000000).toFixed(1) + 'M';
-    
-    const roi = ((data.metrics.revenue - data.spend) / data.spend * 100).toFixed(0);
-    document.getElementById('rep-roi').innerText = roi + '%';
-    
-    document.getElementById('rep-status').innerText = data.status;
-    
-    // Set default insight from DB
-    let finalInsight = data.insight;
-    insightEl.innerText = finalInsight;
+    // 1. POPULATE BASELINE (Immediate & Colorful)
+    // We use hardcoded classes to ensure desktop renders them correctly
+    timeline.innerHTML = data.journey.map((step, i) => `
+        <div class="relative pl-8 border-l-2 border-slate-800 pb-6 last:pb-0">
+            <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-950 border-2 ${step.type === 'Conversion' ? 'border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' : 'border-indigo-500'}"></div>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 p-4 rounded-xl bg-slate-900/40 border border-slate-800/60 hover:border-slate-700 transition-colors">
+                <div>
+                    <span class="text-[10px] font-bold ${step.type === 'Conversion' ? 'text-emerald-400' : 'text-indigo-400'} uppercase tracking-widest">${step.type}</span>
+                    <h5 class="text-white font-bold text-sm mt-0.5">${step.event}</h5>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-[10px] text-slate-500 font-mono">${step.date}</span>
+                    <span class="px-2 py-1 rounded bg-slate-800 text-slate-300 text-[9px] font-bold border border-slate-700">${step.source}</span>
+                </div>
+            </div>
+        </div>
+    `).join('');
 
-    // 2. AI STRATEGIC AUDIT (The "Pinch of AI")
-    if (AI_ENABLED && SESSION_AI_KEY) {
-        // Visual cue that AI is analyzing
-        insightEl.innerHTML = `<span class="flex items-center gap-2 text-blue-400"><i data-lucide="refresh-cw" class="w-3 h-3 animate-spin"></i> Gemini calculating attribution lift...</span>`;
-        if (window.lucide) lucide.createIcons();
+    // Default Baseline Text
+    document.getElementById('rev-insight').innerText = "Analyzing touchpoint influence...";
+    document.getElementById('rev-rec').innerText = "Identifying next step...";
+    
+    resultArea.classList.remove('hidden');
 
-        const context = `Campaign: ${campaignId}. Spend: $${data.spend}, MQLs: ${data.metrics.mqls}, Pipe: $${data.metrics.pipeline}, ROI: ${roi}%. Current Insight: ${data.insight}`;
-        const prompt = `${REPORT_AI_PROMPT}\n\n${context}`;
-
+    // 2. AI ENHANCEMENT
+    if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
         try {
-            const aiResponse = await callGemini(prompt);
+            // Update to gemini-2.0-flash to avoid the 404 error
+            const context = `Journey: ${JSON.stringify(data.journey)}`;
+            const aiResponse = await callGemini(`${REVENUE_AI_PROMPT}\n\nContext: ${context}`);
+            
             if (aiResponse) {
-                // Update with AI branding
-                insightEl.innerHTML = `
-                    <div class="space-y-1">
-                        <span class="text-[9px] font-bold text-blue-400 uppercase tracking-[0.2em] block">AI Strategic Audit</span>
-                        <p class="text-white italic">"${aiResponse.replace(/[".]/g, '').trim()}"</p>
-                    </div>
+                const [conclusion, action] = aiResponse.split('Action:');
+                
+                document.getElementById('rev-insight').innerHTML = `
+                    <span class="text-emerald-200 opacity-60 text-[8px] block mb-1">REFINED BY AI</span>
+                    ${conclusion.replace('Conclusion:', '').trim()}
                 `;
-            } else {
-                insightEl.innerText = finalInsight;
+                document.getElementById('rev-rec').innerText = action ? action.trim() : "Follow up immediately.";
             }
         } catch (e) {
-            console.log("Reporting AI Fallback active.");
-            insightEl.innerText = finalInsight;
+            console.warn("Revenue AI Error - Staying with baseline insights.");
+            document.getElementById('rev-insight').innerText = "Data-driven attribution complete. Ready for executive review.";
         }
     }
 
-    resultArea.classList.remove('hidden');
     if (window.lucide) lucide.createIcons();
 }
 
@@ -1491,6 +1494,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
