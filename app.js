@@ -192,6 +192,28 @@ const industryGapDB = {
     }
 };
 
+const readoutDB = {
+    "weekly-ops-mar-10": {
+        date: "March 10, 2026",
+        audience: "Portfolio Marketing Leadership",
+        status: "On Track",
+        workstreams: [
+            { name: "Sovereign Cloud Launch", status: "Complete", update: "Platform page live; Email 'Special Send' synced to Marketo." },
+            { name: "AI Proving Ground Campaign", status: "At Risk", update: "Creative assets delayed 48hrs; looking to pull in external agency support." },
+            { name: "FY27 H1 Planning", status: "In Progress", update: "Industry gap analysis completed for Healthcare and Energy sectors." }
+        ],
+        metrics: {
+            mql_growth: "+12% WoW",
+            atc_tours: "45 Booked",
+            budget_utilization: "88%"
+        },
+        recommendations: [
+            "Pivot 'AI Proving Ground' ad spend to LinkedIn Sponsored Content to offset asset delay.",
+            "Schedule executive briefing for 'Sovereign Cloud' results by Friday."
+        ]
+    }
+};
+
 const utmHistory = [
     { raw: "LinkedIn / Paid Search", fixed: "linkedin / paid-search", url: "https://wwt.com?utm_source=linkedin&utm_medium=paid-search", changeLog: "Standardized & Hyphenated" },
     { raw: "FACEBOOK / Email_Newsletter", fixed: "facebook / email", url: "https://wwt.com?utm_source=facebook&utm_medium=email", changeLog: "Lowercased & Cleaned" },
@@ -205,8 +227,9 @@ const agents = [
     { id: 'reporting', name: 'Performance Agent', cat: 'Revenue', icon: 'bar-chart-3' },
     { id: 'icp', name: 'ICP Agent', cat: 'Portfolio', icon: 'target' },
     { id: 'revenue', name: 'Revenue Intel', cat: 'Portfolio', icon: 'pie-chart' },
-    { id: 'industry', name: 'Industry Agent', cat: 'Portfolio', icon: 'factory' }, // New!
-    { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail' }
+    { id: 'industry', name: 'Industry Agent', cat: 'Portfolio', icon: 'factory' },
+    { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail' },
+    { id: 'readout', name: 'Readout Agent', cat: 'Marketing Ops', icon: 'file-text' } // The Final Piece!
 ];
 
 
@@ -701,6 +724,56 @@ function launchAgent(id) {
             </div>`;
         }
 
+        if (id === 'readout') {
+        content.innerHTML = `
+            <div class="max-w-5xl mx-auto space-y-6">
+                <div class="flex items-center justify-between px-2">
+                    <div class="flex items-center gap-4">
+                        <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <h3 class="text-xl font-bold text-white tracking-tight">Marketing Readout & Rec Agent</h3>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold py-1 px-3 rounded-lg border border-slate-700 transition-all">Export PPT</button>
+                        <button class="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold py-1 px-3 rounded-lg transition-all">Sync to Loop</button>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl flex items-center justify-between">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Active Reporting Cycle</p>
+                        <h4 class="text-white font-bold">WWT Portfolio Marketing - Week 10 (Mar 2026)</h4>
+                    </div>
+                    <button onclick="runReadout('weekly-ops-mar-10')" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all flex items-center gap-2">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Generate Executive Brief
+                    </button>
+                </div>
+
+                <div id="readout-result" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+                            <h5 class="text-[10px] font-bold text-slate-500 uppercase mb-4 tracking-widest">Workstream Status</h5>
+                            <div id="readout-workstreams" class="space-y-4"></div>
+                        </div>
+                        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+                            <h5 class="text-[10px] font-bold text-slate-500 uppercase mb-4 tracking-widest italic">Weekly Recommendations</h5>
+                            <ul id="readout-recs" class="space-y-3 list-none"></ul>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-indigo-600 rounded-2xl p-6 shadow-xl shadow-indigo-900/20">
+                            <h5 class="text-indigo-100 text-[10px] font-black uppercase mb-4 tracking-widest">Key Performance Indicators</h5>
+                            <div id="readout-metrics" class="space-y-4"></div>
+                        </div>
+                        <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl text-center">
+                            <h5 class="text-slate-500 text-[10px] font-bold uppercase mb-2">Overall Program Health</h5>
+                            <div class="text-3xl font-black text-emerald-500 uppercase tracking-tighter">ON TRACK</div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
+    
     lucide.createIcons();
 }
 
@@ -979,6 +1052,40 @@ function runIndustryAnalysis(key) {
     if (window.lucide) lucide.createIcons();
 }
 
+function runReadout(key) {
+    const data = readoutDB[key];
+    const resultArea = document.getElementById('readout-result');
+
+    // Build Workstreams
+    document.getElementById('readout-workstreams').innerHTML = data.workstreams.map(w => `
+        <div class="flex items-start justify-between p-4 bg-slate-900/50 border border-slate-800 rounded-xl">
+            <div>
+                <h6 class="text-white font-bold text-sm">${w.name}</h6>
+                <p class="text-xs text-slate-400 mt-1">${w.update}</p>
+            </div>
+            <span class="text-[8px] font-black px-2 py-1 rounded border ${w.status === 'At Risk' ? 'border-red-500/50 text-red-500 bg-red-500/10' : 'border-emerald-500/50 text-emerald-500 bg-emerald-500/10'} uppercase">${w.status}</span>
+        </div>
+    `).join('');
+
+    // Build Recs
+    document.getElementById('readout-recs').innerHTML = data.recommendations.map(r => `
+        <li class="flex items-start gap-3 text-xs text-slate-300">
+            <i data-lucide="arrow-right-circle" class="w-4 h-4 text-indigo-500 flex-shrink-0"></i>
+            <span>${r}</span>
+        </li>
+    `).join('');
+
+    // Build Metrics
+    document.getElementById('readout-metrics').innerHTML = `
+        <div class="flex justify-between border-b border-indigo-400/30 pb-2"><span class="text-xs text-indigo-100">MQL Growth</span><span class="text-white font-bold">${data.metrics.mql_growth}</span></div>
+        <div class="flex justify-between border-b border-indigo-400/30 pb-2"><span class="text-xs text-indigo-100">ATC Tours</span><span class="text-white font-bold">${data.metrics.atc_tours}</span></div>
+        <div class="flex justify-between"><span class="text-xs text-indigo-100">Budget Spent</span><span class="text-white font-bold">${data.metrics.budget_utilization}</span></div>
+    `;
+
+    resultArea.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+}
+
 function clearStage() {
     document.getElementById('stage-placeholder').classList.remove('hidden');
     document.getElementById('stage-content').classList.add('hidden');
@@ -1007,6 +1114,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
