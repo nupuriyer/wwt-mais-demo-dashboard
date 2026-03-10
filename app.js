@@ -94,6 +94,31 @@ const performanceDB = {
     }
 };
 
+const icpDB = {
+    "manufacturing-ai": {
+        title: "Industrial AI Pioneers",
+        signals: ["Increased NVIDIA H100 spend", "Hiring 'Head of Digital Twin'", "Recent $50M Series C"],
+        attributes: {
+            industry: "Advanced Manufacturing",
+            size: "1,000 - 5,000 Employees",
+            techStack: "NVIDIA, Azure, Ignition SCADA",
+            painPoint: "Bridge gap between OT (factory floor) and IT (cloud AI)."
+        },
+        strategy: "Focus on 'ATC Factory-in-a-Box' demo. Lead with security and low-latency edge compute."
+    },
+    "finance-security": {
+        title: "Quantum-Ready Fintech",
+        signals: ["Updated SEC Cybersecurity disclosure", "Legacy mainframe migration", "High cloud-egress fees"],
+        attributes: {
+            industry: "Financial Services",
+            size: "10,000+ Employees",
+            techStack: "AWS, Palo Alto, IBM Z-Series",
+            painPoint: "Protecting data-in-motion against future quantum threats."
+        },
+        strategy: "Pitch 'Cyber Range' simulation for post-quantum crypto. Lead with compliance and risk-reduction."
+    }
+};
+
 const utmHistory = [
     { raw: "LinkedIn / Paid Search", fixed: "linkedin / paid-search", url: "https://wwt.com?utm_source=linkedin&utm_medium=paid-search", changeLog: "Standardized & Hyphenated" },
     { raw: "FACEBOOK / Email_Newsletter", fixed: "facebook / email", url: "https://wwt.com?utm_source=facebook&utm_medium=email", changeLog: "Lowercased & Cleaned" },
@@ -105,24 +130,24 @@ const agents = [
     { id: 'intel', name: 'Competitor Intel', cat: 'Strategy', icon: 'shield' },
     { id: 'seo', name: 'SEO Search', cat: 'Growth', icon: 'search' },
     { id: 'reporting', name: 'Performance Agent', cat: 'Revenue', icon: 'bar-chart-3' },
-    { id: 'social', name: 'Social Post', cat: 'Content', icon: 'share-2' },
+    { id: 'icp', name: 'ICP Agent', cat: 'Portfolio', icon: 'target' }, // Updated ID and Label
     { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail' }
 ];
+
 
 function init() {
     const grid = document.getElementById('agent-grid');
     if (grid) {
         grid.innerHTML = agents.map(a => `
             <div class="agent-button card p-4 flex flex-col items-center justify-center text-center cursor-pointer group hover:bg-slate-800 transition-all border-slate-700 hover:border-blue-500" onclick="launchAgent('${a.id}')">
-                <div class="w-10 h-10 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                <div class="w-10 h-10 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
                     <i data-lucide="${a.icon}" class="w-5 h-5"></i>
                 </div>
                 <h4 class="text-[10px] font-bold text-slate-300 uppercase tracking-widest leading-tight">${a.name}</h4>
-                <span class="text-[8px] text-slate-500 mt-1 uppercase">${a.cat}</span>
+                <span class="text-[8px] text-slate-500 mt-1 uppercase font-medium tracking-tighter">${a.cat}</span>
             </div>
         `).join('');
     }
-    // Check if lucide is available before calling
     if (window.lucide) {
         lucide.createIcons();
     }
@@ -386,6 +411,65 @@ function launchAgent(id) {
                 </div>
             </div>`;
         }
+    if (id === 'icp') {
+        content.innerHTML = `
+            <div class="max-w-6xl mx-auto space-y-6">
+                <div class="flex items-center justify-between px-2">
+                    <div class="flex items-center gap-4">
+                        <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <h3 class="text-xl font-bold text-white tracking-tight">Ideal Client Profile (ICP) Agent</h3>
+                    </div>
+                    <div class="bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest">
+                        Analyzing Market Signals
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 block">Identify Growth Opportunity</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button onclick="runICP('manufacturing-ai')" class="p-4 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 font-bold hover:border-indigo-500 transition-all text-left">
+                            Manufacturing + AI
+                        </button>
+                        <button onclick="runICP('finance-security')" class="p-4 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 font-bold hover:border-indigo-500 transition-all text-left">
+                            FinTech + Quantum Security
+                        </button>
+                    </div>
+                </div>
+
+                <div id="icp-result" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl p-6">
+                        <h4 class="text-xs font-bold text-slate-500 uppercase mb-4 tracking-widest">Detected Market Signals</h4>
+                        <div id="icp-signals" class="space-y-3"></div>
+                    </div>
+
+                    <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 relative overflow-hidden">
+                        <div class="relative z-10 space-y-6">
+                            <div>
+                                <h2 id="icp-title" class="text-2xl font-bold text-white mb-1"></h2>
+                                <span class="text-indigo-400 text-[10px] font-bold uppercase tracking-widest">Target ICP Definition</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">
+                                    <p class="text-[9px] text-slate-500 font-bold uppercase">Industry</p>
+                                    <p id="icp-industry" class="text-slate-200 text-xs font-medium"></p>
+                                </div>
+                                <div class="p-3 bg-slate-950 rounded-lg border border-slate-800">
+                                    <p class="text-[9px] text-slate-500 font-bold uppercase">Tech Stack</p>
+                                    <p id="icp-tech" class="text-slate-200 text-xs font-medium"></p>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-indigo-600/10 border border-indigo-500/20 rounded-xl">
+                                <h5 class="text-indigo-400 text-[10px] font-bold uppercase mb-1">Portfolio Strategy</h5>
+                                <p id="icp-strategy" class="text-white text-sm font-medium leading-relaxed"></p>
+                            </div>
+                        </div>
+                        <div class="absolute top-0 right-0 p-4 opacity-10">
+                            <i data-lucide="target" class="w-24 h-24 text-white"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+    }
     
     lucide.createIcons();
 }
@@ -545,6 +629,27 @@ function runReporting(campaignId) {
     lucide.createIcons();
 }
 
+function runICP(key) {
+    const data = icpDB[key];
+    const resultArea = document.getElementById('icp-result');
+    
+    // Signals
+    document.getElementById('icp-signals').innerHTML = data.signals.map(s => `
+        <div class="flex items-center gap-3 p-3 bg-slate-900/50 rounded-lg border border-slate-800">
+            <i data-lucide="activity" class="w-3 h-3 text-indigo-500"></i>
+            <span class="text-xs text-slate-300 font-mono">${s}</span>
+        </div>
+    `).join('');
+
+    // Profile
+    document.getElementById('icp-title').innerText = data.title;
+    document.getElementById('icp-industry').innerText = data.attributes.industry;
+    document.getElementById('icp-tech').innerText = data.attributes.techStack;
+    document.getElementById('icp-strategy').innerText = data.strategy;
+
+    resultArea.classList.remove('hidden');
+    lucide.createIcons();
+}
 
 function copyLine(text, btn) {
     navigator.clipboard.writeText(text);
@@ -569,6 +674,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
