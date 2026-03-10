@@ -1,4 +1,5 @@
-var GOOGLE_AI_KEY = 'GEMINI_API_KEY_PLACEHOLDER';
+// 1. GLOBAL SESSION STATE
+let SESSION_AI_KEY = null;
 let AI_ENABLED = false;
 
 // 1. THE GOVERNANCE DICTIONARY
@@ -248,7 +249,55 @@ function init() {
     }
     if (window.lucide) lucide.createIcons();
 }
-window.onload = init;
+
+// 2. THE AI IGNITION SYSTEM
+async function toggleUniversalAI(checkbox) {
+    const container = document.getElementById('ai-status-container');
+    const dot = document.getElementById('ai-glow-dot');
+    const icon = document.getElementById('universal-ai-icon');
+
+    if (checkbox.checked) {
+        const key = prompt("Enter WWT Agentic Master Key to enable Live AI Mode:");
+        if (key && key.trim().length > 20) {
+            SESSION_AI_KEY = key;
+            // Visual Power-Up
+            if(container) container.classList.replace('border-slate-700', 'border-blue-500/50');
+            if(dot) {
+                dot.classList.replace('bg-slate-600', 'bg-blue-400');
+                dot.classList.add('animate-pulse');
+            }
+            console.log("AI ENGINE: ONLINE");
+        } else {
+            checkbox.checked = false;
+            alert("Valid API Key required for Live Mode.");
+        }
+    } else {
+        SESSION_AI_KEY = null;
+        if(container) container.classList.replace('border-blue-500/50', 'border-slate-700');
+        if(dot) {
+            dot.classList.replace('bg-blue-400', 'bg-slate-600');
+            dot.classList.remove('animate-pulse');
+        }
+        console.log("AI ENGINE: DEMO MODE");
+    }
+}
+
+// UNIVERSAL CALLER (Used by all agents)
+async function callGemini(prompt) {
+    if (!SESSION_AI_KEY) return null; // If toggle is off, return null to use demo data
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${SESSION_AI_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+    } catch (e) {
+        console.error("AI Link Failed:", e);
+        return null;
+    }
+}
 
 
 // Call init when window loads
@@ -1114,6 +1163,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
