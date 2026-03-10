@@ -845,7 +845,6 @@ function govern(input, fallback) {
 }
 
 async function processUTM() {
-async function processUTM() {
     const rawUrl = document.getElementById('utm-url').value || "https://wwt.com";
     const rawSrc = document.getElementById('utm-src').value || "direct";
     const rawMed = document.getElementById('utm-med').value || "none";
@@ -1162,6 +1161,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
