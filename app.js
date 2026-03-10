@@ -124,34 +124,22 @@ const seoIntentDB = {
     }
 };
 
-const performanceDB = {
+const reportingDB = {
     "q1-ai-launch": {
-        name: "Q1 Global AI Launch",
-        spend: 125000,
-        metrics: {
-            impressions: "1.2M",
-            clicks: "45K",
-            mqls: 850,
-            sqls: 120,
-            pipeline: 4200000,
-            revenue: 1100000
-        },
-        insight: "High efficiency in the 'Consideration' phase. 14% MQL-to-SQL conversion is 4% above benchmark.",
-        status: "High Performance"
+        spend: "$450,000",
+        mqls: "1,240",
+        pipeline: "$3.8M",
+        roi: "8.4x",
+        status: "High Performance",
+        insight: "The Q1 Global AI Launch is significantly outperforming benchmarks in the EMEA region, primarily driven by the 'Sovereign Cloud' webinar series which maintained a 42% attendance-to-MQL conversion rate."
     },
     "cyber-range-promo": {
-        name: "Cyber Range: Hands-on Demo",
-        spend: 85000,
-        metrics: {
-            impressions: "850K",
-            clicks: "12K",
-            mqls: 310,
-            sqls: 95,
-            pipeline: 2800000,
-            revenue: 650000
-        },
-        insight: "Lower top-of-funnel volume, but extremely high SQL quality. Leads from this campaign close 20% faster.",
-        status: "High Quality"
+        spend: "$125,000",
+        mqls: "410",
+        pipeline: "$1.2M",
+        roi: "9.6x",
+        status: "Optimal Efficiency",
+        insight: "Cyber Range promotions are seeing lower volume but significantly higher intent. 1 in 4 MQLs from this campaign are converting to SQLs within 14 days, the fastest velocity in the current portfolio."
     }
 };
 
@@ -1494,60 +1482,52 @@ async function runReadout() {
     if (window.lucide) lucide.createIcons();
 }
 
-function runReporting() {
-    // 1. SELECTOR & TARGETS
-    const resultArea = document.getElementById('readout-result');
-    const metricsContainer = document.getElementById('readout-metrics');
+async function runReporting(key) {
+    // 1. DYNAMIC KEY LOGIC
+    const activeKey = key || "q1-ai-launch";
+    const data = reportingDB[activeKey];
     
-    console.log("🚀 Reporting Module: Initializing High-Level Synthesis...");
+    if (!data) return console.error("Reporting key not found:", activeKey);
 
-    // FIX: Ensure the parent container is actually visible! 
-    // If you click Performance before Weekly Readout, it was staying hidden.
-    if (resultArea) {
-        resultArea.classList.remove('hidden');
-    }
+    const resultArea = document.getElementById('report-result');
+    
+    console.log(`🚀 Reporting Module: Synthesizing ${activeKey}...`);
 
-    // 2. RENDER BASELINE REPORT
-    const reportingHTML = `
-        <div id="ai-performance-report" class="mt-6 p-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 animate-in fade-in zoom-in duration-500">
-            <div class="flex items-center justify-between mb-4">
-                <h5 class="text-indigo-400 font-black text-[10px] uppercase tracking-[0.3em]">H1 Performance Synthesis</h5>
-                <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[8px] font-bold">READY FOR EXPORT</span>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
-                    <p class="text-slate-500 text-[10px] uppercase font-bold mb-1">Total Pipeline Influenced</p>
-                    <h6 class="text-white text-xl font-black">$14.2M</h6>
-                </div>
-                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
-                    <p class="text-slate-500 text-[10px] uppercase font-bold mb-1">ATC Conversion Lift</p>
-                    <h6 class="text-emerald-400 text-xl font-black">+22.4%</h6>
-                </div>
-            </div>
+    // 2. POPULATE BASELINE (Immediate & Colorful)
+    document.getElementById('rep-spend').innerText = data.spend;
+    document.getElementById('rep-mql').innerText = data.mqls;
+    document.getElementById('rep-pipe').innerText = data.pipeline;
+    document.getElementById('rep-roi').innerText = data.roi;
+    document.getElementById('rep-status').innerText = data.status;
+    document.getElementById('rep-insight').innerText = data.insight;
 
-            <p class="text-slate-400 text-xs leading-relaxed italic border-l-2 border-indigo-500 pl-4">
-                "Reporting suggests a strong correlation between Edge Computing proving grounds and high-velocity Healthcare deals."
-            </p>
-        </div>
-    `;
+    // Reveal the hidden results
+    resultArea.classList.remove('hidden');
 
-    // 3. SMART INJECTION
-    // Avoid double-posting if they click the button twice
-    const existingReport = document.getElementById('ai-performance-report');
-    if (existingReport) existingReport.remove();
-
-    if (metricsContainer) {
-        metricsContainer.insertAdjacentHTML('afterend', reportingHTML);
-    } else if (resultArea) {
-        // Fallback: if metricsContainer isn't there, just dump it in the result area
-        resultArea.innerHTML += reportingHTML;
-    }
-
-    // 4. AI NARRATIVE (Optional)
+    // 3. AI ENHANCEMENT (Optional Layer)
     if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
-        console.log("✨ Reporting: Applying AI Narrative Polish...");
-        // This is where you'd callGemini to update the italic text above
+        // Find the button to show the loading state
+        const btn = document.querySelector(`button[onclick*="${activeKey}"]`);
+        const originalBtn = btn ? btn.innerHTML : null;
+        if (btn) btn.innerHTML = `<i data-lucide="sparkles" class="w-3 h-3 animate-spin"></i> Analyzing...`;
+
+        try {
+            const prompt = `Analyze this campaign performance: ${JSON.stringify(data)}. 
+            Provide a 1-sentence executive "Power Insight" that sounds like a senior CMO strategy.`;
+            
+            // Using the gemini-2.0-flash fix we discussed
+            const aiResponse = await callGemini(prompt);
+            
+            if (aiResponse) {
+                document.getElementById('rep-insight').innerHTML = `
+                    <span class="text-blue-400 font-bold block text-[10px] mb-2">✨ AI EXECUTIVE SUMMARY:</span>
+                    ${aiResponse.trim()}
+                `;
+            }
+        } catch (e) {
+            console.warn("Reporting AI Fallback: Using database insights.");
+        }
+        if (btn) btn.innerHTML = originalBtn;
     }
 
     if (window.lucide) lucide.createIcons();
@@ -1572,6 +1552,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
