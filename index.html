@@ -2,28 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="config.js"></script>
-    <script src="app.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WWT | Marketing Agentic Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; }
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 1rem; }
         
-        /* Grid Brute Force */
         #agent-grid {
             display: grid !important;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
             gap: 1rem !important;
-            min-height: 100px;
         }
         @media (min-width: 768px) { #agent-grid { grid-template-columns: repeat(5, 1fr) !important; } }
 
-        /* Toggle Switch */
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #334155; transition: .4s; border-radius: 20px; }
@@ -39,7 +32,9 @@
                 <h1 class="text-3xl font-bold text-white tracking-tight">WWT <span class="text-blue-500 font-light">Marketing Ops</span></h1>
                 <p class="text-slate-400">Agentic Proving Ground v2.0</p>
             </div>
-            <div class="flex items-center gap-4 bg-slate-800/50 p-2 px-4 rounded-2xl border border-slate-700 transition-all" id="ai-status-container">
+            
+            <div id="ai-status-container" class="flex items-center gap-4 bg-slate-800/50 p-2 px-4 rounded-2xl border border-slate-700 transition-all">
+                <i data-lucide="sparkles" id="universal-ai-icon" class="w-4 h-4 text-slate-500 transition-colors"></i>
                 <div id="ai-glow-dot" class="w-2 h-2 rounded-full bg-slate-600 transition-all duration-500"></div>
                 <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">AI Mode</span>
                 <label class="switch">
@@ -66,13 +61,8 @@
             <div id="agent-grid"></div>
         </div>
     </div>
-    <script src="env.js"></script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="app.js"></script>
 </body>
 </html>
-
-
-
-
-
-
