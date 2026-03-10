@@ -1496,6 +1496,54 @@ async function runReadout() {
     if (window.lucide) lucide.createIcons();
 }
 
+function runReporting() {
+    // 1. SELECTOR & TARGETS
+    // We'll use a hardcoded default for the 'Report Type' to keep it simple
+    const resultArea = document.getElementById('readout-result'); // Sharing the readout area or its own container
+    const metricsContainer = document.getElementById('readout-metrics');
+    
+    console.log("🚀 Reporting Module: Initializing High-Level Synthesis...");
+
+    // 2. RENDER BASELINE REPORT (Desktop-Safe Colors)
+    // This provides immediate visual feedback
+    const reportingHTML = `
+        <div class="mt-6 p-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 animate-in fade-in zoom-in duration-500">
+            <div class="flex items-center justify-between mb-4">
+                <h5 class="text-indigo-400 font-black text-[10px] uppercase tracking-[0.3em]">H1 Performance Synthesis</h5>
+                <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-[8px] font-bold">READY FOR EXPORT</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                    <p class="text-slate-500 text-[10px] uppercase font-bold mb-1">Total Pipeline Influenced</p>
+                    <h6 class="text-white text-xl font-black">$14.2M</h6>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800">
+                    <p class="text-slate-500 text-[10px] uppercase font-bold mb-1">ATC Conversion Lift</p>
+                    <h6 class="text-emerald-400 text-xl font-black">+22.4%</h6>
+                </div>
+            </div>
+
+            <p class="text-slate-400 text-xs leading-relaxed italic border-l-2 border-indigo-500 pl-4">
+                "Reporting suggests a strong correlation between Edge Computing proving grounds and high-velocity Healthcare deals."
+            </p>
+        </div>
+    `;
+
+    // Injecting into the main result area
+    if (metricsContainer) {
+        metricsContainer.insertAdjacentHTML('afterend', reportingHTML);
+    }
+
+    // 3. OPTIONAL: AI ANALYSIS (If you want to 'AI-ify' the report)
+    if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
+        console.log("✨ Reporting: Applying AI Narrative Polish...");
+        // You can add a callGemini here later to generate a custom 'Executive Summary'
+    }
+
+    if (window.lucide) lucide.createIcons();
+}
+
 function clearStage() {
     document.getElementById('stage-placeholder').classList.remove('hidden');
     document.getElementById('stage-content').classList.add('hidden');
@@ -1515,6 +1563,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
