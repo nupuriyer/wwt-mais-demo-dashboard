@@ -1162,21 +1162,13 @@ function copyLine(text, btn) {
     setTimeout(() => { btn.innerHTML = original; lucide.createIcons(); }, 2000);
 }
 
-function toggleUniversalAI(el) {
-    AI_ENABLED = el.checked;
-    const utmBtn = document.getElementById('utm-btn');
-    if (utmBtn) {
-        utmBtn.className = `w-full p-4 rounded-xl font-bold text-white transition-all ${AI_ENABLED ? 'bg-blue-600 shadow-lg shadow-blue-900/20' : 'bg-slate-800'}`;
-        utmBtn.innerText = AI_ENABLED ? "Govern with Gemini" : "Generate Standard Link";
-    }
-}
-
 function clearStage() {
     document.getElementById('stage-content').classList.add('hidden');
     document.getElementById('stage-placeholder').classList.remove('hidden');
 }
 
 window.onload = init;
+
 
 
 
