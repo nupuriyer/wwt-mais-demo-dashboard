@@ -1,7 +1,22 @@
 var GOOGLE_AI_KEY = 'GEMINI_API_KEY_PLACEHOLDER';
 let AI_ENABLED = false;
 
-// 1. NINE AGENTS DEFINITION
+// 1. DUMMY DATA FOR GOVERNANCE DEMO
+const utmDemoCases = [
+    { url: "https://wwt.com/atc", src: "LinkedIn", med: "Paid_Social", camp: "ATC Promo 2026", fixedSrc: "linkedin", fixedMed: "social", fixedCamp: "atc-promo-2026" },
+    { url: "https://wwt.com/labs", src: "FACEBOOK", med: "Email_Newsletter", camp: "Labs_Update", fixedSrc: "facebook", fixedMed: "email", fixedCamp: "labs-update" },
+    { url: "https://wwt.com/cloud", src: "Google & Bing", med: "Search-Ads", camp: "Cloud_Migration", fixedSrc: "google-bing", fixedMed: "search", fixedCamp: "cloud-migration" },
+    { url: "https://wwt.com/security", src: "LNKD-App", med: "Post", camp: "Security_Brief_2.0", fixedSrc: "linkedin", fixedMed: "social", fixedCamp: "security-brief-v2" },
+    { url: "https://wwt.com/ai", src: "Twitter", med: "Organic_Share", camp: "AI_Strategy_Final", fixedSrc: "twitter", fixedMed: "social", fixedCamp: "ai-strategy-final" },
+    { url: "https://wwt.com/data", src: "newsletter_march", med: "ClickThrough", camp: "Data_Insights", fixedSrc: "newsletter", fixedMed: "email", fixedCamp: "data-insights" },
+    { url: "https://wwt.com/edge", src: "Internal_Referral", med: "Banner_Ads", camp: "Edge_Compute", fixedSrc: "internal", fixedMed: "display", fixedCamp: "edge-compute" },
+    { url: "https://wwt.com/network", src: "Partner Portal", med: "Web_Referral", camp: "Network_Scale", fixedSrc: "partner", fixedMed: "referral", fixedCamp: "network-scale" },
+    { url: "https://wwt.com/storage", src: "Event_QR", med: "Physical_Print", camp: "Storage_Summit", fixedSrc: "event", fixedMed: "qr-code", fixedCamp: "storage-summit" },
+    { url: "https://wwt.com/compute", src: "YouTube_Pre-Roll", med: "Video_Ad", camp: "Compute_Efficiency", fixedSrc: "youtube", fixedMed: "video", fixedCamp: "compute-efficiency" }
+];
+let demoIndex = 0;
+
+// 2. NINE AGENTS DEFINITION
 const agents = [
     { id: 'utm', name: 'UTM Builder', cat: 'Digital', icon: 'link' },
     { id: 'intel', name: 'Competitor Intel', cat: 'Strategy', icon: 'shield' },
@@ -14,7 +29,7 @@ const agents = [
     { id: 'brand', name: 'Brand Guide', cat: 'Creative', icon: 'palette' }
 ];
 
-// 2. INITIALIZATION
+// 3. INITIALIZATION
 function init() {
     const grid = document.getElementById('agent-grid');
     if (!grid) return;
@@ -29,14 +44,13 @@ function init() {
     lucide.createIcons();
 }
 
-// 3. UI LOGIC
+// 4. UI LOGIC
 function toggleUniversalAI(el) {
     AI_ENABLED = el.checked;
     const icon = document.getElementById('universal-ai-icon');
     icon?.classList.toggle('text-blue-400', AI_ENABLED);
     icon?.classList.toggle('animate-pulse', AI_ENABLED);
     
-    // Refresh UTM button if it's currently open
     const utmBtn = document.getElementById('utm-btn');
     if (utmBtn) {
         utmBtn.className = `w-full p-4 rounded-xl font-bold text-white transition-all ${AI_ENABLED ? 'bg-blue-600' : 'bg-slate-700'}`;
@@ -62,8 +76,12 @@ function launchAgent(id) {
                 <div class="space-y-4">
                     <input id="utm-url" type="text" placeholder="https://wwt.com/atc" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl text-white outline-none focus:border-blue-500">
                     <div class="grid grid-cols-2 gap-4">
-                        <input id="utm-src" type="text" placeholder="Source (e.g. LinkedIn)" class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-white outline-none">
-                        <input id="utm-med" type="text" placeholder="Medium (e.g. Social)" class="bg-slate-800 border border-slate-700 p-4 rounded-xl text-white outline-none">
+                        <div class="relative">
+                            <input id="utm-src" type="text" placeholder="Source (e.g. LinkedIn)" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl text-white outline-none transition-all">
+                        </div>
+                        <div class="relative">
+                            <input id="utm-med" type="text" placeholder="Medium (e.g. Social)" class="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl text-white outline-none transition-all">
+                        </div>
                     </div>
                 </div>
                 <button onclick="processUTM()" id="utm-btn" class="w-full p-4 rounded-xl font-bold text-white transition-all ${AI_ENABLED ? 'bg-blue-600' : 'bg-slate-700'}">
@@ -88,34 +106,38 @@ function launchAgent(id) {
     lucide.createIcons();
 }
 
-// 4. THE CORE UTM LOGIC
+// 5. THE CORE UTM LOGIC (WITH GOVERNANCE DEMO FALLBACK)
 async function processUTM() {
-    const url = document.getElementById('utm-url').value || "https://wwt.com";
+    const urlInput = document.getElementById('utm-url');
+    const srcInput = document.getElementById('utm-src');
+    const medInput = document.getElementById('utm-med');
     const box = document.getElementById('utm-res-box');
     const text = document.getElementById('utm-result');
+    
+    const url = urlInput.value || "https://wwt.com";
     box.classList.remove('hidden');
 
     if (!AI_ENABLED) {
         // --- MANUAL MODE ---
-        const src = (document.getElementById('utm-src').value || "manual").toLowerCase();
-        const med = (document.getElementById('utm-med').value || "direct").toLowerCase();
+        const src = (srcInput.value || "manual").toLowerCase().replace(/\s+/g, '-');
+        const med = (medInput.value || "direct").toLowerCase().replace(/\s+/g, '-');
         text.innerText = `${url}?utm_source=${src}&utm_medium=${med}&utm_campaign=standard`;
     } else {
         // --- AI MODE ---
         text.innerHTML = "<span class='animate-pulse text-blue-400 font-bold'>Gemini is strategizing...</span>";
         
+        const activeKey = window.API_KEY_INJECTED || window.GOOGLE_AI_KEY || GOOGLE_AI_KEY;
+
+        // CHECK IF WE RUN REAL AI OR DUMMY DEMO
+        if (!activeKey || activeKey.includes('PLACEHOLDER') || activeKey.length < 10) {
+            console.warn("API Key not found. Running Governance Demo Mode.");
+            runGovernanceDemo(urlInput, srcInput, medInput, text);
+            return;
+        }
+
         try {
-            // 1. DYNAMIC KEY CHECK: Look everywhere for the key right when the button is clicked
-            const activeKey = window.API_KEY_INJECTED || window.GOOGLE_AI_KEY || GOOGLE_AI_KEY;
-
-            if (!activeKey || activeKey.includes('PLACEHOLDER') || activeKey.length < 10) {
-                throw new Error("API Key Missing. Check GitHub Secrets for GEMSTONE_DIAMOND.");
-            }
-
             const modelId = "gemini-2.0-flash";
             const prompt = `Act as a WWT Marketing specialist. For the URL ${url}, suggest a professional lowercase hyphenated campaign name, source, and medium. Return ONLY a raw JSON object with these keys: campaign, source, medium.`;
-            
-            // 2. CACHE-BUSTED API URL
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${activeKey}&cb=${Date.now()}`;
 
             const response = await fetch(apiUrl, {
@@ -125,26 +147,56 @@ async function processUTM() {
             });
 
             const data = await response.json();
-            
-            if (data.error) {
-                throw new Error(data.error.message);
-            }
+            if (data.error) throw new Error(data.error.message);
 
-            // 3. ROBUST DATA PARSING
             const rawText = data.candidates[0].content.parts[0].text;
             const cleanJson = JSON.parse(rawText.replace(/```json|```/g, "").trim());
             
-            document.getElementById('utm-src').value = cleanJson.source;
-            document.getElementById('utm-med').value = cleanJson.medium;
+            applyAIFix(srcInput, medInput, cleanJson.source, cleanJson.medium);
             text.innerText = `${url}?utm_source=${cleanJson.source}&utm_medium=${cleanJson.medium}&utm_campaign=${cleanJson.campaign}`;
             
         } catch (e) {
             console.error("UTM AI Error:", e);
-            // Show a helpful error message in the UI
             text.innerHTML = `<span class="text-red-400 text-[10px]">AI Offline: ${e.message}</span>`;
         }
     }
     lucide.createIcons();
+}
+
+// 6. GOVERNANCE DEMO HELPER
+function runGovernanceDemo(urlEl, srcEl, medEl, resultEl) {
+    const data = utmDemoCases[demoIndex];
+    
+    // Simulate manual messy input first
+    urlEl.value = data.url;
+    srcEl.value = data.src;
+    medEl.value = data.med;
+    srcEl.style.color = "#f87171"; // red-400 for 'messy'
+    medEl.style.color = "#f87171";
+
+    setTimeout(() => {
+        applyAIFix(srcEl, medEl, data.fixedSrc, data.fixedMed);
+        resultEl.innerHTML = `
+            <div class="flex flex-col gap-1">
+                <span class="text-green-400 text-[8px] font-bold">✓ GOVERNANCE: AI CORRECTED INCONSISTENCIES</span>
+                <span class="text-slate-200">${data.url}?utm_source=${data.fixedSrc}&utm_medium=${data.fixedMed}&utm_campaign=${data.fixedCamp}</span>
+            </div>
+        `;
+        demoIndex = (demoIndex + 1) % utmDemoCases.length;
+    }, 1500);
+}
+
+function applyAIFix(srcEl, medEl, s, m) {
+    srcEl.value = s;
+    medEl.value = m;
+    srcEl.style.color = "#60a5fa"; // blue-400 for 'fixed'
+    medEl.style.color = "#60a5fa";
+    srcEl.classList.add('ring-2', 'ring-blue-500/50');
+    medEl.classList.add('ring-2', 'ring-blue-500/50');
+    setTimeout(() => {
+        srcEl.classList.remove('ring-2', 'ring-blue-500/50');
+        medEl.classList.remove('ring-2', 'ring-blue-500/50');
+    }, 2000);
 }
 
 function copyUTM() {
@@ -160,4 +212,3 @@ function clearStage() {
 }
 
 window.onload = init;
-
