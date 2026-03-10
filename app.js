@@ -134,17 +134,31 @@ const revenueDB = {
 
 const emailDraftDB = {
     "sovereign-cloud": {
-        pageTitle: "Data Sovereignty & Sovereign Cloud Solutions",
+        pageTitle: "Data Sovereignty & Sovereign Cloud",
         url: "https://www.wwt.com/sovereign-cloud",
-        keyThemes: ["Regulatory Compliance", "Data Residency", "National Security", "Multi-Cloud Strategy"],
-        targetAudience: "CISO / IT Infrastructure Director",
         draft: {
-            subject: "Ensuring Data Sovereignty in a Multi-Cloud World",
-            preview: "How WWT helps you navigate residency requirements without sacrificing cloud agility.",
-            body: "Hi [First_Name],\n\nAs regulatory landscapes shift, maintaining control over your data residency has moved from a 'nice-to-have' to a mission-critical priority. We just published a deep dive on how WWT is partnering with VMware and AWS to deliver Sovereign Cloud solutions that keep your data compliant and your infrastructure agile.\n\nWould you like to see how we've mapped these sovereignty requirements in the ATC?\n\nBest,\n[Your Name]"
+            subject: "Data Sovereignty: Navigating the Multi-Cloud Regulatory Landscape",
+            body: "Hi [First_Name],\n\nAs regulatory landscapes shift, maintaining control over your data residency is now mission-critical. We just published a deep dive on how WWT delivers Sovereign Cloud solutions that keep your data compliant.\n\nWould you like to see how we've mapped these requirements in the ATC?\n\nBest,\n[Your Name]"
+        }
+    },
+    "ai-proving-ground": {
+        pageTitle: "AI Proving Ground: Accelerating AI Outcomes",
+        url: "https://www.wwt.com/ai-proving-ground",
+        draft: {
+            subject: "Move from AI Hype to AI Reality",
+            body: "Hi [First_Name],\n\nMost AI projects stall at the proof-of-concept stage. WWT’s AI Proving Ground is designed to break that cycle by providing the infrastructure and expertise to validate your LLM use cases at scale.\n\nReady to see the lab in action?\n\nBest,\n[Your Name]"
+        }
+    },
+    "cyber-range": {
+        pageTitle: "WWT Cyber Range: Advanced Security Simulation",
+        url: "https://www.wwt.com/cyber-range",
+        draft: {
+            subject: "Test Your Defenses in the WWT Cyber Range",
+            body: "Hi [First_Name],\n\nYou shouldn't find the gaps in your security during a breach. The WWT Cyber Range allows your team to simulate real-world attacks in a safe, sandboxed environment.\n\nCheck out our latest threat-hunting scenarios here.\n\nBest,\n[Your Name]"
         }
     }
 };
+
 
 const utmHistory = [
     { raw: "LinkedIn / Paid Search", fixed: "linkedin / paid-search", url: "https://wwt.com?utm_source=linkedin&utm_medium=paid-search", changeLog: "Standardized & Hyphenated" },
@@ -540,7 +554,7 @@ function launchAgent(id) {
             </div>`;
     }
 
-        if (id === 'email') {
+            if (id === 'email') {
         content.innerHTML = `
             <div class="max-w-4xl mx-auto space-y-6">
                 <div class="flex items-center justify-between px-2">
@@ -551,10 +565,17 @@ function launchAgent(id) {
                 </div>
 
                 <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl space-y-4">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-1">Source Platform URL</label>
+                    <div class="flex items-center justify-between px-1">
+                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">WWT Platform: Latest Published Pages</label>
+                        <span class="text-[9px] text-emerald-500 font-bold animate-pulse">● LIVE SYNC</span>
+                    </div>
                     <div class="flex gap-3">
-                        <input type="text" value="https://www.wwt.com/sovereign-cloud" readonly class="flex-1 bg-slate-950 border border-slate-800 p-3 rounded-xl text-blue-400 font-mono text-xs outline-none">
-                        <button onclick="runEmailDraft('sovereign-cloud')" class="px-6 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all flex items-center gap-2">
+                        <select id="cms-page-selector" class="flex-1 bg-slate-950 border border-slate-800 p-3 rounded-xl text-blue-400 font-medium text-sm outline-none focus:border-blue-500 appearance-none">
+                            <option value="sovereign-cloud">Sovereign Cloud Solutions</option>
+                            <option value="ai-proving-ground">AI Proving Ground</option>
+                            <option value="cyber-range">Cyber Range Simulation</option>
+                        </select>
+                        <button onclick="runEmailDraft()" class="px-6 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all flex items-center gap-2">
                             <i data-lucide="wand-2" class="w-4 h-4"></i> Draft Special Send
                         </button>
                     </div>
@@ -563,29 +584,32 @@ function launchAgent(id) {
                 <div id="email-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
                         <div class="bg-slate-900 px-6 py-3 border-b border-slate-800 flex justify-between items-center">
-                            <span class="text-[10px] font-bold text-slate-500 uppercase">Draft: Sovereign Cloud Special Send</span>
-                            <div class="flex gap-2">
-                                <div class="w-2 h-2 rounded-full bg-red-500/20"></div>
-                                <div class="w-2 h-2 rounded-full bg-yellow-500/20"></div>
-                                <div class="w-2 h-2 rounded-full bg-green-500/20"></div>
-                            </div>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Agent Draft Output</span>
+                            <div id="edit-indicator" class="hidden text-[9px] font-bold text-orange-400 uppercase tracking-widest animate-pulse">Editing Mode Active</div>
                         </div>
                         <div class="p-8 space-y-4 font-serif text-slate-300">
-                            <p class="text-sm font-sans text-slate-500"><b class="text-slate-400 font-bold uppercase text-[10px]">Subject:</b> <span id="eml-subject"></span></p>
+                            <div class="flex items-center gap-2">
+                                <b class="text-slate-500 font-bold uppercase text-[10px] font-sans">Subject:</b>
+                                <span id="eml-subject" contenteditable="false" class="text-sm font-sans text-white focus:outline-none focus:bg-slate-900 px-1 rounded"></span>
+                            </div>
                             <hr class="border-slate-800">
-                            <div id="eml-body" class="whitespace-pre-wrap leading-relaxed italic text-lg"></div>
+                            <div id="eml-body" contenteditable="false" class="whitespace-pre-wrap leading-relaxed italic text-lg focus:outline-none focus:bg-slate-900 p-2 rounded transition-colors"></div>
                         </div>
-                        <div class="bg-slate-900/50 p-4 border-t border-slate-800 flex justify-end gap-3">
-                             <button class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">Edit Content</button>
-                             <button onclick="simulatePush()" id="push-btn" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2">
-                                <i data-lucide="share-2" class="w-3 h-3"></i> Push to Marketo
+                        <div class="bg-slate-900/50 p-4 border-t border-slate-800 flex justify-between items-center px-6">
+                             <button onclick="toggleEmailEdit()" id="edit-toggle-btn" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
+                                <i data-lucide="edit-3" class="w-3 h-3"></i> <span>Edit Content</span>
                              </button>
+                             <div class="flex gap-3">
+                                 <button onclick="simulatePush()" id="push-btn" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2">
+                                    <i data-lucide="share-2" class="w-3 h-3"></i> Push to Marketo
+                                 </button>
+                             </div>
                         </div>
                     </div>
                 </div>
             </div>`;
-        }
-    
+    }
+
     lucide.createIcons();
 }
 
@@ -790,7 +814,9 @@ function runRevenue(key) {
     if (window.lucide) lucide.createIcons();
 }
 
-function runEmailDraft(key) {
+function runEmailDraft() {
+    const selector = document.getElementById('cms-page-selector');
+    const key = selector.value;
     const data = emailDraftDB[key];
     const resultArea = document.getElementById('email-result');
     
@@ -799,6 +825,31 @@ function runEmailDraft(key) {
 
     resultArea.classList.remove('hidden');
     if (window.lucide) lucide.createIcons();
+}
+
+function toggleEmailEdit() {
+    const body = document.getElementById('eml-body');
+    const subject = document.getElementById('eml-subject');
+    const indicator = document.getElementById('edit-indicator');
+    const btnSpan = document.querySelector('#edit-toggle-btn span');
+    const btnIcon = document.querySelector('#edit-toggle-btn i');
+
+    const isEditing = body.contentEditable === "true";
+
+    if (isEditing) {
+        body.contentEditable = "false";
+        subject.contentEditable = "false";
+        indicator.classList.add('hidden');
+        btnSpan.innerText = "Edit Content";
+        body.classList.remove('bg-slate-900', 'border', 'border-blue-500/30');
+    } else {
+        body.contentEditable = "true";
+        subject.contentEditable = "true";
+        indicator.classList.remove('hidden');
+        btnSpan.innerText = "Save Changes";
+        body.classList.add('bg-slate-900', 'border', 'border-blue-500/30');
+        body.focus();
+    }
 }
 
 function simulatePush() {
@@ -843,6 +894,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
