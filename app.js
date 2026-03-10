@@ -119,6 +119,34 @@ const icpDB = {
     }
 };
 
+const revenueDB = {
+    "global-bank-deal": {
+        account: "Global Fortune 500 Bank",
+        dealValue: "$2.4M",
+        cycleTime: "180 Days",
+        touches: [
+            { date: "Jan 12", event: "SEO: Quantum Security Search", impact: "High" },
+            { date: "Feb 05", event: "Email: CTO Strategy Briefing", impact: "Medium" },
+            { date: "Mar 01", event: "ATC: Private Cloud Workshop", impact: "Critical" },
+            { date: "Mar 15", event: "Sales: Opportunity Created", impact: "N/A" }
+        ],
+        insight: "The ATC Workshop was the 'Tipping Point.' 80% of closed-won deals in this sector attended a lab within 30 days of the deal closing.",
+        recommendation: "Increase budget for 'Cloud-First' ATC lab invites by 20% for Q3."
+    },
+    "retail-edge-expansion": {
+        account: "National Retail Chain",
+        dealValue: "$850K",
+        cycleTime: "95 Days",
+        touches: [
+            { date: "Feb 10", event: "LinkedIn: Edge Computing Ad", impact: "Medium" },
+            { date: "Feb 22", event: "Web: Downloaded Retail Whitepaper", impact: "High" },
+            { date: "Mar 10", event: "Webinar: Future of Retail AI", impact: "High" }
+        ],
+        insight: "Content-heavy journey. This account consumed 4+ pieces of thought leadership before engaging sales.",
+        recommendation: "Retarget similar 'Retail' personas with the 'AI Roadmap' whitepaper."
+    }
+};
+
 const utmHistory = [
     { raw: "LinkedIn / Paid Search", fixed: "linkedin / paid-search", url: "https://wwt.com?utm_source=linkedin&utm_medium=paid-search", changeLog: "Standardized & Hyphenated" },
     { raw: "FACEBOOK / Email_Newsletter", fixed: "facebook / email", url: "https://wwt.com?utm_source=facebook&utm_medium=email", changeLog: "Lowercased & Cleaned" },
@@ -130,10 +158,10 @@ const agents = [
     { id: 'intel', name: 'Competitor Intel', cat: 'Strategy', icon: 'shield' },
     { id: 'seo', name: 'SEO Search', cat: 'Growth', icon: 'search' },
     { id: 'reporting', name: 'Performance Agent', cat: 'Revenue', icon: 'bar-chart-3' },
-    { id: 'icp', name: 'ICP Agent', cat: 'Portfolio', icon: 'target' }, // Updated ID and Label
-    { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail' }
+    { id: 'icp', name: 'ICP Agent', cat: 'Portfolio', icon: 'target' },
+    { id: 'revenue', name: 'Revenue Intel', cat: 'Portfolio', icon: 'pie-chart' }, // New Slot
+    { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail' } // Kept for later!
 ];
-
 
 function init() {
     const grid = document.getElementById('agent-grid');
@@ -470,6 +498,56 @@ function launchAgent(id) {
                 </div>
             </div>`;
     }
+
+        if (id === 'revenue') {
+        content.innerHTML = `
+            <div class="max-w-6xl mx-auto space-y-6">
+                <div class="flex items-center justify-between px-2">
+                    <div class="flex items-center gap-4">
+                        <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                        <h3 class="text-xl font-bold text-white tracking-tight">Marketing-to-Revenue Intelligence</h3>
+                    </div>
+                    <div class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full">
+                        <i data-lucide="dollar-sign" class="w-3 h-3 text-emerald-500"></i>
+                        <span class="text-[9px] font-bold text-emerald-500 uppercase tracking-widest leading-none">Revenue Sync Active</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 block px-1">Select Closed-Won Account to Trace</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button onclick="runRevenue('global-bank-deal')" class="p-5 rounded-xl border border-slate-800 bg-slate-950 hover:border-emerald-500 transition-all text-left group">
+                            <h4 class="text-white font-bold group-hover:text-emerald-400">Global Fortune 500 Bank</h4>
+                            <p class="text-[10px] text-slate-500 uppercase mt-1 tracking-tight">$2.4M Deal Value • 180 Day Cycle</p>
+                        </button>
+                        <button onclick="runRevenue('retail-edge-expansion')" class="p-5 rounded-xl border border-slate-800 bg-slate-950 hover:border-emerald-500 transition-all text-left group">
+                            <h4 class="text-white font-bold group-hover:text-emerald-400">National Retail Chain</h4>
+                            <p class="text-[10px] text-slate-500 uppercase mt-1 tracking-tight">$850K Deal Value • 95 Day Cycle</p>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="rev-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-2xl p-6">
+                            <h4 class="text-[10px] font-bold text-slate-500 uppercase mb-6 tracking-[0.2em]">Multi-Touch Attribution Journey</h4>
+                            <div id="rev-timeline" class="space-y-4"></div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="bg-emerald-600 rounded-2xl p-6 shadow-xl shadow-emerald-900/20">
+                                <h5 class="text-emerald-100 text-[10px] font-black uppercase mb-4 tracking-widest">Revenue Attribution Insight</h5>
+                                <p id="rev-insight" class="text-white font-bold text-sm leading-relaxed"></p>
+                            </div>
+                            <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                                <h5 class="text-slate-500 text-[10px] font-bold uppercase mb-2">Portfolio Strategy: Next-Best Action</h5>
+                                <p id="rev-rec" class="text-slate-200 text-xs font-medium italic"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
     
     lucide.createIcons();
 }
@@ -674,6 +752,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
