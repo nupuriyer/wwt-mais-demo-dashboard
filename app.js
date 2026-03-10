@@ -282,17 +282,31 @@ async function toggleUniversalAI(checkbox) {
 
 // UNIVERSAL CALLER (Used by all agents)
 async function callGemini(prompt) {
-    if (!SESSION_AI_KEY) return null; // If toggle is off, return null to use demo data
+    if (!SESSION_AI_KEY) return null;
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${SESSION_AI_KEY}`, {
+        // Updated to v1 and gemini-1.5-flash (most compatible)
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${SESSION_AI_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
+        
         const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
+        
+        // Safety Check: If the API returns an error, log it and return null
+        if (data.error) {
+            console.error("Gemini API Error:", data.error.message);
+            return null;
+        }
+
+        // Check if the expected data structure exists
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+            return data.candidates[0].content.parts[0].text;
+        }
+        
+        return null;
     } catch (e) {
-        console.error("AI Link Failed:", e);
+        console.error("Network/AI Link Failed:", e);
         return null;
     }
 }
@@ -1161,6 +1175,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
