@@ -98,52 +98,37 @@ const icpDB = {
     "manufacturing-ai": {
         title: "Industrial AI Pioneers",
         signals: ["Increased NVIDIA H100 spend", "Hiring 'Head of Digital Twin'", "Recent $50M Series C"],
-        attributes: {
-            industry: "Advanced Manufacturing",
-            size: "1,000 - 5,000 Employees",
-            techStack: "NVIDIA, Azure, Ignition SCADA",
-            painPoint: "Bridge gap between OT (factory floor) and IT (cloud AI)."
-        },
-        strategy: "Focus on 'ATC Factory-in-a-Box' demo. Lead with security and low-latency edge compute."
+        attributes: { industry: "Manufacturing", techStack: "NVIDIA, Azure", painPoint: "OT/IT Gap" },
+        strategy: "Focus on 'ATC Factory-in-a-Box'. Lead with edge compute security."
     },
     "finance-security": {
         title: "Quantum-Ready Fintech",
-        signals: ["Updated SEC Cybersecurity disclosure", "Legacy mainframe migration", "High cloud-egress fees"],
-        attributes: {
-            industry: "Financial Services",
-            size: "10,000+ Employees",
-            techStack: "AWS, Palo Alto, IBM Z-Series",
-            painPoint: "Protecting data-in-motion against future quantum threats."
-        },
-        strategy: "Pitch 'Cyber Range' simulation for post-quantum crypto. Lead with compliance and risk-reduction."
+        signals: ["SEC Cyber disclosure update", "Mainframe migration", "High egress fees"],
+        attributes: { industry: "Financial Services", techStack: "AWS, Palo Alto", painPoint: "Quantum threats" },
+        strategy: "Pitch 'Cyber Range' simulations. Lead with compliance risk-reduction."
     }
 };
 
 const revenueDB = {
     "global-bank-deal": {
         account: "Global Fortune 500 Bank",
-        dealValue: "$2.4M",
-        cycleTime: "180 Days",
+        insight: "The ATC Workshop was the 'Tipping Point.' 80% of closed deals in this sector attended a lab within 30 days of closing.",
+        recommendation: "Increase budget for 'Cloud-First' ATC lab invites by 20% for Q3.",
         touches: [
             { date: "Jan 12", event: "SEO: Quantum Security Search", impact: "High" },
             { date: "Feb 05", event: "Email: CTO Strategy Briefing", impact: "Medium" },
-            { date: "Mar 01", event: "ATC: Private Cloud Workshop", impact: "Critical" },
-            { date: "Mar 15", event: "Sales: Opportunity Created", impact: "N/A" }
-        ],
-        insight: "The ATC Workshop was the 'Tipping Point.' 80% of closed-won deals in this sector attended a lab within 30 days of the deal closing.",
-        recommendation: "Increase budget for 'Cloud-First' ATC lab invites by 20% for Q3."
+            { date: "Mar 01", event: "ATC: Private Cloud Workshop", impact: "Critical" }
+        ]
     },
     "retail-edge-expansion": {
         account: "National Retail Chain",
-        dealValue: "$850K",
-        cycleTime: "95 Days",
+        insight: "Content-heavy journey. This account consumed 4+ pieces of thought leadership before engaging sales.",
+        recommendation: "Retarget similar 'Retail' personas with the 'AI Roadmap' whitepaper.",
         touches: [
             { date: "Feb 10", event: "LinkedIn: Edge Computing Ad", impact: "Medium" },
-            { date: "Feb 22", event: "Web: Downloaded Retail Whitepaper", impact: "High" },
+            { date: "Feb 22", event: "Web: Retail Whitepaper Download", impact: "High" },
             { date: "Mar 10", event: "Webinar: Future of Retail AI", impact: "High" }
-        ],
-        insight: "Content-heavy journey. This account consumed 4+ pieces of thought leadership before engaging sales.",
-        recommendation: "Retarget similar 'Retail' personas with the 'AI Roadmap' whitepaper."
+        ]
     }
 };
 
@@ -159,8 +144,8 @@ const agents = [
     { id: 'seo', name: 'SEO Search', cat: 'Growth', icon: 'search' },
     { id: 'reporting', name: 'Performance Agent', cat: 'Revenue', icon: 'bar-chart-3' },
     { id: 'icp', name: 'ICP Agent', cat: 'Portfolio', icon: 'target' },
-    { id: 'revenue', name: 'Revenue Intel', cat: 'Portfolio', icon: 'pie-chart' }, // New Slot
-    { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail' } // Kept for later!
+    { id: 'revenue', name: 'Revenue Intel', cat: 'Portfolio', icon: 'pie-chart' },
+    { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail' }
 ];
 
 function init() {
@@ -168,7 +153,7 @@ function init() {
     if (grid) {
         grid.innerHTML = agents.map(a => `
             <div class="agent-button card p-4 flex flex-col items-center justify-center text-center cursor-pointer group hover:bg-slate-800 transition-all border-slate-700 hover:border-blue-500" onclick="launchAgent('${a.id}')">
-                <div class="w-10 h-10 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all">
+                <div class="w-10 h-10 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
                     <i data-lucide="${a.icon}" class="w-5 h-5"></i>
                 </div>
                 <h4 class="text-[10px] font-bold text-slate-300 uppercase tracking-widest leading-tight">${a.name}</h4>
@@ -176,10 +161,10 @@ function init() {
             </div>
         `).join('');
     }
-    if (window.lucide) {
-        lucide.createIcons();
-    }
+    if (window.lucide) lucide.createIcons();
 }
+window.onload = init;
+
 
 // Call init when window loads
 window.onload = init;
@@ -499,7 +484,7 @@ function launchAgent(id) {
             </div>`;
     }
 
-        if (id === 'revenue') {
+            if (id === 'revenue') {
         content.innerHTML = `
             <div class="max-w-6xl mx-auto space-y-6">
                 <div class="flex items-center justify-between px-2">
@@ -507,48 +492,40 @@ function launchAgent(id) {
                         <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
                         <h3 class="text-xl font-bold text-white tracking-tight">Marketing-to-Revenue Intelligence</h3>
                     </div>
-                    <div class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-full">
-                        <i data-lucide="dollar-sign" class="w-3 h-3 text-emerald-500"></i>
-                        <span class="text-[9px] font-bold text-emerald-500 uppercase tracking-widest leading-none">Revenue Sync Active</span>
-                    </div>
                 </div>
 
-                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 block px-1">Select Closed-Won Account to Trace</label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <button onclick="runRevenue('global-bank-deal')" class="p-5 rounded-xl border border-slate-800 bg-slate-950 hover:border-emerald-500 transition-all text-left group">
-                            <h4 class="text-white font-bold group-hover:text-emerald-400">Global Fortune 500 Bank</h4>
-                            <p class="text-[10px] text-slate-500 uppercase mt-1 tracking-tight">$2.4M Deal Value • 180 Day Cycle</p>
-                        </button>
-                        <button onclick="runRevenue('retail-edge-expansion')" class="p-5 rounded-xl border border-slate-800 bg-slate-950 hover:border-emerald-500 transition-all text-left group">
-                            <h4 class="text-white font-bold group-hover:text-emerald-400">National Retail Chain</h4>
-                            <p class="text-[10px] text-slate-500 uppercase mt-1 tracking-tight">$850K Deal Value • 95 Day Cycle</p>
-                        </button>
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button onclick="runRevenue('global-bank-deal')" class="p-5 rounded-xl border border-slate-800 bg-slate-950 hover:border-emerald-500 transition-all text-left group">
+                        <h4 class="text-white font-bold group-hover:text-emerald-400 text-lg">Global Fortune 500 Bank</h4>
+                        <p class="text-[10px] text-slate-500 uppercase mt-1 tracking-tight">$2.4M Deal Value • 180 Day Cycle</p>
+                    </button>
+                    <button onclick="runRevenue('retail-edge-expansion')" class="p-5 rounded-xl border border-slate-800 bg-slate-950 hover:border-emerald-500 transition-all text-left group">
+                        <h4 class="text-white font-bold group-hover:text-emerald-400 text-lg">National Retail Chain</h4>
+                        <p class="text-[10px] text-slate-500 uppercase mt-1 tracking-tight">$850K Deal Value • 95 Day Cycle</p>
+                    </button>
                 </div>
 
-                <div id="rev-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div id="rev-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-2xl p-6">
-                            <h4 class="text-[10px] font-bold text-slate-500 uppercase mb-6 tracking-[0.2em]">Multi-Touch Attribution Journey</h4>
-                            <div id="rev-timeline" class="space-y-4"></div>
+                        <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-2xl p-8">
+                            <h4 class="text-[10px] font-bold text-slate-500 uppercase mb-8 tracking-[0.2em]">Multi-Touch Attribution Journey</h4>
+                            <div id="rev-timeline" class="space-y-6"></div>
                         </div>
-
                         <div class="space-y-4">
                             <div class="bg-emerald-600 rounded-2xl p-6 shadow-xl shadow-emerald-900/20">
-                                <h5 class="text-emerald-100 text-[10px] font-black uppercase mb-4 tracking-widest">Revenue Attribution Insight</h5>
+                                <h5 class="text-emerald-100 text-[10px] font-black uppercase mb-4 tracking-widest">AI Strategic Conclusion</h5>
                                 <p id="rev-insight" class="text-white font-bold text-sm leading-relaxed"></p>
                             </div>
                             <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
-                                <h5 class="text-slate-500 text-[10px] font-bold uppercase mb-2">Portfolio Strategy: Next-Best Action</h5>
+                                <h5 class="text-slate-500 text-[10px] font-bold uppercase mb-2">Next-Best Action</h5>
                                 <p id="rev-rec" class="text-slate-200 text-xs font-medium italic"></p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>`;
-        }
-    
+    }
+
     lucide.createIcons();
 }
 
@@ -729,6 +706,35 @@ function runICP(key) {
     lucide.createIcons();
 }
 
+function runRevenue(key) {
+    const data = revenueDB[key];
+    const resultArea = document.getElementById('rev-result');
+    
+    // Inject Timeline
+    document.getElementById('rev-timeline').innerHTML = data.touches.map((t, i) => `
+        <div class="flex items-start gap-4">
+            <div class="flex flex-col items-center">
+                <div class="w-8 h-8 rounded-full ${t.impact === 'Critical' ? 'bg-emerald-500' : 'bg-slate-800'} flex items-center justify-center text-[10px] font-bold text-white z-10">${i+1}</div>
+                ${i < data.touches.length - 1 ? '<div class="w-0.5 h-10 bg-slate-800"></div>' : ''}
+            </div>
+            <div class="flex-1 bg-slate-900/40 border border-slate-800 p-4 rounded-xl flex justify-between items-center">
+                <div><p class="text-[9px] text-slate-500 font-bold uppercase">${t.date}</p><p class="text-white text-sm font-bold">${t.event}</p></div>
+                <span class="text-[8px] font-black uppercase ${t.impact === 'Critical' ? 'text-emerald-400' : 'text-slate-500'}">${t.impact} Impact</span>
+            </div>
+        </div>
+    `).join('');
+
+    document.getElementById('rev-insight').innerText = data.insight;
+    document.getElementById('rev-rec').innerText = data.recommendation;
+    resultArea.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons();
+}
+
+function clearStage() {
+    document.getElementById('stage-placeholder').classList.remove('hidden');
+    document.getElementById('stage-content').classList.add('hidden');
+}
+
 function copyLine(text, btn) {
     navigator.clipboard.writeText(text);
     const original = btn.innerHTML;
@@ -752,6 +758,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
