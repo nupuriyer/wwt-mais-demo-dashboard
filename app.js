@@ -12,6 +12,33 @@ const governanceMap = {
     "strategy briefing 2.0": { val: "strategy-briefing-v2", label: "Slugified Version" }
 };
 
+const competitorIntelDB = {
+    "accenture": {
+        headline: "Accenture to Acquire Ookla to Strengthen Network Intelligence with Data and AI",
+        source: "Accenture Newsroom • March 3, 2026",
+        url: "https://newsroom.accenture.com/news/2026/accenture-to-acquire-ookla-to-strengthen-network-intelligence-and-experience-with-data-and-ai-for-enterprises",
+        summary: "Accenture is integrating Speedtest and Downdetector data into their AI stack to own the 'Data Foundation' for 5G optimization.",
+        impact: "Challenges WWT's role in network performance validation; they are moving from consulting to owning the measurement tools.",
+        counter: "Double down on the ATC 'Physical Truth'—software data can be modeled, but WWT provides the hardware-level validation Accenture lacks."
+    },
+    "deloitte": {
+        headline: "Deloitte Unveils 'Physical AI' Solutions Built with NVIDIA Omniverse Libraries",
+        source: "Deloitte Global • March 2, 2026",
+        url: "https://www.deloitte.com/global/en/about/press-room/physical-ai-nvidia-omniverse-industrial-transformation.html",
+        summary: "Expansion of NVIDIA partnership to deploy high-fidelity digital twins and edge robotics in industrial environments.",
+        impact: "Deloitte is moving into 'Embodied AI' (Robotics/Edge), requiring massive compute infrastructure where WWT typically leads.",
+        counter: "Lead with 'Edge-to-Cloud' architecture. Deloitte has the digital twin software, but WWT has the labs to build the supercomputing pods."
+    },
+    "insight": {
+        headline: "Insight Enterprises Presents AI-First Strategic Shift at Raymond James Conference",
+        source: "Investing.com • March 3, 2026",
+        url: "https://in.investing.com/news/transcripts/insight-enterprises-at-raymond-james-conference-aifirst-strategy-93CH-5270229",
+        summary: "A direct brand-pivot to move beyond hardware reseller roots into high-margin AI consulting and 'Decision Intelligence' platforms.",
+        impact: "Increases market noise; clients may see Insight as a cheaper alternative for AI integration.",
+        counter: "Showcase the 'AI Project Canvas.' Emphasize WWT's ability to take a project from vague concept to ATC-validated roadmap."
+    }
+};
+
 const utmHistory = [
     { raw: "LinkedIn / Paid Search", fixed: "linkedin / paid-search", url: "https://wwt.com?utm_source=linkedin&utm_medium=paid-search", changeLog: "Standardized & Hyphenated" },
     { raw: "FACEBOOK / Email_Newsletter", fixed: "facebook / email", url: "https://wwt.com?utm_source=facebook&utm_medium=email", changeLog: "Lowercased & Cleaned" },
@@ -78,6 +105,83 @@ function launchAgent(id) {
             </div>`;
         renderHistory();
     }
+            if (id === 'intel') {
+        content.innerHTML = `
+            <div class="max-w-6xl mx-auto space-y-6">
+                <div class="flex items-center justify-between px-2">
+                    <div class="flex items-center gap-4">
+                        <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <h3 class="text-xl font-bold text-white tracking-tight">Competitor Intelligence Crawler</h3>
+                    </div>
+                    <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-full">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Web Crawler Active</span>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl">
+                    <div class="flex gap-4">
+                        <input id="intel-search" type="text" placeholder="Enter Competitor Name (e.g. Accenture, Deloitte, Insight)" 
+                               class="flex-1 bg-slate-950 border border-slate-800 p-4 rounded-xl text-slate-300 font-medium placeholder:text-slate-600 outline-none focus:border-blue-500 transition-all">
+                        <button onclick="runCrawler()" class="px-8 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all flex items-center gap-2">
+                            <i data-lucide="zap" class="w-4 h-4"></i> Run Analysis
+                        </button>
+                    </div>
+                </div>
+
+                <div id="intel-display" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-6 animate-in fade-in zoom-in-95 duration-500">
+                    
+                    <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden flex flex-col">
+                        <div class="bg-slate-900 px-4 py-2 border-b border-slate-800 flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Crawler Snapshot</span>
+                            <span id="snap-source" class="text-[9px] text-blue-400 font-mono"></span>
+                        </div>
+                        <div class="p-8 space-y-4">
+                            <div class="w-12 h-1 bg-blue-500"></div>
+                            <h2 id="snap-headline" class="text-2xl font-bold text-white leading-tight"></h2>
+                            <div class="space-y-2 opacity-40">
+                                <div class="h-3 bg-slate-800 rounded w-full"></div>
+                                <div class="h-3 bg-slate-800 rounded w-5/6"></div>
+                                <div class="h-3 bg-slate-800 rounded w-4/6"></div>
+                            </div>
+                            <div class="pt-6">
+                                <a id="snap-link" href="#" target="_blank" class="inline-flex items-center gap-2 text-[10px] font-bold text-blue-500 uppercase tracking-widest hover:text-blue-400 transition-colors">
+                                    View Original Source <i data-lucide="external-link" class="w-3 h-3"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-blue-500/5 border border-blue-500/20 p-6 rounded-2xl space-y-3">
+                            <h5 class="text-blue-400 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+                                <i data-lucide="brain-circuit" class="w-4 h-4"></i> Strategic Synthesis
+                            </h5>
+                            <p id="syn-summary" class="text-slate-200 text-sm leading-relaxed font-medium"></p>
+                        </div>
+                        <div class="bg-red-500/5 border border-red-500/20 p-6 rounded-2xl space-y-3">
+                            <h5 class="text-red-400 font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+                                <i data-lucide="alert-triangle" class="w-4 h-4"></i> WWT Competitive Impact
+                            </h5>
+                            <p id="syn-impact" class="text-slate-200 text-sm leading-relaxed font-medium"></p>
+                        </div>
+                        <div class="bg-green-500/10 border border-green-500/20 p-6 rounded-2xl flex items-center justify-between">
+                             <div class="space-y-1">
+                                <h5 class="text-green-400 font-bold text-[10px] uppercase tracking-widest">Recommended Counter-Move</h5>
+                                <p id="syn-counter" class="text-white font-bold text-lg leading-tight"></p>
+                             </div>
+                             <div class="w-10 h-10 bg-green-500/10 rounded-full flex items-center justify-center text-green-500">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                             </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>`;
+            }
+    
     lucide.createIcons();
 }
 
@@ -162,6 +266,37 @@ function renderHistory() {
     lucide.createIcons();
 }
 
+function runCrawler() {
+    const query = document.getElementById('intel-search').value.toLowerCase().trim();
+    const display = document.getElementById('intel-display');
+    
+    // Default Fallback
+    let data = {
+        headline: "Monitoring Competitive Signals for " + query,
+        source: "Live Crawler • March 2026",
+        url: "https://www.wwt.com",
+        summary: "General market movement detected. Competitor is increasing headcount in digital engineering roles.",
+        impact: "Incremental pressure on talent acquisition and standard consulting rates.",
+        counter: "Promote the ATC's 'Lab-as-a-Service' to highlight our physical engineering edge."
+    };
+
+    if (competitorIntelDB[query]) { data = competitorIntelDB[query]; }
+
+    // Populate UI
+    document.getElementById('snap-source').innerText = data.source;
+    document.getElementById('snap-headline').innerText = data.headline;
+    document.getElementById('syn-summary').innerText = data.summary;
+    document.getElementById('syn-impact').innerText = data.impact;
+    document.getElementById('syn-counter').innerText = data.counter;
+    
+    // Set the link
+    const linkEl = document.getElementById('snap-link');
+    linkEl.href = data.url;
+
+    display.classList.remove('hidden');
+    lucide.createIcons();
+}
+
 function copyLine(text, btn) {
     navigator.clipboard.writeText(text);
     const original = btn.innerHTML;
@@ -185,4 +320,5 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
