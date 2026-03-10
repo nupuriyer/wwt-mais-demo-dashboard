@@ -2,6 +2,14 @@
 let SESSION_AI_KEY = null;
 let AI_ENABLED = false;
 
+
+const UTM_AI_SYSTEM_PROMPT = `You are a WWT Marketing Data Guardrail.
+Task: Provide a 5-word strategic reason for a UTM correction.
+Constraint: NO introductory text, NO quotes, NO punctuation at the end. 
+Example Input: lnkd -> linkedin
+Example Output: Ensures cross-platform attribution parity`;
+
+
 // 1. THE GOVERNANCE DICTIONARY
 const governanceMap = {
     "linkedin": { val: "linkedin", label: "Standardized Brand" },
@@ -252,49 +260,25 @@ function init() {
 
 // The Ignition Function
 async function toggleUniversalAI(checkbox) {
-    console.log("Toggle Clicked! State:", checkbox.checked); // DEBUG LINE
-
     const container = document.getElementById('ai-status-container');
     const dot = document.getElementById('ai-glow-dot');
-    const icon = document.getElementById('universal-ai-icon');
 
-    if (checkbox.checked) {
-        const key = prompt("Enter WWT Agentic Master Key to enable Live AI Mode:");
+    AI_ENABLED = checkbox.checked;
+
+    if (AI_ENABLED) {
+        // Just take whatever they give us. We'll validate it during the actual call.
+        const key = prompt("Enter WWT Agentic Master Key (or any string to attempt Live Mode):");
+        SESSION_AI_KEY = key; 
         
-        if (key && key.trim().length > 20) {
-            SESSION_AI_KEY = key;
-            
-            // Visual Updates
-            if(container) {
-                container.classList.replace('border-slate-700', 'border-blue-500/50');
-                container.classList.add('shadow-[0_0_15px_rgba(59,130,246,0.3)]');
-            }
-            if(dot) {
-                dot.classList.replace('bg-slate-600', 'bg-blue-400');
-                dot.classList.add('animate-pulse', 'shadow-[0_0_8px_rgba(96,165,250,0.8)]');
-            }
-            if(icon) icon.classList.replace('text-slate-500', 'text-blue-400');
-            
-            alert("🚀 AI Engine Online.");
-        } else {
-            checkbox.checked = false;
-            alert("Invalid Key. Returning to Demo Mode.");
-        }
+        if(container) container.classList.add('border-blue-500/50');
+        if(dot) dot.classList.add('bg-blue-400', 'animate-pulse');
+        console.log("AI Mode Attempting...");
     } else {
-        // Reset to Gray
         SESSION_AI_KEY = null;
-        if(container) {
-            container.classList.replace('border-blue-500/50', 'border-slate-700');
-            container.classList.remove('shadow-[0_0_15px_rgba(59,130,246,0.3)]');
-        }
-        if(dot) {
-            dot.classList.replace('bg-blue-400', 'bg-slate-600');
-            dot.classList.remove('animate-pulse', 'shadow-[0_0_8px_rgba(96,165,250,0.8)]');
-        }
-        if(icon) icon.classList.replace('text-blue-400', 'text-slate-500');
+        if(container) container.classList.remove('border-blue-500/50');
+        if(dot) dot.classList.remove('bg-blue-400', 'animate-pulse');
     }
 }
-
 
 // UNIVERSAL CALLER (Used by all agents)
 async function callGemini(prompt) {
@@ -861,36 +845,46 @@ function govern(input, fallback) {
 }
 
 async function processUTM() {
+async function processUTM() {
     const rawUrl = document.getElementById('utm-url').value || "https://wwt.com";
-    const rawSrc = document.getElementById('utm-src').value || "";
-    const rawMed = document.getElementById('utm-med').value || "";
-    const rawCamp = document.getElementById('utm-camp').value || "";
+    const rawSrc = document.getElementById('utm-src').value || "direct";
+    const rawMed = document.getElementById('utm-med').value || "none";
+    const rawCamp = document.getElementById('utm-camp').value || "promo";
 
-    const activeKey = window.API_KEY_INJECTED || window.GOOGLE_AI_KEY || GOOGLE_AI_KEY;
-    let finalSrc, finalMed, finalCamp, log;
+    // 1. RUN MANUAL GOVERNANCE FIRST (The guaranteed fallback)
+    const s = govern(rawSrc, "direct");
+    const m = govern(rawMed, "none");
+    const c = govern(rawCamp, "promo");
+    
+    let finalSrc = s.val;
+    let finalMed = m.val;
+    let finalCamp = c.val;
+    let log = s.label; // Default to "Mapped Platform ID", "Lowercased", etc.
 
-    if (AI_ENABLED && activeKey && !activeKey.includes('PLACEHOLDER')) {
+    // 2. TRY AI (But don't rely on it)
+    if (AI_ENABLED && SESSION_AI_KEY) {
         try {
-            // ... (AI Logic remains ready here)
-            log = "AI Strategic Correction";
+            const prompt = `Source: ${rawSrc} -> ${finalSrc}. Medium: ${rawMed} -> ${finalMed}. 
+                            Explain benefit in 5 words for WWT reporting. No quotes.`;
+            
+            const aiResponse = await callGemini(prompt);
+            
+            // Only update the log if the AI actually returned a successful string
+            if (aiResponse && !aiResponse.includes("error")) {
+                log = aiResponse.replace(/[".]/g, '').trim();
+            }
         } catch (e) {
-            const res = govern(rawSrc, "direct");
-            finalSrc = res.val; log = res.label;
+            console.log("AI Key/Network Error. Falling back to manual labels.");
+            // We do nothing here! 'log' is already set to the manual 's.label'
         }
-    } else {
-        const s = govern(rawSrc, "direct");
-        const m = govern(rawMed, "none");
-        const c = govern(rawCamp, "promo");
-        finalSrc = s.val;
-        finalMed = m.val;
-        finalCamp = c.val;
-        log = `${s.label} / ${m.label}`;
     }
 
-    const finalUrl = `${rawUrl}${rawUrl.includes('?') ? '&' : '?'}utm_source=${finalSrc}&utm_medium=${finalMed}&utm_campaign=${finalCamp}`;
+    // 3. FINALIZE (This will work even if AI failed)
+    const connector = rawUrl.includes('?') ? '&' : '?';
+    const finalUrl = `${rawUrl}${connector}utm_source=${finalSrc}&utm_medium=${finalMed}&utm_campaign=${finalCamp}`;
 
     utmHistory.unshift({
-        raw: `${rawSrc || "None"} / ${rawMed || "None"}`,
+        raw: `${rawSrc} / ${rawMed}`,
         fixed: `${finalSrc} / ${finalMed}`,
         url: finalUrl,
         changeLog: log
@@ -1168,6 +1162,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
