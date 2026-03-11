@@ -1134,6 +1134,7 @@ async function runCrawler() {
     const display = document.getElementById('intel-display');
     const btn = document.querySelector('button[onclick="runCrawler()"]');
     
+    // 1. Initial State
     let data = {
         headline: "Monitoring Competitive Signals for " + query,
         source: "Live Crawler • March 2026",
@@ -1149,6 +1150,7 @@ async function runCrawler() {
         data = JSON.parse(JSON.stringify(competitorIntelDB[query])); 
     }
 
+    // 2. AI Intelligence & Handoff Extraction
     if (AI_ENABLED && SESSION_AI_KEY) {
         const originalBtnText = btn.innerHTML;
         btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Analyzing...`;
@@ -1160,11 +1162,9 @@ async function runCrawler() {
         try {
             const aiResponse = await callGemini(prompt);
             if (aiResponse) {
-                // Split AI response into Play and Trigger
                 const lines = aiResponse.split('\n');
                 data.counter = lines[0].replace('Play:', '').trim();
                 
-                // Extract trigger for the handoff
                 const triggerLine = lines.find(l => l.includes('Trigger:'));
                 if (triggerLine) {
                     const [ind, top] = triggerLine.replace('Trigger:', '').split('|');
@@ -1178,7 +1178,17 @@ async function runCrawler() {
         btn.disabled = false;
     }
 
-    // POPULATE UI
+    // 3. UI Mapping & Population
+    const industryMap = {
+        "Healthcare": { icon: "stethoscope", label: "Healthcare Agent" },
+        "Energy": { icon: "zap", label: "Energy Agent" },
+        "Financial Services": { icon: "landmark", label: "Finance Agent" },
+        "Telecommunications": { icon: "rss", label: "Telco Agent" },
+        "Manufacturing": { icon: "factory", label: "Manufacturing Agent" }
+    };
+
+    const industryInfo = industryMap[data.industry] || { icon: "layout", label: "Industry Agent" };
+
     document.getElementById('snap-source').innerText = data.source;
     document.getElementById('snap-headline').innerText = data.headline;
     document.getElementById('syn-summary').innerText = data.summary;
@@ -1186,12 +1196,26 @@ async function runCrawler() {
     
     const counterEl = document.getElementById('syn-counter');
     counterEl.innerHTML = `
-        <div class="flex flex-col gap-2">
-            <span class="text-white font-bold text-lg">${data.counter}</span>
-            <button onclick="launchAgent('industry', { industry: '${data.industry}', topic: '${data.topic}' })" 
-                    class="mt-2 text-[10px] bg-blue-600/20 border border-blue-500/30 text-blue-400 px-3 py-1 rounded-full w-fit hover:bg-blue-600/40 transition-all">
-                Connect to ${data.industry} Content Agent →
-            </button>
+        <div class="space-y-4">
+            <div class="flex items-start gap-3">
+                <i data-lucide="shield-check" class="w-5 h-5 text-green-500 mt-1"></i>
+                <p class="text-white font-bold text-lg leading-tight italic">"${data.counter}"</p>
+            </div>
+            
+            <div class="pt-2 border-t border-green-500/10">
+                <p class="text-[9px] text-slate-500 uppercase font-black mb-2 tracking-widest">Strategic Handoff</p>
+                <button onclick="launchAgent('industry', { industry: '${data.industry}', topic: '${data.topic}' })" 
+                        class="group flex items-center gap-3 px-4 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-white transition-all shadow-lg shadow-blue-900/20">
+                    <div class="p-1.5 bg-white/10 rounded-lg group-hover:bg-white/20">
+                        <i data-lucide="${industryInfo.icon}" class="w-4 h-4"></i>
+                    </div>
+                    <div class="text-left">
+                        <div class="text-[10px] font-black uppercase tracking-tighter leading-none">Launch ${industryInfo.label}</div>
+                        <div class="text-[9px] opacity-70 font-medium italic">Target: ${data.topic}</div>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
         </div>
     `;
     
@@ -1719,6 +1743,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
