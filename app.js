@@ -349,14 +349,14 @@ function init() {
     const grid = document.getElementById('agent-grid');
     if (!grid) return;
 
-    // REVERT: Back to the stable 3-column grid you had originally
+    // Standard 3-column layout for the Top Row
     grid.className = "grid grid-cols-1 md:grid-cols-3 gap-6 w-full";
 
     const sortedCandidates = agents
         .filter(a => a.status === 'candidate')
         .sort((a, b) => (candidateInterest[b.id] || 0) - (candidateInterest[a.id] || 0));
 
-    // Helper: Active/Soon Cards (Standard 1-column span)
+    // Helper: Active/Soon Cards
     const createActiveCard = (a) => {
         const isActive = a.status === 'active';
         const isSoon = a.status === 'soon';
@@ -376,7 +376,7 @@ function init() {
         `;
     };
 
-    // Helper: Candidate Row (Spans full width)
+    // Helper: Potential Future Candidate Row
     const createCandidateRow = (a) => `
         <div class="col-span-1 md:col-span-3 flex items-center justify-between p-4 px-6 border border-slate-800/40 rounded-xl opacity-40 hover:opacity-90 transition-all cursor-pointer bg-slate-950/30 group mb-2"
              onclick="logInterest('${a.id}')">
@@ -387,7 +387,7 @@ function init() {
                 <div class="flex flex-col md:flex-row md:items-center gap-8 text-left">
                     <div class="w-32">
                         <h4 class="text-[9px] font-bold text-slate-300 uppercase tracking-widest leading-tight">${a.name}</h4>
-                        <span class="text-[7px] text-slate-700 font-bold uppercase tracking-tighter">Candidate</span>
+                        <span class="text-[7px] text-slate-700 font-bold uppercase tracking-tighter">Potential</span>
                     </div>
                     <div class="flex flex-col border-l border-slate-800/50 pl-4">
                         <p class="text-[9px] text-slate-400 font-medium leading-tight">
@@ -409,15 +409,11 @@ function init() {
     `;
 
     grid.innerHTML = `
-        <div class="col-span-1 md:col-span-3 mb-2 px-2">
-            <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">Active Agents</h5>
-        </div>
-        
         ${agents.filter(a => a.status === 'active' || a.status === 'soon').map(createActiveCard).join('')}
 
-        <div class="col-span-1 md:col-span-3 mt-12 mb-4 px-2">
+        <div class="col-span-1 md:col-span-3 mt-16 mb-4 px-2">
             <div class="flex items-center gap-4">
-                <h5 class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] whitespace-nowrap">Development Backlog</h5>
+                <h5 class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] whitespace-nowrap">Potential Future Candidates</h5>
                 <div class="w-full h-[1px] bg-slate-800/40"></div>
             </div>
         </div>
@@ -1705,6 +1701,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
