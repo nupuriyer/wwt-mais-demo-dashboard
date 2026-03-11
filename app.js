@@ -292,11 +292,12 @@ function init() {
     const grid = document.getElementById('agent-grid');
     if (!grid) return;
 
+    // Helper to build the card HTML
     const createCard = (a) => {
         const isActive = a.status === 'active';
         const isSoon = a.status === 'soon';
 
-        // Styling for active vs soon
+        // High-contrast blue border for active, muted for soon
         const borderClass = isActive 
             ? "border-blue-500/50 hover:border-blue-400 bg-slate-900/50 shadow-lg shadow-blue-500/5" 
             : "border-slate-800/60 bg-slate-900/20 opacity-60 cursor-not-allowed";
@@ -304,24 +305,27 @@ function init() {
         const interactivity = isActive ? "hover:bg-slate-800 cursor-pointer" : "";
 
         const badge = isSoon 
-            ? `<span class="absolute top-2 right-2 text-[6px] bg-slate-800 text-blue-400 px-1.5 py-0.5 rounded uppercase font-black tracking-tighter border border-blue-500/20">Soon</span>` 
+            ? `<span class="absolute top-2 right-2 text-[7px] bg-slate-800 text-blue-400 px-1.5 py-0.5 rounded uppercase font-black tracking-tighter border border-blue-500/20">Soon</span>` 
             : "";
 
         return `
-            <div class="agent-button card p-4 flex flex-col items-center justify-center text-center transition-all relative group border-2 ${borderClass} ${interactivity}" 
+            <div class="agent-button card p-5 flex flex-col items-center justify-center text-center transition-all relative group border-2 ${borderClass} ${interactivity}" 
                  onclick="${isActive ? `launchAgent('${a.id}')` : ''}">
                 ${badge}
-                <div class="w-10 h-10 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center ${isActive ? 'group-hover:bg-blue-600 group-hover:text-white' : ''} transition-all">
-                    <i data-lucide="${a.icon}" class="w-5 h-5"></i>
+                <div class="w-12 h-12 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center ${isActive ? 'group-hover:bg-blue-600 group-hover:text-white' : ''} transition-all">
+                    <i data-lucide="${a.icon}" class="w-6 h-6"></i>
                 </div>
-                <h4 class="text-[9px] font-bold ${isActive ? 'text-slate-200' : 'text-slate-500'} uppercase tracking-widest leading-tight">${a.name}</h4>
+                <h4 class="text-[10px] font-bold ${isActive ? 'text-slate-200' : 'text-slate-500'} uppercase tracking-widest leading-tight">${a.name}</h4>
                 <span class="text-[8px] text-slate-600 mt-1 uppercase font-medium tracking-tighter">${a.cat}</span>
             </div>
         `;
     };
 
+    // Filter agents by status
     const activeHTML = agents.filter(a => a.status === 'active').map(createCard).join('');
     const soonHTML = agents.filter(a => a.status === 'soon').map(createCard).join('');
+    
+    // Candidates use a simpler, more compact template
     const candidateHTML = agents.filter(a => a.status === 'candidate').map(a => `
         <div class="p-3 flex flex-col items-center justify-center text-center border border-slate-800/50 rounded-xl opacity-30 grayscale bg-slate-950">
             <i data-lucide="${a.icon}" class="w-4 h-4 text-slate-600 mb-2"></i>
@@ -329,26 +333,32 @@ function init() {
         </div>
     `).join('');
 
+    // Construct the layout with responsive flex logic
     grid.innerHTML = `
-        <div class="flex items-stretch gap-4">
-            <div class="grid grid-cols-2 gap-4 flex-[2]">
-                ${activeHTML}
-            </div>
-            
-            <div class="flex flex-col items-center justify-center px-1">
-                <div class="h-full w-[1px] bg-gradient-to-b from-transparent via-slate-700 to-transparent"></div>
+        <div class="w-full space-y-8">
+            <div class="flex flex-col lg:flex-row items-stretch gap-6 w-full">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-[2]">
+                    ${activeHTML}
+                </div>
+                
+                <div class="hidden lg:flex flex-col items-center justify-center px-2">
+                    <div class="h-full w-[1px] bg-gradient-to-b from-transparent via-slate-700 to-transparent"></div>
+                </div>
+
+                <div class="flex-1 min-w-[240px]">
+                    ${soonHTML}
+                </div>
             </div>
 
-            <div class="flex-1">
-                ${soonHTML}
+            <div class="pt-4">
+                <div class="mb-4 px-2">
+                    <h5 class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] border-b border-slate-800/50 pb-2">Future Candidates</h5>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 pb-8">
+                    ${candidateHTML}
+                </div>
             </div>
-        </div>
-
-        <div class="mt-12 mb-4 px-2">
-            <h5 class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] border-b border-slate-800/50 pb-2">Future Candidates</h5>
-        </div>
-        <div class="grid grid-cols-3 md:grid-cols-6 gap-3 pb-8">
-            ${candidateHTML}
         </div>
     `;
 
@@ -1611,6 +1621,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
