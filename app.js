@@ -1134,37 +1134,40 @@ async function runCrawler() {
     const display = document.getElementById('intel-display');
     const btn = document.querySelector('button[onclick="runCrawler()"]');
     
-    // 1. Initial State
+    // 1. BASELINE DATA & FALLBACKS
     let data = {
         headline: "Monitoring Competitive Signals for " + query,
         source: "Live Crawler • March 2026",
         url: "https://www.wwt.com",
-        summary: "General market movement detected.",
-        impact: "Incremental pressure on talent acquisition.",
-        counter: "Promote the ATC's 'Lab-as-a-Service'.",
+        summary: "General market movement detected in the digital engineering sector.",
+        impact: "Incremental pressure on talent acquisition and standard consulting rates.",
+        counter: "Promote the ATC's 'Lab-as-a-Service' to highlight our physical engineering edge.",
         industry: "General Tech",
         topic: "AI Infrastructure"
     };
 
+    // Check internal DB for curated signals
     if (competitorIntelDB[query]) { 
         data = JSON.parse(JSON.stringify(competitorIntelDB[query])); 
     }
 
-    // 2. AI Intelligence & Handoff Extraction
+    // 2. AI STRATEGIC ENHANCEMENT
     if (AI_ENABLED && SESSION_AI_KEY) {
         const originalBtnText = btn.innerHTML;
         btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Analyzing...`;
         btn.disabled = true;
 
-        const context = `Competitor: ${query}. Move: ${data.headline}.`;
+        const context = `Competitor: ${query}. Move: ${data.headline}. Standard counter: ${data.counter}`;
         const prompt = `${INTEL_AI_PROMPT}\n\nContext: ${context}`;
 
         try {
             const aiResponse = await callGemini(prompt);
             if (aiResponse) {
                 const lines = aiResponse.split('\n');
-                data.counter = lines[0].replace('Play:', '').trim();
+                // Capture the Play (Line 1)
+                data.counter = lines[0].replace('Play:', '').replace(/[".]/g, '').trim();
                 
+                // Capture the Trigger (Line 2)
                 const triggerLine = lines.find(l => l.includes('Trigger:'));
                 if (triggerLine) {
                     const [ind, top] = triggerLine.replace('Trigger:', '').split('|');
@@ -1172,54 +1175,63 @@ async function runCrawler() {
                     data.topic = top.trim();
                 }
             }
-        } catch (e) { console.log("Intel AI Fallback active."); }
+        } catch (e) {
+            console.log("Intel AI Fallback active: Using standard DB counter.");
+        }
         
         btn.innerHTML = originalBtnText;
         btn.disabled = false;
     }
 
-    // 3. UI Mapping & Population
+    // 3. UI MAPPING & POPULATION
     const industryMap = {
-        "Healthcare": { icon: "stethoscope", label: "Healthcare Agent" },
-        "Energy": { icon: "zap", label: "Energy Agent" },
-        "Financial Services": { icon: "landmark", label: "Finance Agent" },
-        "Telecommunications": { icon: "rss", label: "Telco Agent" },
-        "Manufacturing": { icon: "factory", label: "Manufacturing Agent" }
+        "Telecommunications": { icon: "rss" },
+        "Healthcare": { icon: "stethoscope" },
+        "Energy": { icon: "zap" },
+        "Financial Services": { icon: "landmark" },
+        "Manufacturing": { icon: "factory" },
+        "Enterprise SaaS": { icon: "layers" }
     };
 
-    const industryInfo = industryMap[data.industry] || { icon: "layout", label: "Industry Agent" };
+    const industryInfo = industryMap[data.industry] || { icon: "layout" };
 
+    // Update basic fields
     document.getElementById('snap-source').innerText = data.source;
     document.getElementById('snap-headline').innerText = data.headline;
     document.getElementById('syn-summary').innerText = data.summary;
     document.getElementById('syn-impact').innerText = data.impact;
-    
+    document.getElementById('snap-link').href = data.url;
+
+    // Update the Recommendation Box (The "Power Play")
     const counterEl = document.getElementById('syn-counter');
     counterEl.innerHTML = `
-        <div class="space-y-4">
-            <div class="flex items-start gap-3">
-                <i data-lucide="shield-check" class="w-5 h-5 text-green-500 mt-1"></i>
-                <p class="text-white font-bold text-lg leading-tight italic">"${data.counter}"</p>
+        <div class="space-y-6">
+            <div class="flex items-start gap-4">
+                <div class="w-1.5 h-14 bg-green-500 rounded-full shrink-0 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+                <p class="text-white font-bold text-xl leading-tight tracking-tight">
+                    "${data.counter}"
+                </p>
             </div>
             
-            <div class="pt-2 border-t border-green-500/10">
-                <p class="text-[9px] text-slate-500 uppercase font-black mb-2 tracking-widest">Strategic Handoff</p>
+            <div class="pt-2">
                 <button onclick="launchAgent('industry', { industry: '${data.industry}', topic: '${data.topic}' })" 
-                        class="group flex items-center gap-3 px-4 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl text-white transition-all shadow-lg shadow-blue-900/20">
-                    <div class="p-1.5 bg-white/10 rounded-lg group-hover:bg-white/20">
-                        <i data-lucide="${industryInfo.icon}" class="w-4 h-4"></i>
+                        class="group flex items-center gap-4 px-5 py-4 bg-slate-900 border border-slate-800 hover:border-blue-500/50 rounded-2xl text-white transition-all shadow-xl hover:shadow-blue-500/5">
+                    <div class="w-10 h-10 bg-blue-600/10 rounded-xl flex items-center justify-center text-blue-400 group-hover:bg-blue-600 group-hover:text-white transition-all">
+                        <i data-lucide="${industryInfo.icon}" class="w-5 h-5"></i>
                     </div>
                     <div class="text-left">
-                        <div class="text-[10px] font-black uppercase tracking-tighter leading-none">Launch ${industryInfo.label}</div>
-                        <div class="text-[9px] opacity-70 font-medium italic">Target: ${data.topic}</div>
+                        <div class="text-[10px] font-black uppercase tracking-[0.1em] text-slate-500 mb-0.5">Recommended Action</div>
+                        <div class="text-sm font-bold text-white group-hover:text-blue-400 transition-colors">
+                            Launch Industry Agent: ${data.industry}
+                        </div>
                     </div>
-                    <i data-lucide="arrow-right" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"></i>
+                    <i data-lucide="arrow-right" class="w-4 h-4 ml-4 text-slate-600 group-hover:text-blue-400 group-hover:translate-x-1 transition-all"></i>
                 </button>
             </div>
         </div>
     `;
-    
-    document.getElementById('snap-link').href = data.url;
+
+    // Reveal and refresh icons
     display.classList.remove('hidden');
     if (window.lucide) lucide.createIcons();
 }
@@ -1743,6 +1755,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
