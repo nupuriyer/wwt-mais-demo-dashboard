@@ -83,34 +83,34 @@ const governanceMap = {
 
 const competitorIntelDB = {
     "accenture": {
-        headline: "Accenture Acquires Avanseus AI to Scale Autonomous Network Operations",
-        source: "Accenture Newsroom • February 24, 2026",
-        url: "https://newsroom.accenture.com/news/2026/accenture-acquires-advanced-ai-technology-to-help-communications-companies-accelerate-autonomous-network-journeys",
-        summary: "Accenture is integrating Avanseus' predictive AI into their 'Cognitive Network Platform' to automate telco planning and anomaly detection.",
-        impact: "Threatens WWT’s service provider dominance; they are moving from consulting to AI-driven 'Autonomous Networks'.",
-        counter: "Leverage ATC 'Multi-OEM AI Testing'—Accenture is locked into their platform; WWT validates the entire multi-vendor ecosystem.",
+        headline: "Accenture acquires Ookla to scale AI-driven network intelligence",
+        source: "Accenture Newsroom • March 3, 2026",
+        url: "https://newsroom.accenture.com/news/2026/accenture-to-acquire-ookla-to-strengthen-network-intelligence-and-experience-with-data-and-ai-for-enterprises",
+        summary: "Integrating Speedtest and Downdetector data to optimize the 5G and Wi-Fi networks powering enterprise digital cores.",
+        impact: "Direct threat to WWT's role in optimizing mission-critical connectivity for AI infrastructure.",
+        counter: "Showcase WWT’s ATC multi-vendor testing to prove network resilience beyond simple benchmarking.",
         industry: "Telecommunications",
-        topic: "Autonomous Network AI"
+        topic: "AI Network Intelligence"
     },
     "deloitte": {
-        headline: "Deloitte Tech Trends 2026: 'AI Goes Physical' and the Rise of Inference Economics",
-        source: "Deloitte Insights • March 2026",
-        url: "https://www.deloitte.com/us/en/insights/topics/technology-management/tech-trends.html",
-        summary: "Focus on 'Embodied AI' (Robotics/Edge) and shifting from cloud-only to hybrid 'Inference-optimized' infrastructure.",
-        impact: "Direct overlap with WWT's 'AI Proving Ground'. Deloitte is positioning as the architect for AI factories.",
-        counter: "Showcase 'Cisco Secure AI Factory with NVIDIA'—Deloitte talks blueprints; WWT has the hardware-ready factory floor at the ATC.",
-        industry: "Industrial/Manufacturing",
-        topic: "Physical AI & Inference Infrastructure"
+        headline: "Deloitte unveils Physical AI solutions with NVIDIA Omniverse",
+        source: "Deloitte Global • March 3, 2026",
+        url: "https://www.deloitte.com/global/en/about/press-room/physical-ai-nvidia-omniverse-industrial-transformation.html",
+        summary: "Scaling 'embodied AI'—moving AI from digital pilots into physical robotics and digital twin simulations.",
+        impact: "Aggressive move into the 'Simulation-to-Reality' space where WWT traditionally leads via staging.",
+        counter: "Position the WWT ATC as the premier site for physical validation of Deloitte's digital simulations.",
+        industry: "Manufacturing",
+        topic: "Physical AI & Robotics"
     },
     "insight": {
-        headline: "Insight Enterprises Expands 'Decision Intelligence' Platform for Mid-Market",
-        source: "Investing.com • March 2026",
-        url: "https://www.insight.com",
-        summary: "Scaling AI-native software delivery to help mid-market firms implement RAG and agents without massive engineering teams.",
-        impact: "Pressure on WWT's high-margin consulting for RAG; Insight is commoditizing the 'AI Pilot'.",
-        counter: "Utilize the 'AI Project Canvas' to move clients beyond the pilot 'reality check' into ATC-validated production scale.",
-        industry: "Enterprise SaaS",
-        topic: "Agentic AI Orchestration"
+        headline: "Insight highlights AI & Multicloud focus at Raymond James Conference",
+        source: "Insight Investor News • March 8, 2026",
+        url: "https://investor.insight.com/news-releases/default.aspx",
+        summary: "Pivot toward higher-margin AI services and cybersecurity to offset traditional hardware reseller pressure.",
+        impact: "Insight is transitioning from a partner to a direct competitor in AI services and multicloud orchestration.",
+        counter: "Highlight WWT's deeper engineering bench and 'Lab-as-a-Service' vs. Insight's reseller-heavy heritage.",
+        industry: "Financial Services", // Often mapped to their Raymond James focus
+        topic: "Multicloud AI Services"
     }
 };
 
@@ -1239,11 +1239,10 @@ async function runCrawler() {
     // 3. UI MAPPING & POPULATION
     const industryMap = {
         "Telecommunications": { icon: "rss" },
-        "Healthcare": { icon: "stethoscope" },
+        "Healthcare": { icon: "heart-pulse" }, // Corrected icon name
         "Energy": { icon: "zap" },
         "Financial Services": { icon: "landmark" },
-        "Manufacturing": { icon: "factory" },
-        "Enterprise SaaS": { icon: "layers" }
+        "Manufacturing": { icon: "factory" }
     };
 
     const industryInfo = industryMap[data.industry] || { icon: "layout" };
@@ -1619,10 +1618,14 @@ function setContentType(type) {
 }
 
 async function runIndustryAnalysis(key, externalData = null) {
-    // 1. Key Resolution
-    const activeKey = key ? key.toLowerCase().split(' ')[0] : "healthcare";
+    // 1. Key Resolution - Maps full names (e.g., "Financial Services") to keys (e.g., "finance")
+    const activeKey = INDUSTRY_KEY_MAP[key] || (key ? key.toLowerCase().split(' ')[0] : "healthcare");
     const data = industryGapDB[activeKey];
-    if (!data) return;
+    
+    if (!data) {
+        console.error(`Industry key "${activeKey}" not found in industryGapDB`);
+        return;
+    }
 
     const resultArea = document.getElementById('industry-result');
     
@@ -1668,15 +1671,22 @@ async function runIndustryAnalysis(key, externalData = null) {
         const titleInput = document.getElementById('ind-title');
         titleInput.value = "AI is refining technical depth...";
 
-        const prompt = `${INDUSTRY_AI_PROMPT}\n\nContext: Industry: ${data.industry}, Format: ${typeof currentContentType !== 'undefined' ? currentContentType : 'Whitepaper'}, Specific Topic: ${externalData ? externalData.topic : data.gap}`;
+        // Ensure we have a specific topic to focus the AI
+        const specificTopic = externalData?.topic || data.gap;
+        const currentType = typeof currentContentType !== 'undefined' ? currentContentType : 'Whitepaper';
+        
+        const prompt = `${INDUSTRY_AI_PROMPT}\n\nContext: Industry: ${data.industry}, Format: ${currentType}, Specific Topic: ${specificTopic}`;
 
         try {
             const aiResponse = await callGemini(prompt);
             if (aiResponse) {
                 const lines = aiResponse.split('\n');
+                
+                // Update Title from AI
                 const aiTitle = lines.find(l => l.startsWith('Angle:'))?.split(': ')[1];
                 if (aiTitle) titleInput.value = `✨ ${aiTitle.replace(/["]/g, '')}`;
 
+                // Update individual section textareas
                 const textareas = document.querySelectorAll('#ind-sections textarea');
                 textareas.forEach((area, index) => {
                     const content = lines.find(l => l.startsWith(`S${index + 1}:`))?.split(': ')[1];
@@ -1837,6 +1847,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
