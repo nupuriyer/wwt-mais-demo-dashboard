@@ -930,61 +930,68 @@ function launchAgent(id) {
     }
 
         if (id === 'industry') {
-        content.innerHTML = `
-            <div class="max-w-5xl mx-auto space-y-6">
-                <div class="flex items-center justify-between px-2">
-                    <div class="flex items-center gap-4">
-                        <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                        <h3 class="text-xl font-bold text-white tracking-tight">Industry Content Intelligence</h3>
+    content.innerHTML = `
+        <div class="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
+            <div class="flex items-center justify-between px-2">
+                <div class="flex items-center gap-4">
+                    <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                    <div>
+                        <h3 class="text-xl font-bold text-white tracking-tight">Industry Content Architect</h3>
+                        <p id="context-breadcrumb" class="text-[10px] text-blue-500 font-mono uppercase tracking-widest mt-1 hidden"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                ${['healthcare', 'energy', 'telecommunications', 'manufacturing'].map(key => `
+                    <div onclick="runIndustryAnalysis('${key}')" class="bg-slate-900 border border-slate-800 p-4 rounded-2xl cursor-pointer hover:border-blue-500 transition-all group">
+                        <div class="w-10 h-10 bg-slate-950 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                            <i data-lucide="${key === 'healthcare' ? 'heart-pulse' : key === 'energy' ? 'zap' : key === 'telecommunications' ? 'rss' : 'factory'}" class="w-5 h-5 text-slate-500 group-hover:text-blue-400"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${key}</span>
+                    </div>
+                `).join('')}
+            </div>
+
+            <div id="industry-result" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-3xl space-y-4">
+                        <div class="inline-flex px-2 py-1 bg-blue-500/10 text-blue-400 text-[8px] font-black uppercase tracking-widest rounded">Target Gap</div>
+                        <h2 id="ind-gap" class="text-2xl font-bold text-white leading-tight"></h2>
+                        <p id="ind-trend" class="text-xs text-slate-500 italic"></p>
+                    </div>
+                    <div class="bg-emerald-500/5 border border-emerald-500/20 p-6 rounded-3xl">
+                        <h5 class="text-emerald-400 text-[10px] font-black uppercase mb-3">The Opportunity</h5>
+                        <p id="ind-opp" class="text-white text-sm leading-relaxed"></p>
                     </div>
                 </div>
 
-                <div class="bg-slate-900 p-8 rounded-2xl border border-slate-800 shadow-2xl text-center space-y-6">
-                    <div class="flex justify-center gap-8">
-                        <div class="text-center group cursor-pointer" onclick="runIndustryAnalysis('healthcare')">
-                            <div class="w-16 h-16 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-center mb-3 group-hover:border-blue-500 transition-all">
-                                <i data-lucide="heart-pulse" class="w-8 h-8 text-blue-500"></i>
-                            </div>
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Healthcare</span>
+                <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+                    <div class="bg-slate-950 px-8 py-4 border-b border-slate-800 flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <span id="ind-type" class="text-[9px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md font-bold uppercase tracking-tighter">Whitepaper</span>
+                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Interactive Blueprint</span>
                         </div>
-                        <div class="text-center group cursor-pointer" onclick="runIndustryAnalysis('energy')">
-                            <div class="w-16 h-16 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-center mb-3 group-hover:border-orange-500 transition-all">
-                                <i data-lucide="zap" class="w-8 h-8 text-orange-500"></i>
-                            </div>
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Energy</span>
+                        <div class="flex gap-2">
+                             <button onclick="launchAgent('email-agent')" class="flex items-center gap-2 px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded-lg transition-all shadow-lg shadow-blue-900/40">
+                                <i data-lucide="mail" class="w-3 h-3"></i> Draft Promo Email
+                            </button>
                         </div>
                     </div>
-                    <p class="text-slate-400 text-sm italic">Select an industry to identify high-value content white spaces.</p>
-                </div>
-
-                <div id="industry-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div class="lg:col-span-1 space-y-4">
-                            <div class="bg-slate-950 border border-slate-800 p-6 rounded-2xl">
-                                <h5 class="text-blue-400 text-[10px] font-bold uppercase mb-4 tracking-widest">Market Gap Detected</h5>
-                                <h2 id="ind-gap" class="text-xl font-bold text-white mb-2"></h2>
-                                <p id="ind-trend" class="text-xs text-slate-400 leading-relaxed"></p>
-                            </div>
-                            <div class="bg-blue-600/10 border border-blue-500/20 p-6 rounded-2xl">
-                                <h5 class="text-blue-300 text-[10px] font-bold uppercase mb-2">The Opportunity</h5>
-                                <p id="ind-opp" class="text-white text-xs font-medium leading-relaxed"></p>
-                            </div>
+                    
+                    <div class="p-8 space-y-8">
+                        <div class="space-y-2">
+                            <label class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Main Headline</label>
+                            <input id="ind-title" class="w-full bg-transparent text-2xl font-bold text-white border-b border-slate-800 focus:border-blue-500 outline-none pb-2 transition-colors">
                         </div>
-
-                        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-                            <div class="bg-slate-950 px-6 py-3 border-b border-slate-800 flex justify-between items-center">
-                                <span class="text-[10px] font-bold text-slate-500 uppercase">AI-Generated Content Blueprint</span>
-                                <button class="text-[10px] font-bold text-blue-500 uppercase hover:text-blue-400">Export to Word</button>
+                        
+                        <div id="ind-sections" class="space-y-6">
                             </div>
-                            <div class="p-8 space-y-6">
-                                <h3 id="ind-title" class="text-2xl font-bold text-white border-l-4 border-blue-600 pl-4"></h3>
-                                <div id="ind-sections" class="space-y-4"></div>
-                            </div>
-                        </div>
                     </div>
                 </div>
-            </div>`;
-        }
+            </div>
+        </div>`;
+}
 
         if (id === 'readout') {
         content.innerHTML = `
@@ -1549,63 +1556,84 @@ function simulatePush() {
 
 // Ensure this matches your existing DB keys (e.g., 'cloud-migration', 'edge-computing')
 // Add 'key' as a parameter so buttons can pass "energy" or "healthcare"
-async function runIndustryAnalysis(key) {
-    // 1. DYNAMIC KEY LOGIC
-    // If a key is passed (from a button), use it. 
-    // Otherwise, try to get it from a selector or default to healthcare.
-    const activeKey = key || (document.getElementById('industry-selector') ? document.getElementById('industry-selector').value : "healthcare");
-    
+async function runIndustryAnalysis(key, externalData = null) {
+    const activeKey = key || "healthcare";
     const data = industryGapDB[activeKey];
-    if (!data) return console.error("Industry key not found in DB:", activeKey);
+    if (!data) return;
 
     const resultArea = document.getElementById('industry-result');
-    // Find the button specifically for this industry or the generic trigger
-    const btn = document.querySelector(`button[onclick*="${activeKey}"]`) || document.querySelector('button[onclick="runIndustryAnalysis()"]');
+    
+    // UI Feedback: Show what we are working on
+    if (externalData) {
+        const breadcrumb = document.getElementById('context-breadcrumb');
+        breadcrumb.innerText = `Source: Competitor Intel | Topic: ${externalData.topic}`;
+        breadcrumb.classList.remove('hidden');
+    }
 
-    // --- 2. POPULATE BASELINE (Baseline works instantly) ---
+    // Populate Baseline
     document.getElementById('ind-gap').innerText = data.gap;
     document.getElementById('ind-trend').innerText = data.trend;
     document.getElementById('ind-opp').innerText = data.opportunity;
-    document.getElementById('ind-title').innerText = data.outline.title;
+    document.getElementById('ind-title').value = data.outline.title;
 
+    // Build Editable Sections
     const sectionsContainer = document.getElementById('ind-sections');
     sectionsContainer.innerHTML = data.outline.sections.map((s, i) => `
-        <div class="flex gap-4 items-start py-1">
-            <span class="text-blue-500 font-mono text-sm font-bold">0${i+1}</span>
-            <p class="text-slate-300 text-sm leading-relaxed">${s}</p>
+        <div class="group space-y-2">
+            <div class="flex items-center gap-3">
+                <span class="text-[10px] font-mono text-blue-500/50 font-bold italic">Module 0${i+1}</span>
+                <div class="h-px flex-1 bg-slate-800 group-hover:bg-slate-700 transition-colors"></div>
+            </div>
+            <textarea class="w-full bg-slate-950/50 border border-slate-800/50 rounded-xl p-4 text-sm text-slate-300 focus:border-blue-500/50 focus:bg-slate-950 outline-none transition-all resize-none" rows="2">${s}</textarea>
         </div>
     `).join('');
 
     resultArea.classList.remove('hidden');
 
-    // --- 3. AI ENHANCEMENT ---
-    if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
-        const originalBtn = btn ? btn.innerHTML : null;
-        if (btn) btn.innerHTML = `<i data-lucide="sparkles" class="w-3 h-3 animate-spin"></i> Refining...`;
+    // Trigger AI Refinement if enabled
+    if (AI_ENABLED && SESSION_AI_KEY) {
+    // 1. Gather context from the UI for refinement
+    const currentTitle = document.getElementById('ind-title').value;
+    const currentGap = document.getElementById('ind-gap').innerText;
+    
+    // UI Feedback: Show the user the AI is "Thinking"
+    document.getElementById('ind-title').value = "Refining strategy...";
+    const textareas = document.querySelectorAll('#ind-sections textarea');
+    textareas.forEach(t => t.placeholder = "AI is generating deeper insights...");
+
+    const context = `Industry: ${data.industry}. Current Title: ${currentTitle}. Gap: ${currentGap}.`;
+    const prompt = `${INDUSTRY_AI_PROMPT}\n\nContext: ${context}`;
+
+    try {
+        const aiResponse = await callGemini(prompt);
         
-        const context = `Industry: ${data.industry}. Gap: ${data.gap}. Trend: ${data.trend}. Opp: ${data.opportunity}.`;
-        const prompt = `${INDUSTRY_AI_PROMPT}\n\nContext: ${context}`;
-
-        try {
-            const aiResponse = await callGemini(prompt);
+        if (aiResponse) {
+            const lines = aiResponse.split('\n');
             
-            if (aiResponse) {
-                const lines = aiResponse.split('\n');
-                const aiGap = lines.find(l => l.includes('Gap:'))?.split('Gap:')[1]?.trim();
-                const aiOpp = lines.find(l => l.includes('Opportunity:'))?.split('Opportunity:')[1]?.trim();
+            // Extract type and angle
+            const aiType = lines.find(l => l.startsWith('Type:'))?.split(': ')[1];
+            const aiTitle = lines.find(l => l.startsWith('Angle:'))?.split(': ')[1];
 
-                if (aiGap) {
-                    document.getElementById('ind-gap').innerHTML = `<span class="text-blue-400">✨ </span>${aiGap}`;
+            // Update UI with the "✨" marks to show AI contribution
+            if (aiType) document.getElementById('ind-type').innerText = `✨ ${aiType}`;
+            if (aiTitle) document.getElementById('ind-title').value = aiTitle;
+
+            // Map the S1, S2, S3, S4 lines to the textareas
+            textareas.forEach((area, index) => {
+                const sectionKey = `S${index + 1}:`;
+                const content = lines.find(l => l.startsWith(sectionKey))?.split(': ')[1];
+                if (content) {
+                    // We split the Title and Insight for better formatting
+                    const [title, insight] = content.split('|');
+                    area.value = `${title.trim().toUpperCase()}: ${insight.trim()}`;
                 }
-                if (aiOpp) {
-                    document.getElementById('ind-opp').innerHTML = `<span class="text-blue-400 text-[10px] block mb-1 font-bold uppercase tracking-tight">AI Strategic Refinement:</span>${aiOpp}`;
-                }
-            }
-        } catch (e) {
-            console.warn("Industry AI Fallback: Using default DB content for " + activeKey);
+            });
         }
-        if (btn) btn.innerHTML = originalBtn;
+    } catch (e) {
+        console.warn("Content Refinement failed. Keeping baseline DB content.");
+        document.getElementById('ind-title').value = data.outline.title; // Reset on failure
     }
+}
 
     if (window.lucide) lucide.createIcons();
 }
@@ -1755,6 +1783,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
