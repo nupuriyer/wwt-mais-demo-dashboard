@@ -277,81 +277,177 @@ const agents = [
     // COMING SOON
     { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail', status: 'soon' },
 
-    // ROADMAP CANDIDATES
-    { id: 'utm', name: 'UTM Builder', cat: 'Digital', icon: 'link', status: 'candidate' },
-    { id: 'seo', name: 'SEO Search', cat: 'Growth', icon: 'search', status: 'candidate' },
-    { id: 'reporting', name: 'Performance Agent', cat: 'Revenue', icon: 'bar-chart-3', status: 'candidate' },
-    { id: 'icp', name: 'ICP Agent', cat: 'Portfolio', icon: 'target', status: 'candidate' },
-    { id: 'revenue', name: 'Revenue Intel', cat: 'Portfolio', icon: 'pie-chart', status: 'candidate' },
-    { id: 'readout', name: 'Readout Agent', cat: 'Marketing Ops', icon: 'file-text', status: 'candidate' }
+    // DEVELOPMENT BACKLOG (CANDIDATES)
+    { 
+        id: 'reporting', 
+        name: 'Performance Agent', 
+        cat: 'Revenue', 
+        icon: 'bar-chart-3', 
+        status: 'candidate',
+        desc: 'Automated ROI & Pipeline Attribution synthesis.',
+        solves: 'Eliminates manual H1 marketing-to-revenue reporting.'
+    },
+    { 
+        id: 'readout', 
+        name: 'Readout Agent', 
+        cat: 'Marketing Ops', 
+        icon: 'file-text', 
+        status: 'candidate',
+        desc: 'AI-generated weekly executive summaries.',
+        solves: 'Consolidates cross-team signals into a single source of truth.'
+    },
+    { 
+        id: 'utm', 
+        name: 'UTM Builder', 
+        cat: 'Digital', 
+        icon: 'link', 
+        status: 'candidate',
+        desc: 'Governance-first campaign link generator.',
+        solves: 'Fixes fragmented data caused by inconsistent tagging.'
+    },
+    { 
+        id: 'seo', 
+        name: 'SEO Search', 
+        cat: 'Growth', 
+        icon: 'search', 
+        status: 'candidate',
+        desc: 'Identifies high-intent ATC keyword gaps.',
+        solves: 'Captures untapped organic search demand.'
+    },
+    { 
+        id: 'icp', 
+        name: 'ICP Agent', 
+        cat: 'Portfolio', 
+        icon: 'target', 
+        status: 'candidate',
+        desc: 'Refines Ideal Customer Profile targets.',
+        solves: 'Aligns sales and marketing on high-propensity accounts.'
+    },
+    { 
+        id: 'revenue', 
+        name: 'Revenue Intel', 
+        cat: 'Portfolio', 
+        icon: 'pie-chart', 
+        status: 'candidate',
+        desc: 'Predictive modeling for deal velocity.',
+        solves: 'Reduces slippage in the bottom-of-funnel pipeline.'
+    }
 ];
 
+// Initialize popularity data
+let candidateInterest = {
+    'reporting': 42,
+    'readout': 28,
+    'utm': 15,
+    'seo': 12,
+    'icp': 9,
+    'revenue': 5
+};
 
 
 function init() {
     const grid = document.getElementById('agent-grid');
     if (!grid) return;
 
-    // 1. Reset grid to a standard 3-column layout to match your dashboard's natural width
+    // Reset grid layout
     grid.className = "grid grid-cols-1 md:grid-cols-3 gap-6 w-full";
 
-    const createCard = (a) => {
+    // 1. SORT CANDIDATES BY INTEREST
+    const sortedCandidates = agents
+        .filter(a => a.status === 'candidate')
+        .sort((a, b) => (candidateInterest[b.id] || 0) - (candidateInterest[a.id] || 0));
+
+    // 2. HELPER: ACTIVE & SOON CARDS
+    const createActiveCard = (a) => {
         const isActive = a.status === 'active';
         const isSoon = a.status === 'soon';
-
-        const borderClass = isActive 
-            ? "border-blue-500/50 hover:border-blue-400 bg-slate-900/50 shadow-lg shadow-blue-500/5" 
-            : "border-slate-800/60 bg-slate-900/10 opacity-60 cursor-not-allowed";
         
-        const interactivity = isActive ? "hover:bg-slate-800 cursor-pointer" : "";
+        const activeDot = isActive ? `
+            <span class="absolute top-3 left-3 flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>` : "";
 
-        const badge = isSoon 
-            ? `<span class="absolute top-2 right-2 text-[7px] bg-slate-900 text-blue-400 px-1.5 py-0.5 rounded uppercase font-black tracking-tighter border border-blue-500/20">Soon</span>` 
-            : "";
+        const badge = isSoon ? `
+            <span class="absolute top-3 right-3 text-[7px] bg-slate-900 text-blue-400 px-1.5 py-0.5 rounded uppercase font-black border border-blue-500/20">Soon</span>
+        ` : "";
 
         return `
-            <div class="agent-button card p-6 flex flex-col items-center justify-center text-center transition-all relative group border-2 ${borderClass} ${interactivity}" 
-                 ${isActive ? `onclick="launchAgent('${a.id}')"` : ''}>
+            <div class="h-44 p-6 flex flex-col items-center justify-center text-center transition-all relative group border-2 rounded-2xl 
+                 ${isActive ? 'border-blue-500/50 hover:border-blue-400 bg-slate-900/50 cursor-pointer shadow-lg shadow-blue-500/5' : 'border-slate-800/60 bg-slate-900/10 opacity-70 cursor-pointer'}" 
+                 onclick="handleAgentClick('${a.id}', '${a.status}')">
+                ${activeDot} 
                 ${badge}
                 <div class="w-12 h-12 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center ${isActive ? 'group-hover:bg-blue-600 group-hover:text-white' : ''} transition-all">
                     <i data-lucide="${a.icon}" class="w-6 h-6"></i>
                 </div>
-                <h4 class="text-[10px] font-bold ${isActive ? 'text-slate-200' : 'text-slate-500'} uppercase tracking-widest leading-tight">${a.name}</h4>
+                <h4 class="text-[10px] font-bold ${isActive ? 'text-slate-200' : 'text-slate-500'} uppercase tracking-widest px-2">${a.name}</h4>
                 <span class="text-[8px] text-slate-600 mt-1 uppercase font-medium tracking-tighter">${a.cat}</span>
             </div>
         `;
     };
 
-    const activeHTML = agents.filter(a => a.status === 'active').map(createCard).join('');
-    const soonHTML = agents.filter(a => a.status === 'soon').map(createCard).join('');
-    
-    const candidateHTML = agents.filter(a => a.status === 'candidate').map(a => `
-        <div class="p-4 flex flex-col items-center justify-center text-center border border-slate-800/50 rounded-xl opacity-30 grayscale bg-slate-950/50">
-            <i data-lucide="${a.icon}" class="w-4 h-4 text-slate-600 mb-2"></i>
-            <h4 class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">${a.name}</h4>
-        </div>
-    `).join('');
+    // 3. HELPER: BACKLOG ROW
+    const createCandidateRow = (a) => `
+        <div class="flex items-center justify-between p-4 px-6 border border-slate-800/40 rounded-xl opacity-40 hover:opacity-90 transition-all cursor-pointer bg-slate-950/30 group mb-2"
+             onclick="logInterest('${a.id}')">
+            
+            <div class="flex items-center gap-6 flex-1">
+                <div class="p-2 rounded-lg bg-slate-900 group-hover:bg-slate-800 transition-colors">
+                    <i data-lucide="${a.icon}" class="w-4 h-4 text-slate-500 group-hover:text-blue-400"></i>
+                </div>
+                
+                <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-8">
+                    <div class="w-32">
+                        <h4 class="text-[9px] font-bold text-slate-300 uppercase tracking-widest leading-tight">${a.name}</h4>
+                        <span class="text-[7px] text-slate-700 font-bold uppercase tracking-tighter">Candidate</span>
+                    </div>
+                    
+                    <div class="flex flex-col border-l border-slate-800/50 pl-4">
+                        <p class="text-[9px] text-slate-400 font-medium leading-tight">
+                            <span class="text-slate-600 uppercase text-[7px] font-black mr-1">Impact:</span> ${a.desc}
+                        </p>
+                        <p class="text-[8px] text-slate-500 italic mt-0.5">
+                            <span class="text-slate-700 uppercase text-[7px] font-black not-italic mr-1">Solves:</span> ${a.solves}
+                        </p>
+                    </div>
+                </div>
+            </div>
 
+            <div class="text-right ml-4">
+                <div class="flex flex-col items-end">
+                    <span id="count-${a.id}" class="text-[9px] font-mono text-slate-600 group-hover:text-blue-500 uppercase font-black">
+                        ${candidateInterest[a.id] || 0}
+                    </span>
+                    <span class="text-[6px] text-slate-700 uppercase tracking-tighter">Interest Logged</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 4. RENDER
     grid.innerHTML = `
-        ${activeHTML}
-        ${soonHTML}
+        <div class="col-span-1 md:col-span-3 mb-2 px-2">
+            <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">Active Agents</h5>
+        </div>
+        
+        ${agents.filter(a => a.status === 'active' || a.status === 'soon').map(createActiveCard).join('')}
 
-        <div class="col-span-1 md:col-span-3 mt-8 mb-2">
+        <div class="col-span-1 md:col-span-3 mt-12 mb-4 px-2">
             <div class="flex items-center gap-4">
-                <h5 class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] whitespace-nowrap">Future Candidates</h5>
-                <div class="w-full h-[1px] bg-slate-800/50"></div>
+                <h5 class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] whitespace-nowrap">Development Backlog</h5>
+                <div class="w-full h-[1px] bg-slate-800/40"></div>
             </div>
         </div>
 
-        <div class="col-span-1 md:col-span-3">
-            <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
-                ${candidateHTML}
-            </div>
+        <div class="col-span-1 md:col-span-3 flex flex-col">
+            ${sortedCandidates.map(createCandidateRow).join('')}
         </div>
     `;
 
     if (window.lucide) lucide.createIcons();
 }
+
 
 // The Ignition Function
 async function toggleUniversalAI(checkbox) {
@@ -1607,6 +1703,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
