@@ -36,11 +36,11 @@
         .card { background: #1e293b; border: 1px solid #334155; border-radius: 1rem; }
         
         /* Grid Brute Force */
+        /* Remove the repeat(5, 1fr) entirely */
         #agent-grid {
             display: grid !important;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
-            gap: 1rem !important;
-            min-height: 100px;
+            gap: 1.5rem !important; /* Give them more breathing room */
+            width: 100% !important;
         }
         @media (min-width: 768px) { #agent-grid { grid-template-columns: repeat(5, 1fr) !important; } }
 
@@ -83,7 +83,7 @@
         </div>
 
         <div class="space-y-4">
-            <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Available Agents</h3>
+            <h3 class="text-[10px] font-bold uppercase tracking-[0.2em] text-blue-400">Active Agents</h3>
             <div id="agent-grid"></div>
         </div>
     </div>
@@ -91,4 +91,5 @@
     <script src="app.js"></script>
 </body>
 </html>
+
 
