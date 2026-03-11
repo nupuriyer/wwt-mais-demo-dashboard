@@ -346,17 +346,17 @@ let candidateInterest = {
 };
 
 function init() {
-    const container = document.getElementById('agent-grid');
-    if (!container) return;
+    const grid = document.getElementById('agent-grid');
+    if (!grid) return;
 
-    // Reset the main container to be a single-column stack
-    container.className = "flex flex-col gap-8 w-full";
+    // REVERT: Back to the stable 3-column grid you had originally
+    grid.className = "grid grid-cols-1 md:grid-cols-3 gap-6 w-full";
 
     const sortedCandidates = agents
         .filter(a => a.status === 'candidate')
         .sort((a, b) => (candidateInterest[b.id] || 0) - (candidateInterest[a.id] || 0));
 
-    // Helper: Top Row Cards
+    // Helper: Active/Soon Cards (Standard 1-column span)
     const createActiveCard = (a) => {
         const isActive = a.status === 'active';
         const isSoon = a.status === 'soon';
@@ -364,8 +364,7 @@ function init() {
         const badge = isSoon ? `<span class="absolute top-3 right-3 text-[7px] bg-slate-900 text-blue-400 px-1.5 py-0.5 rounded uppercase font-black border border-blue-500/20">Soon</span>` : "";
 
         return `
-            <div class="h-44 p-6 flex flex-col items-center justify-center text-center transition-all relative group border-2 rounded-2xl 
-                 ${isActive ? 'border-blue-500/50 hover:border-blue-400 bg-slate-900/50 cursor-pointer shadow-lg shadow-blue-500/5' : 'border-slate-800/60 bg-slate-900/10 opacity-70 cursor-pointer'}" 
+            <div class="h-44 p-6 flex flex-col items-center justify-center text-center transition-all relative group border-2 rounded-2xl ${isActive ? 'border-blue-500/50 hover:border-blue-400 bg-slate-900/50 cursor-pointer shadow-lg shadow-blue-500/5' : 'border-slate-800/60 bg-slate-900/10 opacity-70 cursor-pointer'}" 
                  onclick="handleAgentClick('${a.id}', '${a.status}')">
                 ${activeDot} ${badge}
                 <div class="w-12 h-12 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center ${isActive ? 'group-hover:bg-blue-600 group-hover:text-white' : ''} transition-all">
@@ -377,20 +376,20 @@ function init() {
         `;
     };
 
-    // Helper: Candidate Row
+    // Helper: Candidate Row (Spans full width)
     const createCandidateRow = (a) => `
-        <div class="flex items-center justify-between p-4 px-6 border border-slate-800/40 rounded-xl opacity-40 hover:opacity-90 transition-all cursor-pointer bg-slate-950/30 group"
+        <div class="col-span-1 md:col-span-3 flex items-center justify-between p-4 px-6 border border-slate-800/40 rounded-xl opacity-40 hover:opacity-90 transition-all cursor-pointer bg-slate-950/30 group mb-2"
              onclick="logInterest('${a.id}')">
             <div class="flex items-center gap-6 flex-1">
                 <div class="p-2 rounded-lg bg-slate-900 group-hover:bg-slate-800 transition-colors">
                     <i data-lucide="${a.icon}" class="w-4 h-4 text-slate-500 group-hover:text-blue-400"></i>
                 </div>
-                <div class="flex flex-col md:flex-row md:items-center gap-8">
+                <div class="flex flex-col md:flex-row md:items-center gap-8 text-left">
                     <div class="w-32">
-                        <h4 class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">${a.name}</h4>
+                        <h4 class="text-[9px] font-bold text-slate-300 uppercase tracking-widest leading-tight">${a.name}</h4>
                         <span class="text-[7px] text-slate-700 font-bold uppercase tracking-tighter">Candidate</span>
                     </div>
-                    <div class="flex flex-col border-l border-slate-800/50 pl-4 text-left">
+                    <div class="flex flex-col border-l border-slate-800/50 pl-4">
                         <p class="text-[9px] text-slate-400 font-medium leading-tight">
                             <span class="text-slate-600 uppercase text-[7px] font-black mr-1">Impact:</span> ${a.desc}
                         </p>
@@ -401,7 +400,7 @@ function init() {
                 </div>
             </div>
             <div class="text-right ml-4 min-w-[80px]">
-                <span id="count-${a.id}" class="text-[10px] font-mono text-slate-600 group-hover:text-blue-400 uppercase font-black transition-colors">
+                <span id="count-${a.id}" class="text-[10px] font-mono text-slate-600 group-hover:text-blue-400 uppercase font-black">
                     ${candidateInterest[a.id] || 0}
                 </span>
                 <div class="text-[6px] text-slate-700 uppercase tracking-tighter">Interest Logged</div>
@@ -409,24 +408,21 @@ function init() {
         </div>
     `;
 
-    // THE RENDER
-    container.innerHTML = `
-        <div class="w-full">
-            <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em] mb-4 px-2">Active Agents</h5>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                ${agents.filter(a => a.status === 'active' || a.status === 'soon').map(createActiveCard).join('')}
+    grid.innerHTML = `
+        <div class="col-span-1 md:col-span-3 mb-2 px-2">
+            <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">Active Agents</h5>
+        </div>
+        
+        ${agents.filter(a => a.status === 'active' || a.status === 'soon').map(createActiveCard).join('')}
+
+        <div class="col-span-1 md:col-span-3 mt-12 mb-4 px-2">
+            <div class="flex items-center gap-4">
+                <h5 class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] whitespace-nowrap">Development Backlog</h5>
+                <div class="w-full h-[1px] bg-slate-800/40"></div>
             </div>
         </div>
 
-        <div class="w-full mt-4">
-            <div class="flex items-center gap-4 mb-6 px-2">
-                <h5 class="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] whitespace-nowrap">Potential Future Candidates</h5>
-                <div class="w-full h-[1px] bg-slate-800/40"></div>
-            </div>
-            <div class="flex flex-col gap-3">
-                ${sortedCandidates.map(createCandidateRow).join('')}
-            </div>
-        </div>
+        ${sortedCandidates.map(createCandidateRow).join('')}
     `;
 
     if (window.lucide) lucide.createIcons();
@@ -1709,6 +1705,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
