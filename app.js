@@ -216,32 +216,62 @@ const emailDraftDB = {
 
 const industryGapDB = {
     "healthcare": {
-        industry: "Healthcare & Life Sciences",
-        gap: "Clinical Edge Computing",
-        trend: "74% increase in 'Hospital-at-Home' infrastructure searches.",
-        opportunity: "WWT has strong Edge labs but lacks a specific 'Clinical-at-the-Edge' reference architecture for remote patient monitoring.",
+        industry: "Healthcare",
+        gap: "Clinical AI Orchestration",
+        trend: "74% surge in 'Hospital-at-Home' and 'AI-Imaging' infrastructure.",
+        opportunity: "WWT can lead by validating MLOps blueprints for clinical edge compute in the ATC.",
         outline: {
             title: "The Hospital Without Walls: Scaling Clinical AI to the Edge",
             sections: [
-                "The shift from centralized Data Centers to bedside compute.",
-                "Reducing latency in real-time patient vitals monitoring.",
-                "Security: HIPAA compliance in a decentralized Edge network.",
-                "The ATC Blueprint: Validating Edge pods for hospital environments."
+                "DECENTRALIZED CARE MODELS: Analyzing the transition from centralized hospital data centers to bedside and in-home compute pods. Focus on maintaining data integrity across disparate locations using Cisco SD-WAN and AppDynamics for visibility.",
+                "LATENCY-CRITICAL INFERENCE: Optimizing NVIDIA Clara and GPU-accelerated workloads for real-time patient vitals. How the ATC validates sub-millisecond response times for critical care AI models through hardware-level tuning.",
+                "ZERO TRUST IO_MT: Securing the medical perimeter. Implementation of micro-segmentation for connected medical devices to prevent lateral movement of threats within hospital networks, validated in the WWT Cyber Range.",
+                "MULTIVENDOR ATC BLUEPRINT: The physical truth of integration. Validating the interoperability of Pure Storage FlashBlade and Cisco UCS for high-speed medical imaging retrieval and archival."
             ]
         }
     },
     "energy": {
         industry: "Energy & Utilities",
-        gap: "Grid Modernization AI",
-        trend: "Surge in 'Renewable Integration' and 'Smart Grid Security' queries.",
-        opportunity: "High interest in Cisco/NVIDIA utility plays; WWT can lead by showing the 'Physical Truth' of grid simulations.",
+        gap: "OT/IT Convergence Security",
+        trend: "Federal mandates for 'Grid Cybersecurity' and 'Green Hydrogen' pilots.",
+        opportunity: "Leverage ATC Digital Twin simulations to show the 'Physical Truth' of grid attacks.",
         outline: {
-            title: "Securing the Transition: AI-Driven Grid Resiliency",
+            title: "Hardening the Grid: A Blueprint for OT/IT AI Integration",
             sections: [
-                "Predictive maintenance for aging utility infrastructure.",
-                "Managing the load: Integrating renewables with AI forecasting.",
-                "Zero Trust for the Power Grid: Protecting Operational Technology (OT).",
-                "Case Study: Digital Twin simulation of a regional substation."
+                "THE OT/IT DIVIDE: Bridging legacy operational technology with modern IT AI analytics. Strategies for data extraction from substations without compromising grid stability or NERC CIP compliance.",
+                "RUGGEDIZED COMPUTE: Deploying AI at the substation level. Analyzing Cisco’s industrial Ethernet and compute stacks designed for harsh environmental conditions, tested for heat and vibration in WWT labs.",
+                "CYBER RANGE SIMULATION: Utilizing the WWT Cyber Range to simulate 'Black Sky' events. Testing AI-driven threat detection against simulated grid-specific ransomware attacks on PLCs and SCADA systems.",
+                "GRID MODERNIZATION ROI: Building the business case for AI-driven predictive maintenance. Using sensor data to extend the lifecycle of aging transformers and power lines through digital twin modeling."
+            ]
+        }
+    },
+    "finance": {
+        industry: "Financial Services",
+        gap: "Fraud Detection at Scale",
+        trend: "Shift toward 'Real-Time Payment' security and 'Quantum-Safe' encryption.",
+        opportunity: "Banks struggle with GPU costs; WWT can lead with AI Infrastructure FinOps.",
+        outline: {
+            title: "The Secure Vault: High-Performance AI for Modern Finance",
+            sections: [
+                "LOW-LATENCY FRAUD: Running AI inference at the transaction point. Utilizing NVIDIA H100 clusters validated in the ATC to identify anomalies in milliseconds without affecting consumer experience.",
+                "QUANTUM READINESS: Preparing for post-quantum cryptographic standards. Analyzing the impact of Q-day on financial data encryption and testing hardware-based security modules (HSMs).",
+                "HYBRID CLOUD FINOPS: Balancing core banking data with public cloud AI. Strategies for reducing the TCO of massive GPU clusters through intelligent resource scheduling and ATC performance benchmarking.",
+                "SECURE DATA FLYWHEELS: Creating compliant data pipelines for AI training. How WWT integrates NetApp and Snowflake to ensure data sovereignty while enabling rapid model iteration."
+            ]
+        }
+    },
+    "telco": {
+        industry: "Telecommunications",
+        gap: "Open RAN AI Optimization",
+        trend: "Massive investment in 5G SA and 'AI-Native' network management.",
+        opportunity: "Use the ATC to showcase multivendor interoperability for Open RAN deployments.",
+        outline: {
+            title: "Connected Intelligence: AI-Native Foundations for 5G",
+            sections: [
+                "NETWORK SLICING: AI-driven resource allocation for enterprise 5G. Using the ATC to simulate high-density environments and validate dynamic bandwidth steering for mission-critical apps.",
+                "RAN EFFICIENCY: Reducing energy consumption via intelligent beamforming. How AI-native network stacks can lower operational costs by powering down radio components during low-traffic periods.",
+                "EDGE MONETIZATION: Building low-latency application stacks for smart cities. Validating the integration of Dell PowerEdge and VMware Telco Cloud for distributed MEC deployments.",
+                "VENDOR INTEROP: The WWT advantage in Open RAN. Testing the 'Plug-and-Play' reality of O-RAN components from different vendors to ensure seamless carrier-grade performance."
             ]
         }
     }
@@ -932,36 +962,44 @@ function launchAgent(id) {
         if (id === 'industry') {
     content.innerHTML = `
         <div class="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
-            <div class="flex items-center justify-between px-2">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
                 <div class="flex items-center gap-4">
                     <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
                     <div>
                         <h3 class="text-xl font-bold text-white tracking-tight">Industry Content Architect</h3>
-                        <p id="context-breadcrumb" class="text-[10px] text-blue-500 font-mono uppercase tracking-widest mt-1 hidden"></p>
+                        <p id="context-breadcrumb" class="text-[9px] text-blue-500 font-mono uppercase tracking-widest mt-1 hidden"></p>
                     </div>
+                </div>
+                
+                <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
+                    ${['Whitepaper', 'Case Study', 'POV'].map(type => `
+                        <button onclick="setContentType('${type}')" id="btn-${type}" class="px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${type === 'Whitepaper' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}">
+                            ${type}
+                        </button>
+                    `).join('')}
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                ${['healthcare', 'energy', 'telecommunications', 'manufacturing'].map(key => `
-                    <div onclick="runIndustryAnalysis('${key}')" class="bg-slate-900 border border-slate-800 p-4 rounded-2xl cursor-pointer hover:border-blue-500 transition-all group">
-                        <div class="w-10 h-10 bg-slate-950 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                            <i data-lucide="${key === 'healthcare' ? 'heart-pulse' : key === 'energy' ? 'zap' : key === 'telecommunications' ? 'rss' : 'factory'}" class="w-5 h-5 text-slate-500 group-hover:text-blue-400"></i>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                ${['healthcare', 'energy', 'finance', 'telco'].map(key => `
+                    <button onclick="runIndustryAnalysis('${key}')" id="ind-btn-${key}" class="flex items-center gap-3 bg-slate-950 border border-slate-800/60 p-3 rounded-xl hover:border-blue-500/50 transition-all group overflow-hidden">
+                        <div class="p-2 bg-slate-900 rounded-lg group-hover:bg-blue-600/10 transition-colors">
+                            <i data-lucide="${key === 'healthcare' ? 'heart-pulse' : key === 'energy' ? 'zap' : key === 'finance' ? 'landmark' : 'rss'}" class="w-4 h-4 text-slate-500 group-hover:text-blue-400"></i>
                         </div>
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${key}</span>
-                    </div>
+                        <span class="text-[9px] font-black uppercase tracking-tighter text-slate-500 group-hover:text-white truncate text-left">${key}</span>
+                    </button>
                 `).join('')}
             </div>
 
             <div id="industry-result" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div class="lg:col-span-4 space-y-6">
-                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-3xl space-y-4">
+                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
                         <div class="inline-flex px-2 py-1 bg-blue-500/10 text-blue-400 text-[8px] font-black uppercase tracking-widest rounded">Target Gap</div>
                         <h2 id="ind-gap" class="text-2xl font-bold text-white leading-tight"></h2>
-                        <p id="ind-trend" class="text-xs text-slate-500 italic"></p>
+                        <p id="ind-trend" class="text-xs text-slate-500 italic leading-relaxed"></p>
                     </div>
-                    <div class="bg-emerald-500/5 border border-emerald-500/20 p-6 rounded-3xl">
-                        <h5 class="text-emerald-400 text-[10px] font-black uppercase mb-3">The Opportunity</h5>
+                    <div class="bg-blue-600/5 border border-blue-500/20 p-6 rounded-3xl">
+                        <h5 class="text-blue-400 text-[10px] font-black uppercase mb-3 tracking-widest">The Opportunity</h5>
                         <p id="ind-opp" class="text-white text-sm leading-relaxed"></p>
                     </div>
                 </div>
@@ -969,24 +1007,19 @@ function launchAgent(id) {
                 <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
                     <div class="bg-slate-950 px-8 py-4 border-b border-slate-800 flex justify-between items-center">
                         <div class="flex items-center gap-3">
-                            <span id="ind-type" class="text-[9px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md font-bold uppercase tracking-tighter">Whitepaper</span>
+                            <span id="ind-type-label" class="text-[9px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md font-bold uppercase tracking-tighter">Whitepaper</span>
                             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Interactive Blueprint</span>
                         </div>
-                        <div class="flex gap-2">
-                             <button onclick="launchAgent('email-agent')" class="flex items-center gap-2 px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded-lg transition-all shadow-lg shadow-blue-900/40">
-                                <i data-lucide="mail" class="w-3 h-3"></i> Draft Promo Email
-                            </button>
-                        </div>
+                        <button onclick="launchAgent('email-agent')" class="group flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded-lg transition-all shadow-lg shadow-blue-900/40">
+                            <i data-lucide="mail" class="w-3 h-3"></i> Draft Outreach
+                        </button>
                     </div>
-                    
                     <div class="p-8 space-y-8">
                         <div class="space-y-2">
                             <label class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Main Headline</label>
                             <input id="ind-title" class="w-full bg-transparent text-2xl font-bold text-white border-b border-slate-800 focus:border-blue-500 outline-none pb-2 transition-colors">
                         </div>
-                        
-                        <div id="ind-sections" class="space-y-6">
-                            </div>
+                        <div id="ind-sections" class="space-y-6"></div>
                     </div>
                 </div>
             </div>
@@ -1556,84 +1589,85 @@ function simulatePush() {
 
 // Ensure this matches your existing DB keys (e.g., 'cloud-migration', 'edge-computing')
 // Add 'key' as a parameter so buttons can pass "energy" or "healthcare"
+let currentContentType = 'Whitepaper';
+
+function setContentType(type) {
+    currentContentType = type;
+    // Update button styles
+    ['Whitepaper', 'Case Study', 'POV'].forEach(t => {
+        const el = document.getElementById(`btn-${t}`);
+        if (el) el.className = (t === type) 
+            ? "px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg bg-blue-600 text-white shadow-lg"
+            : "px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg text-slate-500 hover:text-slate-300";
+    });
+    // Update label and re-run if already viewing results
+    const label = document.getElementById('ind-type-label');
+    if (label) label.innerText = currentContentType;
+}
+
 async function runIndustryAnalysis(key, externalData = null) {
-    const activeKey = key || "healthcare";
+    // 1. Resolve Key (Handles "healthcare" or "Energy" or "Finance")
+    const activeKey = key ? key.toLowerCase().split(' ')[0] : "healthcare";
     const data = industryGapDB[activeKey];
     if (!data) return;
 
     const resultArea = document.getElementById('industry-result');
     
-    // UI Feedback: Show what we are working on
-    if (externalData) {
-        const breadcrumb = document.getElementById('context-breadcrumb');
+    // 2. Handle Context Breadcrumb
+    const breadcrumb = document.getElementById('context-breadcrumb');
+    if (externalData && breadcrumb) {
         breadcrumb.innerText = `Source: Competitor Intel | Topic: ${externalData.topic}`;
         breadcrumb.classList.remove('hidden');
     }
 
-    // Populate Baseline
+    // 3. Initial UI Population
     document.getElementById('ind-gap').innerText = data.gap;
     document.getElementById('ind-trend').innerText = data.trend;
     document.getElementById('ind-opp').innerText = data.opportunity;
     document.getElementById('ind-title').value = data.outline.title;
 
-    // Build Editable Sections
     const sectionsContainer = document.getElementById('ind-sections');
-    sectionsContainer.innerHTML = data.outline.sections.map((s, i) => `
-        <div class="group space-y-2">
-            <div class="flex items-center gap-3">
-                <span class="text-[10px] font-mono text-blue-500/50 font-bold italic">Module 0${i+1}</span>
-                <div class="h-px flex-1 bg-slate-800 group-hover:bg-slate-700 transition-colors"></div>
+    sectionsContainer.innerHTML = data.outline.sections.map((s, i) => {
+        const rowCount = currentContentType === 'Whitepaper' ? 4 : 3;
+        return `
+            <div class="group space-y-2">
+                <div class="flex items-center gap-3">
+                    <span class="text-[9px] font-mono text-blue-500/50 font-bold italic">Module 0${i+1}</span>
+                    <div class="h-px flex-1 bg-slate-800 group-hover:bg-slate-700 transition-colors"></div>
+                </div>
+                <textarea class="w-full bg-slate-950/50 border border-slate-800/50 rounded-xl p-4 text-sm text-slate-300 focus:border-blue-500/50 focus:bg-slate-950 outline-none transition-all resize-none leading-relaxed" rows="${rowCount}">${s}</textarea>
             </div>
-            <textarea class="w-full bg-slate-950/50 border border-slate-800/50 rounded-xl p-4 text-sm text-slate-300 focus:border-blue-500/50 focus:bg-slate-950 outline-none transition-all resize-none" rows="2">${s}</textarea>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 
     resultArea.classList.remove('hidden');
 
-    // Trigger AI Refinement if enabled
-    if (AI_ENABLED && SESSION_AI_KEY) {
-    // 1. Gather context from the UI for refinement
-    const currentTitle = document.getElementById('ind-title').value;
-    const currentGap = document.getElementById('ind-gap').innerText;
-    
-    // UI Feedback: Show the user the AI is "Thinking"
-    document.getElementById('ind-title').value = "Refining strategy...";
-    const textareas = document.querySelectorAll('#ind-sections textarea');
-    textareas.forEach(t => t.placeholder = "AI is generating deeper insights...");
+    // 4. AI Strategic Deep-Dive
+    if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
+        const textareas = document.querySelectorAll('#ind-sections textarea');
+        const titleInput = document.getElementById('ind-title');
+        const originalTitle = titleInput.value;
+        titleInput.value = "AI is refining technical depth...";
 
-    const context = `Industry: ${data.industry}. Current Title: ${currentTitle}. Gap: ${currentGap}.`;
-    const prompt = `${INDUSTRY_AI_PROMPT}\n\nContext: ${context}`;
+        const prompt = `${INDUSTRY_AI_PROMPT}\n\nContext: Industry: ${data.industry}, Format: ${currentContentType}, Current Topic: ${data.gap}`;
 
-    try {
-        const aiResponse = await callGemini(prompt);
-        
-        if (aiResponse) {
-            const lines = aiResponse.split('\n');
-            
-            // Extract type and angle
-            const aiType = lines.find(l => l.startsWith('Type:'))?.split(': ')[1];
-            const aiTitle = lines.find(l => l.startsWith('Angle:'))?.split(': ')[1];
+        try {
+            const aiResponse = await callGemini(prompt);
+            if (aiResponse) {
+                const lines = aiResponse.split('\n');
+                const aiTitle = lines.find(l => l.startsWith('Angle:'))?.split(': ')[1];
+                if (aiTitle) titleInput.value = `✨ ${aiTitle.replace(/["]/g, '')}`;
 
-            // Update UI with the "✨" marks to show AI contribution
-            if (aiType) document.getElementById('ind-type').innerText = `✨ ${aiType}`;
-            if (aiTitle) document.getElementById('ind-title').value = aiTitle;
-
-            // Map the S1, S2, S3, S4 lines to the textareas
-            textareas.forEach((area, index) => {
-                const sectionKey = `S${index + 1}:`;
-                const content = lines.find(l => l.startsWith(sectionKey))?.split(': ')[1];
-                if (content) {
-                    // We split the Title and Insight for better formatting
-                    const [title, insight] = content.split('|');
-                    area.value = `${title.trim().toUpperCase()}: ${insight.trim()}`;
-                }
-            });
+                textareas.forEach((area, index) => {
+                    const content = lines.find(l => l.startsWith(`S${index + 1}:`))?.split(': ')[1];
+                    if (content) area.value = content.trim();
+                });
+            }
+        } catch (e) {
+            titleInput.value = originalTitle;
+            console.warn("AI Refinement failed, keeping WWT baseline.");
         }
-    } catch (e) {
-        console.warn("Content Refinement failed. Keeping baseline DB content.");
-        document.getElementById('ind-title').value = data.outline.title; // Reset on failure
     }
-}
 
     if (window.lucide) lucide.createIcons();
 }
@@ -1783,6 +1817,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
