@@ -277,7 +277,7 @@ const agents = [
     // COMING SOON
     { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail', status: 'soon' },
 
-    // DEVELOPMENT BACKLOG (CANDIDATES)
+    // DEVELOPMENT BACKLOG (CANDIDATES - Mapped to Image)
     { 
         id: 'reporting', 
         name: 'Performance Agent', 
@@ -333,6 +333,7 @@ const agents = [
         solves: 'Reduces slippage in the bottom-of-funnel pipeline.'
     }
 ];
+
 
 // Initialize popularity data
 let candidateInterest = {
@@ -415,8 +416,79 @@ function init() {
             </div>
 
             <div class="text-right ml-4">
+function init() {
+    const grid = document.getElementById('agent-grid');
+    if (!grid) return;
+
+    // Standardized 3-column grid for the whole container
+    grid.className = "grid grid-cols-1 md:grid-cols-3 gap-6 w-full";
+
+    // Sort candidates by current interest levels
+    const sortedCandidates = agents
+        .filter(a => a.status === 'candidate')
+        .sort((a, b) => (candidateInterest[b.id] || 0) - (candidateInterest[a.id] || 0));
+
+    // Helper: Active & Soon Cards
+    const createActiveCard = (a) => {
+        const isActive = a.status === 'active';
+        const isSoon = a.status === 'soon';
+        
+        // Emerald Pulse for Active Agents
+        const activeDot = isActive ? `
+            <span class="absolute top-3 left-3 flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>` : "";
+
+        const badge = isSoon ? `
+            <span class="absolute top-3 right-3 text-[7px] bg-slate-900 text-blue-400 px-1.5 py-0.5 rounded uppercase font-black border border-blue-500/20">Soon</span>
+        ` : "";
+
+        return `
+            <div class="h-44 p-6 flex flex-col items-center justify-center text-center transition-all relative group border-2 rounded-2xl 
+                 ${isActive ? 'border-blue-500/50 hover:border-blue-400 bg-slate-900/50 cursor-pointer shadow-lg shadow-blue-500/5' : 'border-slate-800/60 bg-slate-900/10 opacity-70 cursor-pointer'}" 
+                 onclick="handleAgentClick('${a.id}', '${a.status}')">
+                ${activeDot} 
+                ${badge}
+                <div class="w-12 h-12 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center ${isActive ? 'group-hover:bg-blue-600 group-hover:text-white' : ''} transition-all">
+                    <i data-lucide="${a.icon}" class="w-6 h-6"></i>
+                </div>
+                <h4 class="text-[10px] font-bold ${isActive ? 'text-slate-200' : 'text-slate-500'} uppercase tracking-widest px-2">${a.name}</h4>
+                <span class="text-[8px] text-slate-600 mt-1 uppercase font-medium tracking-tighter">${a.cat}</span>
+            </div>
+        `;
+    };
+
+    // Helper: Candidate Row
+    const createCandidateRow = (a) => `
+        <div class="flex items-center justify-between p-4 px-6 border border-slate-800/40 rounded-xl opacity-40 hover:opacity-90 transition-all cursor-pointer bg-slate-950/30 group mb-2"
+             onclick="logInterest('${a.id}')">
+            
+            <div class="flex items-center gap-6 flex-1">
+                <div class="p-2 rounded-lg bg-slate-900 group-hover:bg-slate-800 transition-colors">
+                    <i data-lucide="${a.icon}" class="w-4 h-4 text-slate-500 group-hover:text-blue-400"></i>
+                </div>
+                
+                <div class="flex flex-col md:flex-row md:items-center gap-8">
+                    <div class="w-32">
+                        <h4 class="text-[9px] font-bold text-slate-300 uppercase tracking-widest leading-tight">${a.name}</h4>
+                        <span class="text-[7px] text-slate-700 font-bold uppercase tracking-tighter">Candidate</span>
+                    </div>
+                    
+                    <div class="flex flex-col border-l border-slate-800/50 pl-4">
+                        <p class="text-[9px] text-slate-400 font-medium leading-tight">
+                            <span class="text-slate-600 uppercase text-[7px] font-black mr-1">Impact:</span> ${a.desc}
+                        </p>
+                        <p class="text-[8px] text-slate-500 italic mt-0.5">
+                            <span class="text-slate-700 uppercase text-[7px] font-black not-italic mr-1">Solves:</span> ${a.solves}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-right ml-4">
                 <div class="flex flex-col items-end">
-                    <span id="count-${a.id}" class="text-[9px] font-mono text-slate-600 group-hover:text-blue-500 uppercase font-black">
+                    <span id="count-${a.id}" class="text-[9px] font-mono text-slate-600 group-hover:text-blue-400 uppercase font-black">
                         ${candidateInterest[a.id] || 0}
                     </span>
                     <span class="text-[6px] text-slate-700 uppercase tracking-tighter">Interest Logged</span>
@@ -425,7 +497,7 @@ function init() {
         </div>
     `;
 
-    // 4. RENDER
+    // Final Render: All top-level cards in one row, candidates below
     grid.innerHTML = `
         <div class="col-span-1 md:col-span-3 mb-2 px-2">
             <h5 class="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">Active Agents</h5>
@@ -448,6 +520,28 @@ function init() {
     if (window.lucide) lucide.createIcons();
 }
 
+function logInterest(agentId) {
+    // 1. Increment the data
+    candidateInterest[agentId] = (candidateInterest[agentId] || 0) + 1;
+    
+    // 2. Target the specific counter ID we built in createCandidateRow
+    const countEl = document.getElementById(`count-${agentId}`);
+    
+    if (countEl) {
+        // 3. Update text with a quick color flash to show interaction
+        countEl.innerText = candidateInterest[agentId];
+        countEl.classList.remove('text-slate-600');
+        countEl.classList.add('text-blue-400');
+        
+        // Reset color after a moment
+        setTimeout(() => {
+            countEl.classList.remove('text-blue-400');
+            countEl.classList.add('text-slate-600');
+        }, 500);
+    }
+    
+    console.log(`📈 Popularity Data: +1 for ${agentId}. Total: ${candidateInterest[agentId]}`);
+}
 
 // The Ignition Function
 async function toggleUniversalAI(checkbox) {
@@ -1703,6 +1797,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
