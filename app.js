@@ -270,33 +270,57 @@ const utmHistory = [
 ];
 
 const agents = [
-    { id: 'utm', name: 'UTM Builder', cat: 'Digital', icon: 'link' },
-    { id: 'intel', name: 'Competitor Intel', cat: 'Strategy', icon: 'shield' },
-    { id: 'seo', name: 'SEO Search', cat: 'Growth', icon: 'search' },
-    { id: 'reporting', name: 'Performance Agent', cat: 'Revenue', icon: 'bar-chart-3' },
-    { id: 'icp', name: 'ICP Agent', cat: 'Portfolio', icon: 'target' },
-    { id: 'revenue', name: 'Revenue Intel', cat: 'Portfolio', icon: 'pie-chart' },
-    { id: 'industry', name: 'Industry Agent', cat: 'Portfolio', icon: 'factory' },
-    { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail' },
-    { id: 'readout', name: 'Readout Agent', cat: 'Marketing Ops', icon: 'file-text' } // The Final Piece!
+    // ACTIVE AGENTS
+    { id: 'intel', name: 'Competitor Intel', cat: 'Strategy', icon: 'shield', status: 'active' },
+    { id: 'industry', name: 'Industry Agent', cat: 'Portfolio', icon: 'factory', status: 'active' },
+
+    // COMING SOON
+    { id: 'email', name: 'Email Draft', cat: 'Campaigns', icon: 'mail', status: 'soon' },
+
+    // ROADMAP CANDIDATES
+    { id: 'utm', name: 'UTM Builder', cat: 'Digital', icon: 'link', status: 'candidate' },
+    { id: 'seo', name: 'SEO Search', cat: 'Growth', icon: 'search', status: 'candidate' },
+    { id: 'reporting', name: 'Performance Agent', cat: 'Revenue', icon: 'bar-chart-3', status: 'candidate' },
+    { id: 'icp', name: 'ICP Agent', cat: 'Portfolio', icon: 'target', status: 'candidate' },
+    { id: 'revenue', name: 'Revenue Intel', cat: 'Portfolio', icon: 'pie-chart', status: 'candidate' },
+    { id: 'readout', name: 'Readout Agent', cat: 'Marketing Ops', icon: 'file-text', status: 'candidate' }
 ];
+
 
 
 function init() {
     const grid = document.getElementById('agent-grid');
     if (grid) {
-        grid.innerHTML = agents.map(a => `
-            <div class="agent-button card p-4 flex flex-col items-center justify-center text-center cursor-pointer group hover:bg-slate-800 transition-all border-slate-700 hover:border-blue-500" onclick="launchAgent('${a.id}')">
-                <div class="w-10 h-10 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
-                    <i data-lucide="${a.icon}" class="w-5 h-5"></i>
+        grid.innerHTML = agents.map(a => {
+            // Define styles based on status
+            const isActive = a.status === 'active';
+            const isSoon = a.status === 'soon';
+            const isCandidate = a.status === 'candidate';
+
+            const statusClass = isActive 
+                ? "hover:bg-slate-800 border-slate-700 hover:border-blue-500 cursor-pointer" 
+                : "opacity-40 grayscale pointer-events-none border-dashed border-slate-800 cursor-not-allowed";
+            
+            const badge = isSoon 
+                ? `<span class="absolute top-2 right-2 text-[7px] bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded uppercase font-bold tracking-tighter">Soon</span>` 
+                : isCandidate ? `<span class="absolute top-2 right-2 text-[7px] bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded uppercase font-bold tracking-tighter">Candidate</span>` : "";
+
+            return `
+                <div class="agent-button card p-4 flex flex-col items-center justify-center text-center transition-all relative group ${statusClass}" 
+                     onclick="${isActive ? `launchAgent('${a.id}')` : ''}">
+                    ${badge}
+                    <div class="w-10 h-10 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center ${isActive ? 'group-hover:bg-blue-600 group-hover:text-white' : ''} transition-all">
+                        <i data-lucide="${a.icon}" class="w-5 h-5"></i>
+                    </div>
+                    <h4 class="text-[10px] font-bold text-slate-300 uppercase tracking-widest leading-tight">${a.name}</h4>
+                    <span class="text-[8px] text-slate-500 mt-1 uppercase font-medium tracking-tighter">${a.cat}</span>
                 </div>
-                <h4 class="text-[10px] font-bold text-slate-300 uppercase tracking-widest leading-tight">${a.name}</h4>
-                <span class="text-[8px] text-slate-500 mt-1 uppercase font-medium tracking-tighter">${a.cat}</span>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
     if (window.lucide) lucide.createIcons();
 }
+
 
 // The Ignition Function
 async function toggleUniversalAI(checkbox) {
@@ -1552,6 +1576,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
