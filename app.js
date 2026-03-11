@@ -363,24 +363,25 @@ function init() {
         .sort((a, b) => (candidateInterest[b.id] || 0) - (candidateInterest[a.id] || 0));
 
     // Helper: Active/Soon Cards
-    const createActiveCard = (a) => {
-        const isActive = a.status === 'active';
-        const isSoon = a.status === 'soon';
-        const activeDot = isActive ? `<span class="absolute top-3 left-3 flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>` : "";
-        const badge = isSoon ? `<span class="absolute top-3 right-3 text-[7px] bg-slate-900 text-blue-400 px-1.5 py-0.5 rounded uppercase font-black border border-blue-500/20">Soon</span>` : "";
+   // Inside your init() function, update this helper:
+const createActiveCard = (a) => {
+    const isActive = a.status === 'active';
+    const isSoon = a.status === 'soon';
+    const activeDot = isActive ? `<span class="absolute top-3 left-3 flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>` : "";
+    const badge = isSoon ? `<span class="absolute top-3 right-3 text-[7px] bg-slate-900 text-blue-400 px-1.5 py-0.5 rounded uppercase font-black border border-blue-500/20">Soon</span>` : "";
 
-        return `
-            <div class="h-44 p-6 flex flex-col items-center justify-center text-center transition-all relative group border-2 rounded-2xl ${isActive ? 'border-blue-500/50 hover:border-blue-400 bg-slate-900/50 cursor-pointer shadow-lg shadow-blue-500/5' : 'border-slate-800/60 bg-slate-900/10 opacity-70 cursor-pointer'}" 
-                 onclick="handleAgentClick('${a.id}', '${a.status}')">
-                ${activeDot} ${badge}
-                <div class="w-12 h-12 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center ${isActive ? 'group-hover:bg-blue-600 group-hover:text-white' : ''} transition-all">
-                    <i data-lucide="${a.icon}" class="w-6 h-6"></i>
-                </div>
-                <h4 class="text-[10px] font-bold ${isActive ? 'text-slate-200' : 'text-slate-500'} uppercase tracking-widest px-2">${a.name}</h4>
-                <span class="text-[8px] text-slate-600 mt-1 uppercase font-medium tracking-tighter">${a.cat}</span>
+    return `
+        <div class="h-44 p-6 flex flex-col items-center justify-center text-center transition-all relative group border-2 rounded-2xl ${isActive ? 'border-blue-500/50 hover:border-blue-400 bg-slate-900/50 cursor-pointer shadow-lg shadow-blue-500/5' : 'border-slate-800/60 bg-slate-900/10 opacity-70 cursor-not-allowed'}" 
+             onclick="${isActive ? `launchAgent('${a.id}')` : ''}">
+            ${activeDot} ${badge}
+            <div class="w-12 h-12 mb-3 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center ${isActive ? 'group-hover:bg-blue-600 group-hover:text-white' : ''} transition-all">
+                <i data-lucide="${a.icon}" class="w-6 h-6"></i>
             </div>
-        `;
-    };
+            <h4 class="text-[10px] font-bold ${isActive ? 'text-slate-200' : 'text-slate-500'} uppercase tracking-widest px-2">${a.name}</h4>
+            <span class="text-[8px] text-slate-600 mt-1 uppercase font-medium tracking-tighter">${a.cat}</span>
+        </div>
+    `;
+};
 
     // Helper: Potential Future Candidate Row
     const createCandidateRow = (a) => `
@@ -1718,6 +1719,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
