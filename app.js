@@ -2,6 +2,14 @@
 let SESSION_AI_KEY = null;
 let AI_ENABLED = false;
 
+const INDUSTRY_KEY_MAP = {
+    "Telecommunications": "telco",
+    "Healthcare": "healthcare",
+    "Energy": "energy",
+    "Financial Services": "finance",
+    "Manufacturing": "manufacturing",
+    "Public Sector": "public"
+};
 
 const UTM_AI_SYSTEM_PROMPT = `You are a WWT Marketing Data Guardrail.
 Task: Provide a 5-word strategic reason for a UTM correction.
@@ -547,7 +555,7 @@ async function callGemini(prompt) {
 window.onload = init;
 
 
-function launchAgent(id) {
+function launchAgent(id, context = null) {
     document.getElementById('stage-placeholder').classList.add('hidden');
     const content = document.getElementById('stage-content');
     content.classList.remove('hidden');
@@ -993,37 +1001,42 @@ function launchAgent(id) {
 
             <div id="industry-result" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div class="lg:col-span-4 space-y-6">
-                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-xl">
+                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-3xl space-y-4">
                         <div class="inline-flex px-2 py-1 bg-blue-500/10 text-blue-400 text-[8px] font-black uppercase tracking-widest rounded">Target Gap</div>
                         <h2 id="ind-gap" class="text-2xl font-bold text-white leading-tight"></h2>
-                        <p id="ind-trend" class="text-xs text-slate-500 italic leading-relaxed"></p>
+                        <p id="ind-trend" class="text-xs text-slate-500 italic"></p>
                     </div>
                     <div class="bg-blue-600/5 border border-blue-500/20 p-6 rounded-3xl">
-                        <h5 class="text-blue-400 text-[10px] font-black uppercase mb-3 tracking-widest">The Opportunity</h5>
+                        <h5 class="text-blue-400 text-[10px] font-black uppercase mb-3">The Opportunity</h5>
                         <p id="ind-opp" class="text-white text-sm leading-relaxed"></p>
                     </div>
                 </div>
-
                 <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
                     <div class="bg-slate-950 px-8 py-4 border-b border-slate-800 flex justify-between items-center">
                         <div class="flex items-center gap-3">
-                            <span id="ind-type-label" class="text-[9px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md font-bold uppercase tracking-tighter">Whitepaper</span>
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Interactive Blueprint</span>
+                            <span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md font-bold uppercase">Draft Editor</span>
                         </div>
-                        <button onclick="launchAgent('email-agent')" class="group flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded-lg transition-all shadow-lg shadow-blue-900/40">
-                            <i data-lucide="mail" class="w-3 h-3"></i> Draft Outreach
+                        <button onclick="launchAgent('email')" class="group flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded-lg transition-all shadow-lg shadow-blue-900/40">
+                            <i data-lucide="mail" class="w-3 h-3"></i> Outreach
                         </button>
                     </div>
                     <div class="p-8 space-y-8">
-                        <div class="space-y-2">
-                            <label class="text-[9px] font-black text-slate-600 uppercase tracking-widest">Main Headline</label>
-                            <input id="ind-title" class="w-full bg-transparent text-2xl font-bold text-white border-b border-slate-800 focus:border-blue-500 outline-none pb-2 transition-colors">
-                        </div>
+                        <input id="ind-title" class="w-full bg-transparent text-2xl font-bold text-white border-b border-slate-800 focus:border-blue-500 outline-none pb-2">
                         <div id="ind-sections" class="space-y-6"></div>
                     </div>
                 </div>
             </div>
         </div>`;
+
+    // --- AUTO-PILOT BRIDGE ---
+    if (context) {
+        // Map display names to your 4 internal keys
+        const map = { "Telecommunications": "telco", "Healthcare": "healthcare", "Energy": "energy", "Financial Services": "finance" };
+        const activeKey = map[context.industry] || context.industry.toLowerCase();
+        
+        // Wait for DOM to catch up, then fire analysis
+        setTimeout(() => runIndustryAnalysis(activeKey, context), 50);
+    }
 }
 
         if (id === 'readout') {
@@ -1606,21 +1619,29 @@ function setContentType(type) {
 }
 
 async function runIndustryAnalysis(key, externalData = null) {
-    // 1. Resolve Key (Handles "healthcare" or "Energy" or "Finance")
+    // 1. Key Resolution
     const activeKey = key ? key.toLowerCase().split(' ')[0] : "healthcare";
     const data = industryGapDB[activeKey];
     if (!data) return;
 
     const resultArea = document.getElementById('industry-result');
     
-    // 2. Handle Context Breadcrumb
+    // 2. Update Breadcrumb & Visibility
     const breadcrumb = document.getElementById('context-breadcrumb');
     if (externalData && breadcrumb) {
-        breadcrumb.innerText = `Source: Competitor Intel | Topic: ${externalData.topic}`;
+        breadcrumb.innerText = `Focus: ${externalData.topic}`;
         breadcrumb.classList.remove('hidden');
+    } else if (breadcrumb) {
+        breadcrumb.classList.add('hidden');
     }
 
-    // 3. Initial UI Population
+    // 3. Highlight the correct industry button
+    document.querySelectorAll('[id^="ind-btn-"]').forEach(btn => {
+        btn.classList.remove('border-blue-500', 'bg-blue-500/10');
+        if (btn.id === `ind-btn-${activeKey}`) btn.classList.add('border-blue-500', 'bg-blue-500/10');
+    });
+
+    // 4. Baseline UI Population
     document.getElementById('ind-gap').innerText = data.gap;
     document.getElementById('ind-trend').innerText = data.trend;
     document.getElementById('ind-opp').innerText = data.opportunity;
@@ -1628,7 +1649,7 @@ async function runIndustryAnalysis(key, externalData = null) {
 
     const sectionsContainer = document.getElementById('ind-sections');
     sectionsContainer.innerHTML = data.outline.sections.map((s, i) => {
-        const rowCount = currentContentType === 'Whitepaper' ? 4 : 3;
+        const rowCount = typeof currentContentType !== 'undefined' && currentContentType === 'Whitepaper' ? 4 : 3;
         return `
             <div class="group space-y-2">
                 <div class="flex items-center gap-3">
@@ -1642,14 +1663,12 @@ async function runIndustryAnalysis(key, externalData = null) {
 
     resultArea.classList.remove('hidden');
 
-    // 4. AI Strategic Deep-Dive
+    // 5. AI Refinement with Context Injection
     if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
-        const textareas = document.querySelectorAll('#ind-sections textarea');
         const titleInput = document.getElementById('ind-title');
-        const originalTitle = titleInput.value;
         titleInput.value = "AI is refining technical depth...";
 
-        const prompt = `${INDUSTRY_AI_PROMPT}\n\nContext: Industry: ${data.industry}, Format: ${currentContentType}, Current Topic: ${data.gap}`;
+        const prompt = `${INDUSTRY_AI_PROMPT}\n\nContext: Industry: ${data.industry}, Format: ${typeof currentContentType !== 'undefined' ? currentContentType : 'Whitepaper'}, Specific Topic: ${externalData ? externalData.topic : data.gap}`;
 
         try {
             const aiResponse = await callGemini(prompt);
@@ -1658,17 +1677,18 @@ async function runIndustryAnalysis(key, externalData = null) {
                 const aiTitle = lines.find(l => l.startsWith('Angle:'))?.split(': ')[1];
                 if (aiTitle) titleInput.value = `✨ ${aiTitle.replace(/["]/g, '')}`;
 
+                const textareas = document.querySelectorAll('#ind-sections textarea');
                 textareas.forEach((area, index) => {
                     const content = lines.find(l => l.startsWith(`S${index + 1}:`))?.split(': ')[1];
                     if (content) area.value = content.trim();
                 });
             }
         } catch (e) {
-            titleInput.value = originalTitle;
-            console.warn("AI Refinement failed, keeping WWT baseline.");
+            console.error("AI Refinement failed:", e);
+            titleInput.value = data.outline.title;
         }
     }
-
+    
     if (window.lucide) lucide.createIcons();
 }
 
@@ -1817,6 +1837,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
