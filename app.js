@@ -75,28 +75,34 @@ const governanceMap = {
 
 const competitorIntelDB = {
     "accenture": {
-        headline: "Accenture to Acquire Ookla to Strengthen Network Intelligence with Data and AI",
-        source: "Accenture Newsroom • March 3, 2026",
-        url: "https://newsroom.accenture.com/news/2026/accenture-to-acquire-ookla-to-strengthen-network-intelligence-and-experience-with-data-and-ai-for-enterprises",
-        summary: "Accenture is integrating Speedtest and Downdetector data into their AI stack to own the 'Data Foundation' for 5G optimization.",
-        impact: "Challenges WWT's role in network performance validation; they are moving from consulting to owning the measurement tools.",
-        counter: "Double down on the ATC 'Physical Truth'—software data can be modeled, but WWT provides the hardware-level validation Accenture lacks."
+        headline: "Accenture Acquires Avanseus AI to Scale Autonomous Network Operations",
+        source: "Accenture Newsroom • February 24, 2026",
+        url: "https://newsroom.accenture.com/news/2026/accenture-acquires-advanced-ai-technology-to-help-communications-companies-accelerate-autonomous-network-journeys",
+        summary: "Accenture is integrating Avanseus' predictive AI into their 'Cognitive Network Platform' to automate telco planning and anomaly detection.",
+        impact: "Threatens WWT’s service provider dominance; they are moving from consulting to AI-driven 'Autonomous Networks'.",
+        counter: "Leverage ATC 'Multi-OEM AI Testing'—Accenture is locked into their platform; WWT validates the entire multi-vendor ecosystem.",
+        industry: "Telecommunications",
+        topic: "Autonomous Network AI"
     },
     "deloitte": {
-        headline: "Deloitte Unveils 'Physical AI' Solutions Built with NVIDIA Omniverse Libraries",
-        source: "Deloitte Global • March 2, 2026",
-        url: "https://www.deloitte.com/global/en/about/press-room/physical-ai-nvidia-omniverse-industrial-transformation.html",
-        summary: "Expansion of NVIDIA partnership to deploy high-fidelity digital twins and edge robotics in industrial environments.",
-        impact: "Deloitte is moving into 'Embodied AI' (Robotics/Edge), requiring massive compute infrastructure where WWT typically leads.",
-        counter: "Lead with 'Edge-to-Cloud' architecture. Deloitte has the digital twin software, but WWT has the labs to build the supercomputing pods."
+        headline: "Deloitte Tech Trends 2026: 'AI Goes Physical' and the Rise of Inference Economics",
+        source: "Deloitte Insights • March 2026",
+        url: "https://www.deloitte.com/us/en/insights/topics/technology-management/tech-trends.html",
+        summary: "Focus on 'Embodied AI' (Robotics/Edge) and shifting from cloud-only to hybrid 'Inference-optimized' infrastructure.",
+        impact: "Direct overlap with WWT's 'AI Proving Ground'. Deloitte is positioning as the architect for AI factories.",
+        counter: "Showcase 'Cisco Secure AI Factory with NVIDIA'—Deloitte talks blueprints; WWT has the hardware-ready factory floor at the ATC.",
+        industry: "Industrial/Manufacturing",
+        topic: "Physical AI & Inference Infrastructure"
     },
     "insight": {
-        headline: "Insight Enterprises Presents AI-First Strategic Shift at Raymond James Conference",
-        source: "Investing.com • March 3, 2026",
-        url: "https://in.investing.com/news/transcripts/insight-enterprises-at-raymond-james-conference-aifirst-strategy-93CH-5270229",
-        summary: "A direct brand-pivot to move beyond hardware reseller roots into high-margin AI consulting and 'Decision Intelligence' platforms.",
-        impact: "Increases market noise; clients may see Insight as a cheaper alternative for AI integration.",
-        counter: "Showcase the 'AI Project Canvas.' Emphasize WWT's ability to take a project from vague concept to ATC-validated roadmap."
+        headline: "Insight Enterprises Expands 'Decision Intelligence' Platform for Mid-Market",
+        source: "Investing.com • March 2026",
+        url: "https://www.insight.com",
+        summary: "Scaling AI-native software delivery to help mid-market firms implement RAG and agents without massive engineering teams.",
+        impact: "Pressure on WWT's high-margin consulting for RAG; Insight is commoditizing the 'AI Pilot'.",
+        counter: "Utilize the 'AI Project Canvas' to move clients beyond the pilot 'reality check' into ATC-validated production scale.",
+        industry: "Enterprise SaaS",
+        topic: "Agentic AI Orchestration"
     }
 };
 
@@ -1127,58 +1133,69 @@ async function runCrawler() {
     const display = document.getElementById('intel-display');
     const btn = document.querySelector('button[onclick="runCrawler()"]');
     
-    // 1. DEFAULT DATA (Baseline from your DB or Generic)
     let data = {
         headline: "Monitoring Competitive Signals for " + query,
         source: "Live Crawler • March 2026",
         url: "https://www.wwt.com",
-        summary: "General market movement detected. Competitor is increasing headcount in digital engineering roles.",
-        impact: "Incremental pressure on talent acquisition and standard consulting rates.",
-        counter: "Promote the ATC's 'Lab-as-a-Service' to highlight our physical engineering edge."
+        summary: "General market movement detected.",
+        impact: "Incremental pressure on talent acquisition.",
+        counter: "Promote the ATC's 'Lab-as-a-Service'.",
+        industry: "General Tech",
+        topic: "AI Infrastructure"
     };
 
     if (competitorIntelDB[query]) { 
-        data = JSON.parse(JSON.stringify(competitorIntelDB[query])); // Deep copy to avoid mutating DB
+        data = JSON.parse(JSON.stringify(competitorIntelDB[query])); 
     }
 
-    // 2. AI ENHANCEMENT (The "Pinch of AI")
     if (AI_ENABLED && SESSION_AI_KEY) {
         const originalBtnText = btn.innerHTML;
         btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Analyzing...`;
         btn.disabled = true;
 
-        const context = `Competitor: ${query}. Their move: ${data.headline}. Standard counter: ${data.counter}`;
+        const context = `Competitor: ${query}. Move: ${data.headline}.`;
         const prompt = `${INTEL_AI_PROMPT}\n\nContext: ${context}`;
 
         try {
             const aiResponse = await callGemini(prompt);
             if (aiResponse) {
-                // We only overwrite the 'counter' move to show the AI's "Strategic Pivot"
-                data.counter = aiResponse.replace(/[".]/g, '').trim();
+                // Split AI response into Play and Trigger
+                const lines = aiResponse.split('\n');
+                data.counter = lines[0].replace('Play:', '').trim();
+                
+                // Extract trigger for the handoff
+                const triggerLine = lines.find(l => l.includes('Trigger:'));
+                if (triggerLine) {
+                    const [ind, top] = triggerLine.replace('Trigger:', '').split('|');
+                    data.industry = ind.trim();
+                    data.topic = top.trim();
+                }
             }
-        } catch (e) {
-            console.log("Intel AI Fallback active.");
-        }
+        } catch (e) { console.log("Intel AI Fallback active."); }
         
         btn.innerHTML = originalBtnText;
         btn.disabled = false;
     }
 
-    // 3. POPULATE UI
+    // POPULATE UI
     document.getElementById('snap-source').innerText = data.source;
     document.getElementById('snap-headline').innerText = data.headline;
     document.getElementById('syn-summary').innerText = data.summary;
     document.getElementById('syn-impact').innerText = data.impact;
     
-    // Check if we use the AI Counter or DB Counter
     const counterEl = document.getElementById('syn-counter');
-    counterEl.innerHTML = AI_ENABLED && SESSION_AI_KEY ? 
-        `<span class="text-blue-400">AI Optimized:</span> ${data.counter}` : 
-        data.counter;
+    counterEl.innerHTML = `
+        <div class="flex flex-col gap-2">
+            <span class="text-white font-bold text-lg">${data.counter}</span>
+            <button onclick="launchAgent('industry', { industry: '${data.industry}', topic: '${data.topic}' })" 
+                    class="mt-2 text-[10px] bg-blue-600/20 border border-blue-500/30 text-blue-400 px-3 py-1 rounded-full w-fit hover:bg-blue-600/40 transition-all">
+                Connect to ${data.industry} Content Agent →
+            </button>
+        </div>
+    `;
     
     document.getElementById('snap-link').href = data.url;
     display.classList.remove('hidden');
-    
     if (window.lucide) lucide.createIcons();
 }
 
@@ -1701,6 +1718,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
