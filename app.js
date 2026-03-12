@@ -1035,7 +1035,6 @@ function launchAgent(id, context = null) {
     }
 
            if (id === 'email') {
-    // 1. Get current context
     const activeBtn = document.querySelector('[id^="ind-btn-"].border-blue-500');
     const activeIndustry = activeBtn ? activeBtn.innerText.trim() : "None Selected";
     const activeTopic = document.getElementById('ind-title')?.value.replace('✨ ', '') || "No Active Strategy";
@@ -1052,73 +1051,54 @@ function launchAgent(id, context = null) {
                 </div>
             </div>
 
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-xl">
-                <div class="flex items-center gap-6">
-                    <div class="space-y-1">
-                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Active Industry</p>
-                        <p id="sync-industry-tag" class="text-xs font-bold text-emerald-400">${activeIndustry}</p>
+            <div class="bg-slate-950/50 border border-slate-800/60 rounded-2xl p-5 flex items-center justify-between shadow-2xl backdrop-blur-sm">
+                <div class="flex items-center gap-10">
+                    <div class="space-y-1.5">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.15em]">Active Industry</p>
+                        <p id="sync-industry-tag" class="text-sm font-bold text-emerald-400 filter drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]">${activeIndustry}</p>
                     </div>
-                    <div class="h-8 w-px bg-slate-800"></div>
-                    <div class="space-y-1">
-                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Synced Source</p>
+                    
+                    <div class="h-10 w-px bg-gradient-to-b from-transparent via-slate-700 to-transparent"></div>
+                    
+                    <div class="space-y-1.5">
+                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.15em]">Synced Source</p>
                         <div class="flex items-center gap-2">
-                             <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                             <p class="text-xs font-bold text-slate-300">Strategy Architect Bridge</p>
+                             <div class="relative flex items-center justify-center">
+                                <span class="absolute w-2 h-2 bg-blue-500 rounded-full animate-ping opacity-20"></span>
+                                <span class="relative w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                             </div>
+                             <p class="text-sm font-semibold text-slate-200">Strategy Architect <span class="text-slate-500 font-medium">v2.0</span></p>
                         </div>
                     </div>
                 </div>
-                <button class="px-3 py-1.5 border border-slate-700 text-[9px] font-bold text-slate-400 uppercase rounded-lg hover:bg-slate-800 transition-colors">Switch Source</button>
+                <button class="px-4 py-2 bg-slate-900 border border-slate-700 text-[10px] font-black text-slate-300 uppercase rounded-xl hover:bg-slate-800 hover:text-white transition-all tracking-widest">
+                    Switch Source
+                </button>
             </div>
 
-            <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl space-y-4">
+            <div class="bg-slate-900 p-8 rounded-3xl border border-slate-800/50 shadow-2xl space-y-5">
                 <div class="flex items-center justify-between px-1">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Selected Campaign Topic</label>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Selected Campaign Topic</label>
                 </div>
-                <div class="flex gap-3">
-                    <div class="relative flex-1 group">
-                        <div class="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400">
-                             <i data-lucide="sparkles" class="w-4 h-4"></i>
-                        </div>
+                <div class="flex gap-4">
+                    <div class="relative flex-1">
                         <input 
                             id="active-topic-input" 
                             type="text" 
                             readonly
                             value="${activeTopic}" 
-                            class="w-full bg-slate-950 border border-slate-800 pl-11 pr-4 py-3 rounded-xl text-blue-400 font-medium text-sm outline-none border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.1)] cursor-default"
+                            class="w-full bg-slate-950 border border-slate-800 px-6 py-4 rounded-2xl text-blue-400 font-semibold text-base outline-none border-blue-500/20 focus:border-blue-500/50 transition-all cursor-default"
                         >
                     </div>
-                    <button onclick="runEmailDraft()" class="px-6 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all flex items-center gap-2 group shadow-lg shadow-blue-900/20">
-                        <i data-lucide="wand-2" class="w-4 h-4 group-hover:rotate-12 transition-all"></i> Draft Special Send
+                    <button onclick="runEmailDraft()" class="px-8 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all flex items-center gap-3 group shadow-xl shadow-blue-900/40 active:scale-95">
+                        <i data-lucide="wand-2" class="w-5 h-5 group-hover:rotate-12 transition-all"></i>
+                        <span class="text-sm">Draft Special Send</span>
                     </button>
                 </div>
             </div>
 
-            <div id="email-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
-                    <div class="bg-slate-900 px-6 py-3 border-b border-slate-800 flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Agent Draft Output</span>
-                        <div id="edit-indicator" class="hidden text-[9px] font-bold text-orange-400 uppercase tracking-widest animate-pulse">Editing Mode Active</div>
-                    </div>
-                    <div class="p-8 space-y-4 font-serif text-slate-300">
-                        <div class="flex items-center gap-2">
-                            <b class="text-slate-500 font-bold uppercase text-[10px] font-sans">Subject:</b>
-                            <span id="eml-subject" class="text-sm font-sans text-white focus:outline-none focus:bg-slate-900 px-1 rounded"></span>
-                        </div>
-                        <hr class="border-slate-800">
-                        <div id="eml-body" class="whitespace-pre-wrap leading-relaxed italic text-lg focus:outline-none focus:bg-slate-900 p-2 rounded transition-colors"></div>
-                    </div>
-                    <div class="bg-slate-900/50 p-4 border-t border-slate-800 flex justify-between items-center px-6">
-                         <button onclick="toggleEmailEdit()" id="edit-toggle-btn" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
-                            <i data-lucide="edit-3" class="w-3 h-3"></i> <span>Edit Content</span>
-                         </button>
-                         <div class="flex gap-3">
-                             <button onclick="simulatePush()" id="push-btn" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2">
-                                <i data-lucide="share-2" class="w-3 h-3"></i> Push to Marketo
-                             </button>
-                         </div>
-                    </div>
+            <div id="email-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 </div>
-            </div>
         </div>`;
     
     if (window.lucide) lucide.createIcons();
@@ -1669,66 +1649,37 @@ async function runRevenue(key) {
 }
 
 async function runEmailDraft() {
-    // 1. Get references to the UI elements
     const topicInput = document.getElementById('active-topic-input');
     const indNameTag = document.getElementById('sync-industry-tag');
     const resultArea = document.getElementById('email-result');
     const btn = document.querySelector('button[onclick="runEmailDraft()"]');
     
-    // 2. Baseline Data (fallback to industry-sync template)
     const template = emailDraftDB["industry-sync"];
     let subject = template.draft.subject;
     let body = template.draft.body;
 
-    // 3. Dynamic Extraction (The "Sync" Logic)
-    // We pull the industry name and topic directly from the display bars
     const activeIndustry = indNameTag ? indNameTag.innerText.trim() : "Industry Intelligence";
     const activeTopic = topicInput ? topicInput.value : "Strategic Architecture";
 
-    // We pull the "Physical Truth" from the Industry Agent's text areas
     const indTrend = document.getElementById('ind-trend')?.innerText || "current market shifts";
     const indSection1 = document.querySelector('#ind-sections textarea')?.value || "comprehensive architectural validation and ATC testing.";
 
-    // 4. Data Injection (Placeholder Replacement)
-    subject = subject.replace('[INDUSTRY]', activeIndustry)
-                     .replace('[TITLE]', activeTopic);
-                     
-    body = body.replace('[INDUSTRY]', activeIndustry)
-               .replace('[SECTION_1]', indSection1)
-               .replace('[TREND]', indTrend);
+    subject = subject.replace('[INDUSTRY]', activeIndustry).replace('[TITLE]', activeTopic);
+    body = body.replace('[INDUSTRY]', activeIndustry).replace('[SECTION_1]', indSection1).replace('[TREND]', indTrend);
 
-    // 5. Populate the Email Result Area
-    const subjectEl = document.getElementById('eml-subject');
-    const bodyEl = document.getElementById('eml-body');
-    
-    subjectEl.innerText = subject;
-    bodyEl.innerText = body;
-    
-    // Show the hidden result container
+    document.getElementById('eml-subject').innerText = subject;
+    document.getElementById('eml-body').innerText = body;
     resultArea.classList.remove('hidden');
 
-    // 6. AI Visual Polish (The "Wow" Factor)
     if (AI_ENABLED) {
         const originalBtn = btn.innerHTML;
-        // Show a loading state on the button
         btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 animate-spin"></i> Harmonizing ATC Context...`;
-        
-        // Wait 1.2 seconds to simulate "thinking" and cross-referencing
         setTimeout(() => {
-            // Apply the "AI Glow" styling to the text
-            subjectEl.innerHTML = `<span class="text-blue-400">✨ </span>${subject}`;
-            bodyEl.innerHTML = `
-                <span class="block text-blue-500 font-bold italic mb-2 border-b border-blue-500/20 pb-2 text-[10px] tracking-widest uppercase font-sans">
-                    AI Strategic Overlay (Synced from Strategy Agent)
-                </span>${body}`;
-            
-            // Restore button and refresh icons
+            document.getElementById('eml-subject').innerHTML = `<span class="text-blue-400">✨ </span>${subject}`;
+            document.getElementById('eml-body').innerHTML = `<span class="block text-blue-500 font-black italic mb-3 border-b border-blue-500/10 pb-2 text-[9px] tracking-[0.2em] uppercase font-sans">AI Strategic Overlay (Strategy Sync Active)</span>${body}`;
             btn.innerHTML = originalBtn;
             if (window.lucide) lucide.createIcons();
         }, 1200);
-    } else {
-        // If AI is off, just refresh icons immediately
-        if (window.lucide) lucide.createIcons();
     }
 }
 
@@ -2025,6 +1976,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
