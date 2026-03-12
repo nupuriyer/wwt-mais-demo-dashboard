@@ -527,7 +527,7 @@ function init() {
    // Inside your init() function, update this helper:
 const createActiveCard = (a) => {
     const isActive = a.status === 'active';
-    const isSoon = a.status === 'soon';
+    const isSoon = a.status === 'In Dev';
     const activeDot = isActive ? `<span class="absolute top-3 left-3 flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>` : "";
     const badge = isSoon ? `<span class="absolute top-3 right-3 text-[7px] bg-slate-900 text-blue-400 px-1.5 py-0.5 rounded uppercase font-black border border-blue-500/20">Soon</span>` : "";
 
@@ -2024,4 +2024,3 @@ function clearStage() {
 }
 
 window.onload = init;
-
