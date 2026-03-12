@@ -968,75 +968,81 @@ function launchAgent(id, context = null) {
     }
 
         if (id === 'industry') {
-    content.innerHTML = `
-        <div class="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
-                <div class="flex items-center gap-4">
-                    <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                    <div>
-                        <h3 class="text-xl font-bold text-white tracking-tight">Industry Content Architect</h3>
-                        <p id="context-breadcrumb" class="text-[9px] text-blue-500 font-mono uppercase tracking-widest mt-1 hidden"></p>
+        content.innerHTML = `
+            <div class="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
+                    <div class="flex items-center gap-4">
+                        <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <div>
+                            <h3 class="text-xl font-bold text-white tracking-tight">Industry Content Architect</h3>
+                            <p id="context-breadcrumb" class="text-[9px] text-blue-500 font-mono uppercase tracking-widest mt-1 hidden"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
+                        ${['Whitepaper', 'Case Study', 'POV'].map(type => `
+                            <button onclick="setContentType('${type}')" id="btn-${type}" class="px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${type === 'Whitepaper' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}">
+                                ${type}
+                            </button>
+                        `).join('')}
                     </div>
                 </div>
-                
-                <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
-                    ${['Whitepaper', 'Case Study', 'POV'].map(type => `
-                        <button onclick="setContentType('${type}')" id="btn-${type}" class="px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${type === 'Whitepaper' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}">
-                            ${type}
+
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    ${['healthcare', 'energy', 'finance', 'telco', 'manufacturing'].map(key => `
+                        <button onclick="runIndustryAnalysis('${key}')" id="ind-btn-${key}" class="flex flex-col items-center gap-3 bg-slate-950 border border-slate-800/60 p-4 rounded-xl hover:border-blue-500/50 transition-all group overflow-hidden">
+                            <div class="p-3 bg-slate-900 rounded-lg group-hover:bg-blue-600/10 transition-colors">
+                                <i data-lucide="${
+                                    key === 'healthcare' ? 'heart-pulse' : 
+                                    key === 'energy' ? 'zap' : 
+                                    key === 'finance' ? 'landmark' : 
+                                    key === 'telco' ? 'rss' : 'factory'
+                                }" class="w-5 h-5 text-slate-500 group-hover:text-blue-400"></i>
+                            </div>
+                            <span class="text-[9px] font-black uppercase tracking-tighter text-slate-500 group-hover:text-white truncate w-full text-center">${key}</span>
                         </button>
                     `).join('')}
                 </div>
-            </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                ${['healthcare', 'energy', 'finance', 'telco'].map(key => `
-                    <button onclick="runIndustryAnalysis('${key}')" id="ind-btn-${key}" class="flex items-center gap-3 bg-slate-950 border border-slate-800/60 p-3 rounded-xl hover:border-blue-500/50 transition-all group overflow-hidden">
-                        <div class="p-2 bg-slate-900 rounded-lg group-hover:bg-blue-600/10 transition-colors">
-                            <i data-lucide="${key === 'healthcare' ? 'heart-pulse' : key === 'energy' ? 'zap' : key === 'finance' ? 'landmark' : 'rss'}" class="w-4 h-4 text-slate-500 group-hover:text-blue-400"></i>
+                <div id="industry-result" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <div class="lg:col-span-4 space-y-6">
+                        <div class="bg-slate-950 border border-slate-800 p-6 rounded-3xl space-y-4">
+                            <div class="inline-flex px-2 py-1 bg-blue-500/10 text-blue-400 text-[8px] font-black uppercase tracking-widest rounded">Target Gap</div>
+                            <h2 id="ind-gap" class="text-2xl font-bold text-white leading-tight"></h2>
+                            <p id="ind-trend" class="text-xs text-slate-500 italic"></p>
                         </div>
-                        <span class="text-[9px] font-black uppercase tracking-tighter text-slate-500 group-hover:text-white truncate text-left">${key}</span>
-                    </button>
-                `).join('')}
-            </div>
-
-            <div id="industry-result" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div class="lg:col-span-4 space-y-6">
-                    <div class="bg-slate-950 border border-slate-800 p-6 rounded-3xl space-y-4">
-                        <div class="inline-flex px-2 py-1 bg-blue-500/10 text-blue-400 text-[8px] font-black uppercase tracking-widest rounded">Target Gap</div>
-                        <h2 id="ind-gap" class="text-2xl font-bold text-white leading-tight"></h2>
-                        <p id="ind-trend" class="text-xs text-slate-500 italic"></p>
+                        <div class="bg-blue-600/5 border border-blue-500/20 p-6 rounded-3xl">
+                            <h5 class="text-blue-400 text-[10px] font-black uppercase mb-3">The Opportunity</h5>
+                            <p id="ind-opp" class="text-white text-sm leading-relaxed"></p>
+                        </div>
                     </div>
-                    <div class="bg-blue-600/5 border border-blue-500/20 p-6 rounded-3xl">
-                        <h5 class="text-blue-400 text-[10px] font-black uppercase mb-3">The Opportunity</h5>
-                        <p id="ind-opp" class="text-white text-sm leading-relaxed"></p>
+                    <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+                        <div class="bg-slate-950 px-8 py-4 border-b border-slate-800 flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md font-bold uppercase">Draft Editor</span>
+                            </div>
+                            <button onclick="launchAgent('email')" class="group flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded-lg transition-all shadow-lg shadow-blue-900/40">
+                                <i data-lucide="mail" class="w-3 h-3"></i> Outreach
+                            </button>
+                        </div>
+                        <div class="p-8 space-y-8">
+                            <input id="ind-title" class="w-full bg-transparent text-2xl font-bold text-white border-b border-slate-800 focus:border-blue-500 outline-none pb-2">
+                            <div id="ind-sections" class="space-y-6"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
-                    <div class="bg-slate-950 px-8 py-4 border-b border-slate-800 flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <span class="text-[9px] bg-slate-800 text-slate-300 px-2 py-1 rounded-md font-bold uppercase">Draft Editor</span>
-                        </div>
-                        <button onclick="launchAgent('email')" class="group flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold rounded-lg transition-all shadow-lg shadow-blue-900/40">
-                            <i data-lucide="mail" class="w-3 h-3"></i> Outreach
-                        </button>
-                    </div>
-                    <div class="p-8 space-y-8">
-                        <input id="ind-title" class="w-full bg-transparent text-2xl font-bold text-white border-b border-slate-800 focus:border-blue-500 outline-none pb-2">
-                        <div id="ind-sections" class="space-y-6"></div>
-                    </div>
-                </div>
-            </div>
-        </div>`;
+            </div>`;
 
-    // --- AUTO-PILOT BRIDGE ---
-    if (context) {
-        // Map display names to your 4 internal keys
-        const map = { "Telecommunications": "telco", "Healthcare": "healthcare", "Energy": "energy", "Financial Services": "finance" };
-        const activeKey = map[context.industry] || context.industry.toLowerCase();
-        
-        // Wait for DOM to catch up, then fire analysis
-        setTimeout(() => runIndustryAnalysis(activeKey, context), 50);
+        if (context) {
+            // Uses INDUSTRY_KEY_MAP to turn "Manufacturing" into "manufacturing"
+            const activeKey = INDUSTRY_KEY_MAP[context.industry] || context.industry.toLowerCase();
+            setTimeout(() => runIndustryAnalysis(activeKey, context), 50);
+        }
     }
+    
+    if (window.lucide) lucide.createIcons();
 }
 
         if (id === 'readout') {
@@ -1847,6 +1853,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
