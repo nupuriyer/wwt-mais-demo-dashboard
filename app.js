@@ -219,6 +219,15 @@ const emailDraftDB = {
             subject: "Test Your Defenses in the WWT Cyber Range",
             body: "Hi [First_Name],\n\nYou shouldn't find the gaps in your security during a breach. The WWT Cyber Range allows your team to simulate real-world attacks in a safe, sandboxed environment.\n\nCheck out our latest threat-hunting scenarios here.\n\nBest,\n[Your Name]"
         }
+    },
+    // NEW SYNCED OPTION
+    "industry-sync": {
+        pageTitle: "Industry Strategy: High-Intent Content",
+        url: "https://www.wwt.com/digital-twin",
+        draft: {
+            subject: "New Strategy: Closing the Physical AI Gap",
+            body: "Hi [First_Name],\n\nFollowing up on our discussion regarding Physical AI and Industrial Digital Twins. We've just mapped out a new validation blueprint in the ATC specifically for Manufacturing environments.\n\nI’ve attached our latest POV on bridging the Sim-to-Real chasm for your team to review.\n\nBest,\n[Your Name]"
+        }
     }
 };
 
@@ -1027,60 +1036,61 @@ function launchAgent(id, context = null) {
     }
 
             if (id === 'email') {
-        content.innerHTML = `
-            <div class="max-w-4xl mx-auto space-y-6">
-                <div class="flex items-center justify-between px-2">
-                    <div class="flex items-center gap-4">
-                        <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+    content.innerHTML = `
+        <div class="max-w-4xl mx-auto space-y-6">
+            <div class="flex items-center justify-between px-2">
+                <div class="flex items-center gap-4">
+                    <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                    <div class="flex items-center gap-3">
                         <h3 class="text-xl font-bold text-white tracking-tight">Email Campaign Agent</h3>
+                        <span class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[8px] font-black uppercase rounded">BETA / NEXT-GEN</span>
                     </div>
                 </div>
+            </div>
 
-                <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl space-y-4">
-                    <div class="flex items-center justify-between px-1">
-                        <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">WWT Platform: Latest Published Pages</label>
-                        <span class="text-[9px] text-emerald-500 font-bold animate-pulse">● LIVE SYNC</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <select id="cms-page-selector" class="flex-1 bg-slate-950 border border-slate-800 p-3 rounded-xl text-blue-400 font-medium text-sm outline-none focus:border-blue-500 appearance-none">
-                            <option value="sovereign-cloud">Sovereign Cloud Solutions</option>
-                            <option value="ai-proving-ground">AI Proving Ground</option>
-                            <option value="cyber-range">Cyber Range Simulation</option>
-                        </select>
-                        <button onclick="runEmailDraft()" class="px-6 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all flex items-center gap-2">
-                            <i data-lucide="wand-2" class="w-4 h-4"></i> Draft Special Send
-                        </button>
-                    </div>
+            <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl space-y-4 relative overflow-hidden">
+                <div class="absolute inset-0 opacity-5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                
+                <div class="flex items-center justify-between px-1 relative z-10">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">WWT Platform: Intelligent Sync</label>
+                    <span class="text-[9px] text-emerald-500 font-bold animate-pulse flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> LIVE CMS BRIDGE
+                    </span>
                 </div>
+                
+                <div class="flex gap-3 relative z-10">
+                    <select id="cms-page-selector" class="flex-1 bg-slate-950 border border-slate-800 p-3 rounded-xl text-blue-400 font-medium text-sm outline-none focus:border-blue-500 appearance-none cursor-pointer">
+                        <option value="industry-sync" class="text-white font-bold">✨ Latest Strategy: Physical AI (Synced)</option>
+                        <option value="sovereign-cloud">Sovereign Cloud Solutions</option>
+                        <option value="ai-proving-ground">AI Proving Ground</option>
+                        <option value="cyber-range">Cyber Range Simulation</option>
+                        <option value="disabled" disabled class="text-slate-600 italic">Future: Customer Sentiment Sync (Coming Q4)</option>
+                    </select>
+                    <button onclick="runEmailDraft()" class="px-6 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all flex items-center gap-2 group">
+                        <i data-lucide="wand-2" class="w-4 h-4 group-hover:rotate-12 transition-transform"></i> Draft Special Send
+                    </button>
+                </div>
+            </div>
 
-                <div id="email-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden">
-                        <div class="bg-slate-900 px-6 py-3 border-b border-slate-800 flex justify-between items-center">
-                            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Agent Draft Output</span>
-                            <div id="edit-indicator" class="hidden text-[9px] font-bold text-orange-400 uppercase tracking-widest animate-pulse">Editing Mode Active</div>
-                        </div>
-                        <div class="p-8 space-y-4 font-serif text-slate-300">
-                            <div class="flex items-center gap-2">
-                                <b class="text-slate-500 font-bold uppercase text-[10px] font-sans">Subject:</b>
-                                <span id="eml-subject" contenteditable="false" class="text-sm font-sans text-white focus:outline-none focus:bg-slate-900 px-1 rounded"></span>
-                            </div>
-                            <hr class="border-slate-800">
-                            <div id="eml-body" contenteditable="false" class="whitespace-pre-wrap leading-relaxed italic text-lg focus:outline-none focus:bg-slate-900 p-2 rounded transition-colors"></div>
-                        </div>
-                        <div class="bg-slate-900/50 p-4 border-t border-slate-800 flex justify-between items-center px-6">
-                             <button onclick="toggleEmailEdit()" id="edit-toggle-btn" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
-                                <i data-lucide="edit-3" class="w-3 h-3"></i> <span>Edit Content</span>
-                             </button>
-                             <div class="flex gap-3">
-                                 <button onclick="simulatePush()" id="push-btn" class="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2">
-                                    <i data-lucide="share-2" class="w-3 h-3"></i> Push to Marketo
-                                 </button>
-                             </div>
-                        </div>
-                    </div>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="bg-slate-900/40 border border-slate-800/60 p-3 rounded-xl flex items-center gap-3">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter">LLM: Gemini 2.0 Pro</span>
                 </div>
-            </div>`;
-    }
+                <div class="bg-slate-900/40 border border-slate-800/60 p-3 rounded-xl flex items-center gap-3">
+                    <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
+                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter">Marketo Bridge: Ready</span>
+                </div>
+                <div class="bg-slate-900/40 border border-slate-800/60 p-3 rounded-xl flex items-center gap-3">
+                    <div class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-tighter">Personalization: Active</span>
+                </div>
+            </div>
+
+            <div id="email-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                </div>
+        </div>`;
+}
 
        if (id === 'industry') {
         content.innerHTML = `
@@ -1633,41 +1643,29 @@ async function runEmailDraft() {
     const resultArea = document.getElementById('email-result');
     const btn = document.querySelector('button[onclick="runEmailDraft()"]');
     
-    // 1. POPULATE BASELINE (Immediate)
     const subjectEl = document.getElementById('eml-subject');
     const bodyEl = document.getElementById('eml-body');
     
+    // 1. Immediate Population
     subjectEl.innerText = data.draft.subject;
     bodyEl.innerText = data.draft.body;
+    resultArea.classList.remove('hidden');
 
-    // 2. AI ENHANCEMENT (The "Smart Refine")
-    if (AI_ENABLED && SESSION_AI_KEY) {
+    // 2. Simulated "Refinement"
+    if (AI_ENABLED) {
         const originalBtn = btn.innerHTML;
-        btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 animate-spin"></i> Refining...`;
+        btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 animate-spin"></i> Analyzing ATC Context...`;
         
-        const context = `Subject: ${data.draft.subject}. Body: ${data.draft.body}.`;
-        const prompt = `${EMAIL_AI_PROMPT}\n\nContext: ${context}`;
-
-        try {
-            const aiResponse = await callGemini(prompt);
-            if (aiResponse) {
-                // Split AI response (assuming it gives Subject: and Body:)
-                // Or simply treat the whole response as an "AI Recommendation"
-                const aiSuggest = aiResponse.split("Body:");
-                const suggestedSub = aiSuggest[0].replace("Subject:", "").trim();
-                const suggestedBody = aiSuggest[1] ? aiSuggest[1].trim() : aiSuggest[0];
-
-                // Show the AI version with a "Sparkle" indicator
-                subjectEl.innerHTML = `<span class="text-blue-400">✨ </span>${suggestedSub}`;
-                bodyEl.innerHTML = `<span class="block text-slate-500 italic mb-2 border-b border-slate-800 pb-2 text-[11px]">Gemini AI Refinement (ATC-Focus):</span>${suggestedBody}`;
-            }
-        } catch (e) {
-            console.log("Email AI Fallback active.");
-        }
-        btn.innerHTML = originalBtn;
+        // Wait 1.5s for "Dramatic Effect"
+        setTimeout(() => {
+            subjectEl.innerHTML = `<span class="text-blue-400">✨ </span>[ATC Optimized] ${data.draft.subject}`;
+            bodyEl.innerHTML = `<span class="block text-blue-500 font-bold italic mb-2 border-b border-blue-500/20 pb-2 text-[10px] tracking-widest uppercase">AI Strategic Overlay (Context: Industry Agent Sync)</span>${data.draft.body.replace("We just published", "We just validated a multi-vendor 'Physical AI' stack in the ATC and published")}`;
+            
+            btn.innerHTML = originalBtn;
+            if (window.lucide) lucide.createIcons();
+        }, 1500);
     }
 
-    resultArea.classList.remove('hidden');
     if (window.lucide) lucide.createIcons();
 }
 
@@ -1964,6 +1962,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
