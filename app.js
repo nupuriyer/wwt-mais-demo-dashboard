@@ -1035,8 +1035,7 @@ function launchAgent(id, context = null) {
     }
 
            if (id === 'email') {
-    const activeBtn = document.querySelector('[id^="ind-btn-"].border-blue-500');
-    const activeIndustry = activeBtn ? activeBtn.innerText.trim() : "General";
+    // Pulling the strategy title from the Industry Agent
     const activeTopic = document.getElementById('ind-title')?.value.replace('✨ ', '') || "Current Strategic Framework";
 
     content.innerHTML = `
@@ -1053,28 +1052,6 @@ function launchAgent(id, context = null) {
                 </div>
             </div>
 
-            <div class="bg-slate-950/40 border border-slate-800/60 rounded-2xl p-5 flex items-center shadow-xl backdrop-blur-sm">
-                <div class="flex items-center gap-12">
-                    <div class="space-y-1">
-                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Active Industry</p>
-                        <p id="sync-industry-tag" class="text-sm font-bold text-emerald-400 uppercase tracking-tight">${activeIndustry}</p>
-                    </div>
-                    
-                    <div class="h-8 w-px bg-slate-800"></div>
-                    
-                    <div class="space-y-1">
-                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Bridge Status</p>
-                        <div class="flex items-center gap-2">
-                             <span class="relative flex h-2 w-2">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                             </span>
-                             <p class="text-xs font-bold text-slate-400 uppercase tracking-tighter">Live Connection Active</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div class="bg-slate-900 p-8 rounded-3xl border border-slate-800/50 shadow-2xl space-y-5">
                 <div class="flex items-center justify-between px-1">
                     <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Target Campaign Topic</label>
@@ -1085,11 +1062,11 @@ function launchAgent(id, context = null) {
                         type="text" 
                         readonly
                         value="${activeTopic}" 
-                        class="flex-1 bg-slate-950 border border-slate-800 px-6 py-4 rounded-2xl text-blue-400 font-semibold text-base outline-none cursor-default"
+                        class="flex-1 bg-slate-950 border border-slate-800 px-6 py-4 rounded-2xl text-blue-400 font-semibold text-base outline-none cursor-default shadow-inner"
                     >
                     <button onclick="runEmailDraft()" class="px-8 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all flex items-center gap-3 group active:scale-95 shadow-lg shadow-blue-900/30">
                         <i data-lucide="wand-2" class="w-5 h-5 group-hover:rotate-12 transition-all"></i>
-                        <span class="text-sm">Draft Special Send</span>
+                        <span class="text-sm uppercase tracking-wider">Draft Special Send</span>
                     </button>
                 </div>
             </div>
@@ -1097,19 +1074,24 @@ function launchAgent(id, context = null) {
             <div id="email-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
                     <div class="bg-slate-900 px-6 py-3 border-b border-slate-800 flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-sans">Draft Output</span>
-                        <div id="edit-indicator" class="hidden text-[9px] font-bold text-orange-400 uppercase tracking-widest animate-pulse font-sans">Editing Mode</div>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-sans text-slate-400">Campaign Draft Output</span>
+                        <div id="edit-indicator" class="hidden text-[9px] font-bold text-orange-400 uppercase tracking-widest animate-pulse font-sans">Editing Mode Active</div>
                     </div>
+                    
                     <div class="p-8 space-y-4 font-serif text-slate-300">
                         <div class="flex items-center gap-3">
                             <b class="text-slate-500 font-bold uppercase text-[10px] font-sans tracking-widest">Subject:</b>
-                            <span id="eml-subject" class="text-sm font-sans text-white"></span>
+                            <span id="eml-subject" contenteditable="false" class="text-sm font-sans text-white focus:outline-none px-1 rounded transition-colors"></span>
                         </div>
                         <hr class="border-slate-800/50">
-                        <div id="eml-body" class="whitespace-pre-wrap leading-relaxed italic text-lg p-2 rounded transition-colors"></div>
+                        <div id="eml-body" contenteditable="false" class="whitespace-pre-wrap leading-relaxed italic text-lg p-2 rounded focus:outline-none transition-all"></div>
                     </div>
-                    <div class="bg-slate-900/50 p-4 border-t border-slate-800 flex justify-end px-6">
-                         <button onclick="simulatePush()" id="push-btn" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2">
+
+                    <div class="bg-slate-900/50 p-4 border-t border-slate-800 flex justify-between items-center px-6">
+                         <button onclick="toggleEmailEdit()" id="edit-toggle-btn" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
+                            <i data-lucide="edit-3" class="w-3 h-3"></i> <span>Edit Content</span>
+                         </button>
+                         <button onclick="simulatePush()" id="push-btn" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-emerald-900/20">
                             <i data-lucide="share-2" class="w-3 h-3"></i> Push to Marketo
                          </button>
                     </div>
@@ -1994,58 +1976,3 @@ function clearStage() {
 }
 
 window.onload = init;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
