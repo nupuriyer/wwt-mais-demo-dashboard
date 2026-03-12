@@ -1721,17 +1721,26 @@ function simulatePush() {
 let currentContentType = 'Whitepaper';
 
 function setContentType(type) {
+    // 1. Update global state
     currentContentType = type;
-    // Update button styles
+
+    // 2. Update UI: Toggle button styles
     ['Whitepaper', 'Case Study', 'POV'].forEach(t => {
-        const el = document.getElementById(`btn-${t}`);
-        if (el) el.className = (t === type) 
-            ? "px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg bg-blue-600 text-white shadow-lg"
-            : "px-4 py-1.5 text-[9px] font-black uppercase tracking-widest rounded-lg text-slate-500 hover:text-slate-300";
+        const btn = document.getElementById(`btn-${t}`);
+        if (btn) {
+            btn.classList.toggle('bg-blue-600', t === type);
+            btn.classList.toggle('text-white', t === type);
+            btn.classList.toggle('text-slate-500', t !== type);
+        }
     });
-    // Update label and re-run if already viewing results
-    const label = document.getElementById('ind-type-label');
-    if (label) label.innerText = currentContentType;
+
+    // 3. Re-run analysis for the currently active industry
+    const activeBtn = document.querySelector('[id^="ind-btn-"].border-blue-500');
+    if (activeBtn) {
+        // Extract key from id (e.g., "ind-btn-finance" -> "finance")
+        const activeKey = activeBtn.id.replace('ind-btn-', '');
+        runIndustryAnalysis(activeKey);
+    }
 }
 
 async function runIndustryAnalysis(key, externalData = null) {
@@ -1955,6 +1964,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
