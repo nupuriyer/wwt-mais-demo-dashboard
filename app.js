@@ -1034,7 +1034,12 @@ function launchAgent(id, context = null) {
             </div>`;
     }
 
-            if (id === 'email') {
+           if (id === 'email') {
+    // Determine the current context for the display bar
+    const activeBtn = document.querySelector('[id^="ind-btn-"].border-blue-500');
+    const activeIndustry = activeBtn ? activeBtn.innerText.trim() : "None Selected";
+    const activeTopic = document.getElementById('ind-title')?.value.replace('✨ ', '') || "No Active Strategy";
+
     content.innerHTML = `
         <div class="max-w-4xl mx-auto space-y-6">
             <div class="flex items-center justify-between px-2">
@@ -1047,22 +1052,37 @@ function launchAgent(id, context = null) {
                 </div>
             </div>
 
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center justify-between shadow-xl">
+                <div class="flex items-center gap-6">
+                    <div class="space-y-1">
+                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Active Industry</p>
+                        <p id="sync-industry-tag" class="text-xs font-bold text-emerald-400">${activeIndustry}</p>
+                    </div>
+                    <div class="h-8 w-px bg-slate-800"></div>
+                    <div class="space-y-1">
+                        <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Target Topic</p>
+                        <p id="sync-topic-tag" class="text-xs font-bold text-blue-400 truncate max-w-[300px]">${activeTopic}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                    <span class="text-[9px] font-black text-emerald-500 uppercase tracking-tighter">Ready to Sync</span>
+                </div>
+            </div>
+
             <div class="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-2xl space-y-4">
                 <div class="flex items-center justify-between px-1">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">WWT Platform: Intelligent Sync</label>
-                    <span class="text-[9px] text-emerald-500 font-bold animate-pulse flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> LIVE CMS BRIDGE
-                    </span>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Select Campaign Source</label>
                 </div>
                 <div class="flex gap-3">
                     <select id="cms-page-selector" class="flex-1 bg-slate-950 border border-slate-800 p-3 rounded-xl text-blue-400 font-medium text-sm outline-none focus:border-blue-500 appearance-none">
-                        <option value="industry-sync">✨ Latest Strategy Sync (Dynamic)</option>
+                        <option value="industry-sync">✨ Generated Strategy (Use Active Context)</option>
                         <option value="sovereign-cloud">Sovereign Cloud Solutions</option>
                         <option value="ai-proving-ground">AI Proving Ground</option>
                         <option value="cyber-range">Cyber Range Simulation</option>
                     </select>
-                    <button onclick="runEmailDraft()" class="px-6 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all flex items-center gap-2">
-                        <i data-lucide="wand-2" class="w-4 h-4"></i> Draft Special Send
+                    <button onclick="runEmailDraft()" class="px-6 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all flex items-center gap-2 group">
+                        <i data-lucide="wand-2" class="w-4 h-4 group-hover:rotate-12 transition-all"></i> Draft Special Send
                     </button>
                 </div>
             </div>
@@ -1094,8 +1114,10 @@ function launchAgent(id, context = null) {
                 </div>
             </div>
         </div>`;
+    
+    if (window.lucide) lucide.createIcons();
 }
-
+    
        if (id === 'industry') {
         content.innerHTML = `
             <div class="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
@@ -1650,17 +1672,16 @@ async function runEmailDraft() {
     let subject = data.draft.subject;
     let body = data.draft.body;
 
-    // Perform Dynamic Sync if "industry-sync" is selected
+    // SYNC LOGIC: If we are using the Active Context from the Industry Agent
     if (key === 'industry-sync') {
-        const indTitle = document.getElementById('ind-title')?.value || "Advanced Solution";
-        const indTrend = document.getElementById('ind-trend')?.innerText || "current market shifts";
-        const indSection1 = document.querySelector('#ind-sections textarea')?.value || "Technical architecture and ATC validation.";
+        const indTitle = document.getElementById('sync-topic-tag')?.innerText || "Strategic Solution";
+        const indName = document.getElementById('sync-industry-tag')?.innerText || "Industry";
         
-        const activeIndBtn = document.querySelector('[id^="ind-btn-"].border-blue-500');
-        const indName = activeIndBtn ? activeIndBtn.innerText.trim() : "Industry Intelligence";
+        // Grab the trend and first section from the actual Industry Agent UI elements
+        const indTrend = document.getElementById('ind-trend')?.innerText || "market dynamics";
+        const indSection1 = document.querySelector('#ind-sections textarea')?.value || "comprehensive architectural validation";
 
-        // Cleaning up title (removes AI emoji) and replacing placeholders
-        subject = subject.replace('[INDUSTRY]', indName).replace('[TITLE]', indTitle.replace('✨ ', ''));
+        subject = subject.replace('[INDUSTRY]', indName).replace('[TITLE]', indTitle);
         body = body.replace('[INDUSTRY]', indName)
                    .replace('[SECTION_1]', indSection1)
                    .replace('[TREND]', indTrend);
@@ -1675,11 +1696,11 @@ async function runEmailDraft() {
 
     if (AI_ENABLED) {
         const originalBtn = btn.innerHTML;
-        btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 animate-spin"></i> Cross-Referencing ATC Data...`;
+        btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 animate-spin"></i> Harmonizing ATC Context...`;
         
         setTimeout(() => {
             subjectEl.innerHTML = `<span class="text-blue-400">✨ </span>${subject}`;
-            bodyEl.innerHTML = `<span class="block text-blue-500 font-bold italic mb-2 border-b border-blue-500/20 pb-2 text-[10px] tracking-widest uppercase font-sans">AI Strategic Overlay (Synced from Content Architect)</span>${body}`;
+            bodyEl.innerHTML = `<span class="block text-blue-500 font-bold italic mb-2 border-b border-blue-500/20 pb-2 text-[10px] tracking-widest uppercase font-sans">AI Strategic Overlay (Synced from Strategy Agent)</span>${body}`;
             btn.innerHTML = originalBtn;
             if (window.lucide) lucide.createIcons();
         }, 1200);
@@ -1981,6 +2002,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
