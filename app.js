@@ -228,14 +228,34 @@ const industryGapDB = {
         gap: "Clinical AI Orchestration",
         trend: "74% surge in 'Hospital-at-Home' and 'AI-Imaging' infrastructure.",
         opportunity: "WWT can lead by validating MLOps blueprints for clinical edge compute in the ATC.",
-        outline: {
-            title: "The Hospital Without Walls: Scaling Clinical AI to the Edge",
-            sections: [
-                "DECENTRALIZED CARE MODELS: Analyzing the transition from centralized hospital data centers to bedside and in-home compute pods. Focus on maintaining data integrity across disparate locations using Cisco SD-WAN and AppDynamics for visibility.",
-                "LATENCY-CRITICAL INFERENCE: Optimizing NVIDIA Clara and GPU-accelerated workloads for real-time patient vitals. How the ATC validates sub-millisecond response times for critical care AI models through hardware-level tuning.",
-                "ZERO TRUST IO_MT: Securing the medical perimeter. Implementation of micro-segmentation for connected medical devices to prevent lateral movement of threats within hospital networks, validated in the WWT Cyber Range.",
-                "MULTIVENDOR ATC BLUEPRINT: The physical truth of integration. Validating the interoperability of Pure Storage FlashBlade and Cisco UCS for high-speed medical imaging retrieval and archival."
-            ]
+        formats: {
+            "Whitepaper": {
+                title: "The Hospital Without Walls: Scaling Clinical AI to the Edge",
+                sections: [
+                    "DECENTRALIZED CARE MODELS: Analyzing the transition from centralized data centers to bedside compute pods. Focus on maintaining data integrity via Cisco SD-WAN and AppDynamics visibility.",
+                    "LATENCY-CRITICAL INFERENCE: Optimizing NVIDIA Clara workloads for real-time patient vitals. Validating sub-millisecond response times for critical care AI models through hardware-level tuning in the ATC.",
+                    "ZERO TRUST IO_MT: Securing the medical perimeter. Implementation of micro-segmentation for connected medical devices to prevent lateral threat movement, validated in the WWT Cyber Range.",
+                    "MULTIVENDOR ATC BLUEPRINT: The physical truth of integration. Validating interoperability of Pure Storage and Cisco UCS for high-speed medical imaging retrieval and archival."
+                ]
+            },
+            "Case Study": {
+                title: "Case Study: Reducing Radiology Latency by 40% with Edge AI",
+                sections: [
+                    "THE CHALLENGE: A regional health network faced 15-second delays in AI-assisted stroke detection due to cloud latency bottlenecks.",
+                    "ATC VALIDATION: WWT engineers staged a multi-vendor stack using NVIDIA GPUs and Dell PowerEdge to mirror the client's high-traffic environment.",
+                    "THE SOLUTION: Implementation of an 'Edge-First' inference engine that processed imaging locally before syncing to the clinical core.",
+                    "RESULTS: Achieved a 40% reduction in time-to-diagnosis and 100% HIPAA compliance for data in transit."
+                ]
+            },
+            "POV": {
+                title: "Strategy: Why Clinical Edge is the New Standard for Patient Outcomes",
+                sections: [
+                    "MARKET SHIFT: The transition from 'Digital Records' to 'Active Intelligence' requires a fundamental rethink of hospital infrastructure.",
+                    "THE WWT STANCE: Infrastructure is not a commodity; it is the clinical foundation. We believe speed-of-light constraints dictate an edge-heavy architecture.",
+                    "RISK MITIGATION: How to avoid the 'Pilot Purgatory' by validating security and scale in a sandbox environment before clinical deployment.",
+                    "INVESTMENT ROADMAP: Prioritizing high-ROI use cases like automated vitals monitoring and surgical robotics."
+                ]
+            }
         }
     },
     "energy": {
@@ -243,44 +263,139 @@ const industryGapDB = {
         gap: "OT/IT Convergence Security",
         trend: "Federal mandates for 'Grid Cybersecurity' and 'Green Hydrogen' pilots.",
         opportunity: "Leverage ATC Digital Twin simulations to show the 'Physical Truth' of grid attacks.",
-        outline: {
-            title: "Hardening the Grid: A Blueprint for OT/IT AI Integration",
-            sections: [
-                "THE OT/IT DIVIDE: Bridging legacy operational technology with modern IT AI analytics. Strategies for data extraction from substations without compromising grid stability or NERC CIP compliance.",
-                "RUGGEDIZED COMPUTE: Deploying AI at the substation level. Analyzing Cisco’s industrial Ethernet and compute stacks designed for harsh environmental conditions, tested for heat and vibration in WWT labs.",
-                "CYBER RANGE SIMULATION: Utilizing the WWT Cyber Range to simulate 'Black Sky' events. Testing AI-driven threat detection against simulated grid-specific ransomware attacks on PLCs and SCADA systems.",
-                "GRID MODERNIZATION ROI: Building the business case for AI-driven predictive maintenance. Using sensor data to extend the lifecycle of aging transformers and power lines through digital twin modeling."
-            ]
+        formats: {
+            "Whitepaper": {
+                title: "Hardening the Grid: A Blueprint for OT/IT AI Integration",
+                sections: [
+                    "THE OT/IT DIVIDE: Bridging legacy operational technology with modern AI analytics. Strategies for data extraction from substations without compromising NERC CIP compliance.",
+                    "RUGGEDIZED COMPUTE: Deploying AI at the substation level. Analyzing Cisco industrial Ethernet stacks designed for harsh conditions, tested for heat and vibration in WWT labs.",
+                    "CYBER RANGE SIMULATION: Utilizing the WWT Cyber Range to simulate 'Black Sky' events. Testing AI-driven threat detection against simulated ransomware attacks on SCADA systems.",
+                    "GRID MODERNIZATION ROI: Building the business case for AI-driven predictive maintenance. Using sensor data to extend the lifecycle of aging assets through digital twin modeling."
+                ]
+            },
+            "Case Study": {
+                title: "Case Study: Defending Critical Utility Infrastructure via Digital Twin",
+                sections: [
+                    "THE CHALLENGE: A major utility needed to validate their response to targeted PLC-level ransomware without taking the grid offline.",
+                    "ATC VALIDATION: WWT created a physical-to-digital twin of the utility’s substation environment in the Cyber Range.",
+                    "THE SOLUTION: Deployment of AI-driven anomaly detection that identified the lateral move of the threat within 12 seconds.",
+                    "RESULTS: Prevented a simulated 4-hour blackout and established a new NERC-CIP compliance reporting framework."
+                ]
+            },
+            "POV": {
+                title: "Strategy: The Future of Energy is Resilient, Autonomous, and Hybrid",
+                sections: [
+                    "THE DECARBONIZATION CRISIS: Renewable integration introduces grid instability that traditional manual controls cannot manage.",
+                    "THE WWT STANCE: Secure AI at the edge is the only way to balance the load of a decentralized, carbon-neutral energy grid.",
+                    "BEYOND COMPLIANCE: Moving from 'Check-the-box' security to 'Always-on' resilience via automated threat hunting.",
+                    "FUTURE PROOFING: Why modular, vendor-agnostic infrastructure is the key to surviving the next decade of energy transition."
+                ]
+            }
         }
     },
     "finance": {
         industry: "Financial Services",
-        gap: "Fraud Detection at Scale",
+        gap: "Multicloud AI Governance",
         trend: "Shift toward 'Real-Time Payment' security and 'Quantum-Safe' encryption.",
-        opportunity: "Banks struggle with GPU costs; WWT can lead with AI Infrastructure FinOps.",
-        outline: {
-            title: "The Secure Vault: High-Performance AI for Modern Finance",
-            sections: [
-                "LOW-LATENCY FRAUD: Running AI inference at the transaction point. Utilizing NVIDIA H100 clusters validated in the ATC to identify anomalies in milliseconds without affecting consumer experience.",
-                "QUANTUM READINESS: Preparing for post-quantum cryptographic standards. Analyzing the impact of Q-day on financial data encryption and testing hardware-based security modules (HSMs).",
-                "HYBRID CLOUD FINOPS: Balancing core banking data with public cloud AI. Strategies for reducing the TCO of massive GPU clusters through intelligent resource scheduling and ATC performance benchmarking.",
-                "SECURE DATA FLYWHEELS: Creating compliant data pipelines for AI training. How WWT integrates NetApp and Snowflake to ensure data sovereignty while enabling rapid model iteration."
-            ]
+        opportunity: "Banks struggle with GPU costs and data sovereignty; WWT leads with AI Infrastructure FinOps.",
+        formats: {
+            "Whitepaper": {
+                title: "The Secure Vault: High-Performance AI for Modern Finance",
+                sections: [
+                    "MULTICLOUD DATA SOVEREIGNTY: Solving the compliance crisis. How WWT integrates NetApp and Snowflake to ensure sensitive data remains governed while enabling rapid model iteration.",
+                    "LOW-LATENCY FRAUD: Running AI inference at the transaction point. Utilizing NVIDIA H100 clusters validated in the ATC to identify anomalies in milliseconds without affecting UX.",
+                    "QUANTUM READINESS: Preparing for post-quantum cryptographic standards. Analyzing the impact of Q-day on encryption and testing hardware-based security modules (HSMs) in the ATC.",
+                    "HYBRID CLOUD FINOPS: Balancing core banking data with public cloud AI. Strategies for reducing TCO of massive GPU clusters through intelligent resource scheduling."
+                ]
+            },
+            "Case Study": {
+                title: "Case Study: Scaling Fraud Detection for 100M+ Daily Transactions",
+                sections: [
+                    "THE CHALLENGE: A global bank's fraud detection latency was causing checkout abandonment at high-volume retail periods.",
+                    "ATC VALIDATION: Staging a full-stack high-frequency trading environment to benchmark AI inference at the network edge.",
+                    "THE SOLUTION: Implementation of high-throughput NVIDIA TensorRT engines integrated into the existing transaction switch.",
+                    "RESULTS: Reduced false positives by 22% and increased transaction throughput by 4x with zero increase in latency."
+                ]
+            },
+            "POV": {
+                title: "Strategy: Why Sovereignty is the Next Frontier of Financial AI",
+                sections: [
+                    "THE DATA DILEMMA: Banks want the power of LLMs but cannot risk data leakage into public foundation models.",
+                    "THE WWT STANCE: Private AI Infrastructure is the only viable path for the Tier 1 banking sector to maintain regulatory trust.",
+                    "FINOPS REALITY: AI costs are spiraling out of control. Organizations must move from 'Unlimited Spend' to 'Optimized Inference'.",
+                    "ROADMAP: Building a multi-generational plan for Quantum-Safe encryption before the hardware arrives."
+                ]
+            }
         }
     },
     "telco": {
         industry: "Telecommunications",
-        gap: "Open RAN AI Optimization",
-        trend: "Massive investment in 5G SA and 'AI-Native' network management.",
-        opportunity: "Use the ATC to showcase multivendor interoperability for Open RAN deployments.",
-        outline: {
-            title: "Connected Intelligence: AI-Native Foundations for 5G",
-            sections: [
-                "NETWORK SLICING: AI-driven resource allocation for enterprise 5G. Using the ATC to simulate high-density environments and validate dynamic bandwidth steering for mission-critical apps.",
-                "RAN EFFICIENCY: Reducing energy consumption via intelligent beamforming. How AI-native network stacks can lower operational costs by powering down radio components during low-traffic periods.",
-                "EDGE MONETIZATION: Building low-latency application stacks for smart cities. Validating the integration of Dell PowerEdge and VMware Telco Cloud for distributed MEC deployments.",
-                "VENDOR INTEROP: The WWT advantage in Open RAN. Testing the 'Plug-and-Play' reality of O-RAN components from different vendors to ensure seamless carrier-grade performance."
-            ]
+        gap: "AI-Native Network Intelligence",
+        trend: "Massive investment in 5G SA and 'Autonomous' network management.",
+        opportunity: "Use the ATC to showcase how AI-driven network intelligence optimizes real-time QoS.",
+        formats: {
+            "Whitepaper": {
+                title: "Connected Intelligence: AI-Native Foundations for 5G",
+                sections: [
+                    "NETWORK SLICING: AI-driven resource allocation for enterprise 5G. Using the ATC to simulate high-density environments and validate dynamic bandwidth steering for mission-critical apps.",
+                    "RAN EFFICIENCY: Reducing energy consumption via intelligent beamforming. How AI-native network stacks can lower operational costs by powering down components during low-traffic periods.",
+                    "EDGE MONETIZATION: Building low-latency application stacks for smart cities. Validating the integration of Dell PowerEdge and VMware Telco Cloud for distributed MEC deployments.",
+                    "VENDOR INTEROP: The WWT advantage in Open RAN. Testing the 'Plug-and-Play' reality of O-RAN components from different vendors to ensure carrier-grade performance."
+                ]
+            },
+            "Case Study": {
+                title: "Case Study: Deploying the World's First AI-Native O-RAN Fabric",
+                sections: [
+                    "THE CHALLENGE: A Tier 1 carrier needed to integrate four different radio vendors into a single automated management plane.",
+                    "ATC VALIDATION: The WWT Open RAN Foundry was used to benchmark interoperability and energy efficiency across the stack.",
+                    "THE SOLUTION: A cloud-native RAN Intelligent Controller (RIC) that dynamically optimizes radio traffic based on AI predictions.",
+                    "RESULTS: 30% reduction in power consumption and successful 'plug-and-play' integration of non-proprietary hardware."
+                ]
+            },
+            "POV": {
+                title: "Strategy: The Evolution from Connectivity Provider to AI Orchestrator",
+                sections: [
+                    "THE REVENUE GAP: Telcos are struggling to monetize 5G as a 'dumb pipe'. The value is now in the intelligence layer.",
+                    "THE WWT STANCE: The network is the computer. Carriers must own the edge-compute layer to capture the enterprise AI market.",
+                    "OPEN ARCHITECTURES: Why proprietary 'black box' hardware is the biggest threat to carrier agility in the 2030s.",
+                    "EXECUTION: How to build a partner ecosystem that supports multi-vendor, AI-native network growth."
+                ]
+            }
+        }
+    },
+    "manufacturing": {
+        industry: "Manufacturing",
+        gap: "The Sim-to-Real Chasm",
+        trend: "Transition from digital pilots to 'Physical AI' in operational environments.",
+        opportunity: "WWT ATC serves as the physical validation site for NVIDIA Omniverse and industrial robotics simulations.",
+        formats: {
+            "Whitepaper": {
+                title: "Factory of the Future: Scaling Physical AI with Industrial Digital Twins",
+                sections: [
+                    "EMBODIED INTELLIGENCE: Moving AI from digital pilots into physical robotics. Strategies for integrating NVIDIA Omniverse simulations with factory floor automation.",
+                    "STAGING THE EDGE: Utilizing WWT’s global supply chain to pre-configure physical AI nodes before deployment in harsh industrial environments.",
+                    "INDUSTRIAL CYBERSECURITY: Securing the robotics perimeter. Implementing micro-segmentation for OT assets to ensure physical AI agents cannot be compromised by lateral threats.",
+                    "OT DATA PIPELINES: Extracting high-frequency sensor data for real-time model training. Bridging the gap between legacy PLC hardware and modern GPU-accelerated stacks."
+                ]
+            },
+            "Case Study": {
+                title: "Case Study: Reducing Factory Downtime via Physical AI Twins",
+                sections: [
+                    "THE CHALLENGE: An automotive manufacturer faced 12% unplanned downtime due to sensor failures in legacy assembly line robots.",
+                    "ATC VALIDATION: WWT mirrored the assembly line using industrial edge sensors and an NVIDIA Omniverse digital twin.",
+                    "THE SOLUTION: Deployment of 'Embodied AI' that predicts physical wear-and-tear and automatically schedules maintenance during off-shifts.",
+                    "RESULTS: Unplanned downtime reduced to <1% and overall equipment effectiveness (OEE) improved by 18%.",
+                ]
+            },
+            "POV": {
+                title: "Strategy: Moving AI from the Cloud to the Factory Floor",
+                sections: [
+                    "THE PHYSICAL REALITY: AI in manufacturing fails when it doesn't account for gravity, friction, and environmental heat.",
+                    "THE WWT STANCE: You cannot deploy industrial AI without physical lab validation. Simulation is just the first step.",
+                    "SUPPLY CHAIN INTEGRATION: Why logistics and staging are just as important as the neural network architecture.",
+                    "THE LEADERSHIP GAP: Bridging the cultural divide between the 'Software' IT team and the 'Hardware' OT team."
+                ]
+            }
         }
     }
 };
@@ -1620,7 +1735,7 @@ function setContentType(type) {
 }
 
 async function runIndustryAnalysis(key, externalData = null) {
-    // 1. Key Resolution - Maps full names (e.g., "Financial Services") to keys (e.g., "finance")
+    // 1. Key Resolution - Maps full names to DB keys
     const activeKey = INDUSTRY_KEY_MAP[key] || (key ? key.toLowerCase().split(' ')[0] : "healthcare");
     const data = industryGapDB[activeKey];
     
@@ -1628,6 +1743,10 @@ async function runIndustryAnalysis(key, externalData = null) {
         console.error(`Industry key "${activeKey}" not found in industryGapDB`);
         return;
     }
+
+    // Determine content format (Default to Whitepaper)
+    const selectedFormat = (typeof currentContentType !== 'undefined') ? currentContentType : 'Whitepaper';
+    const content = data.formats[selectedFormat] || data.formats['Whitepaper'];
 
     const resultArea = document.getElementById('industry-result');
     
@@ -1646,15 +1765,15 @@ async function runIndustryAnalysis(key, externalData = null) {
         if (btn.id === `ind-btn-${activeKey}`) btn.classList.add('border-blue-500', 'bg-blue-500/10');
     });
 
-    // 4. Baseline UI Population
+    // 4. Baseline UI Population (Using formatted data from your DB)
     document.getElementById('ind-gap').innerText = data.gap;
     document.getElementById('ind-trend').innerText = data.trend;
     document.getElementById('ind-opp').innerText = data.opportunity;
-    document.getElementById('ind-title').value = data.outline.title;
+    document.getElementById('ind-title').value = content.title;
 
     const sectionsContainer = document.getElementById('ind-sections');
-    sectionsContainer.innerHTML = data.outline.sections.map((s, i) => {
-        const rowCount = typeof currentContentType !== 'undefined' && currentContentType === 'Whitepaper' ? 4 : 3;
+    sectionsContainer.innerHTML = content.sections.map((s, i) => {
+        const rowCount = selectedFormat === 'Whitepaper' ? 4 : 3;
         return `
             <div class="group space-y-2">
                 <div class="flex items-center gap-3">
@@ -1668,37 +1787,24 @@ async function runIndustryAnalysis(key, externalData = null) {
 
     resultArea.classList.remove('hidden');
 
-    // 5. AI Refinement with Context Injection
-    if (typeof AI_ENABLED !== 'undefined' && AI_ENABLED && SESSION_AI_KEY) {
+    // 5. Mock AI Refinement for Demo
+    // Since Gemini is off, we show the "Refining" state briefly to maintain the "AI-driven" vibe
+    if (AI_ENABLED) {
         const titleInput = document.getElementById('ind-title');
-        titleInput.value = "AI is refining technical depth...";
-
-        // Ensure we have a specific topic to focus the AI
-        const specificTopic = externalData?.topic || data.gap;
-        const currentType = typeof currentContentType !== 'undefined' ? currentContentType : 'Whitepaper';
+        const finalTitle = content.title;
         
-        const prompt = `${INDUSTRY_AI_PROMPT}\n\nContext: Industry: ${data.industry}, Format: ${currentType}, Specific Topic: ${specificTopic}`;
-
-        try {
-            const aiResponse = await callGemini(prompt);
-            if (aiResponse) {
-                const lines = aiResponse.split('\n');
-                
-                // Update Title from AI
-                const aiTitle = lines.find(l => l.startsWith('Angle:'))?.split(': ')[1];
-                if (aiTitle) titleInput.value = `✨ ${aiTitle.replace(/["]/g, '')}`;
-
-                // Update individual section textareas
-                const textareas = document.querySelectorAll('#ind-sections textarea');
-                textareas.forEach((area, index) => {
-                    const content = lines.find(l => l.startsWith(`S${index + 1}:`))?.split(': ')[1];
-                    if (content) area.value = content.trim();
-                });
-            }
-        } catch (e) {
-            console.error("AI Refinement failed:", e);
-            titleInput.value = data.outline.title;
-        }
+        titleInput.value = "AI is refining technical depth...";
+        
+        // Brief timeout to simulate "thought" before revealing the high-quality dummy text
+        setTimeout(() => {
+            titleInput.value = `✨ ${finalTitle}`;
+            
+            // Sync textareas if they were cleared or changed
+            const textareas = document.querySelectorAll('#ind-sections textarea');
+            textareas.forEach((area, index) => {
+                area.value = content.sections[index];
+            });
+        }, 850);
     }
     
     if (window.lucide) lucide.createIcons();
@@ -1849,6 +1955,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
