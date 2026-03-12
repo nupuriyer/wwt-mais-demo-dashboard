@@ -1035,7 +1035,7 @@ function launchAgent(id, context = null) {
     }
 
            if (id === 'email') {
-    // Pulling the strategy title from the Industry Agent
+    // Dynamically pull the strategy title from the Industry Agent's input field
     const activeTopic = document.getElementById('ind-title')?.value.replace('✨ ', '') || "Current Strategic Framework";
 
     content.innerHTML = `
@@ -1074,7 +1074,7 @@ function launchAgent(id, context = null) {
             <div id="email-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
                     <div class="bg-slate-900 px-6 py-3 border-b border-slate-800 flex justify-between items-center">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-sans text-slate-400">Campaign Draft Output</span>
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-sans">Campaign Draft Output</span>
                         <div id="edit-indicator" class="hidden text-[9px] font-bold text-orange-400 uppercase tracking-widest animate-pulse font-sans">Editing Mode Active</div>
                     </div>
                     
@@ -1088,9 +1088,14 @@ function launchAgent(id, context = null) {
                     </div>
 
                     <div class="bg-slate-900/50 p-4 border-t border-slate-800 flex justify-between items-center px-6">
-                         <button onclick="toggleEmailEdit()" id="edit-toggle-btn" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
-                            <i data-lucide="edit-3" class="w-3 h-3"></i> <span>Edit Content</span>
-                         </button>
+                         <div class="flex gap-6">
+                            <button onclick="toggleEmailEdit()" id="edit-toggle-btn" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
+                                <i data-lucide="edit-3" class="w-3 h-3"></i> <span>Edit Content</span>
+                            </button>
+                            <button onclick="handleEmailCopy(this)" id="copy-btn" class="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-white transition-colors">
+                                <i data-lucide="copy" class="w-3 h-3"></i> <span>Copy Text</span>
+                            </button>
+                         </div>
                          <button onclick="simulatePush()" id="push-btn" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-emerald-900/20">
                             <i data-lucide="share-2" class="w-3 h-3"></i> Push to Marketo
                          </button>
@@ -1646,24 +1651,24 @@ async function runRevenue(key) {
     if (window.lucide) lucide.createIcons();
 }
 
+// --- Drafting Logic ---
 async function runEmailDraft() {
     const topicInput = document.getElementById('active-topic-input');
-    const indNameTag = document.getElementById('sync-industry-tag');
     const resultArea = document.getElementById('email-result');
     const btn = document.querySelector('button[onclick="runEmailDraft()"]');
     
-    // Safety check for DB
+    // Baseline template
     const template = emailDraftDB["industry-sync"];
     let subject = template.draft.subject;
     let body = template.draft.body;
 
-    const activeIndustry = indNameTag ? indNameTag.innerText.trim() : "Industry Intelligence";
-    const activeTopic = topicInput ? topicInput.value : "Solution Architecture";
-
-    // Grab current content from Industry Agent elements
+    // Scrape real-time context from the Industry Agent UI
+    const activeIndustry = document.getElementById('sync-industry-tag')?.innerText || "Strategic Solutions";
+    const activeTopic = topicInput ? topicInput.value : "Case Study";
     const indTrend = document.getElementById('ind-trend')?.innerText || "market dynamics";
-    const indSection1 = document.querySelector('#ind-sections textarea')?.value || "architecture validation and ATC labs.";
+    const indSection1 = document.querySelector('#ind-sections textarea')?.value || "architecture and lab validation.";
 
+    // Data injection
     subject = subject.replace('[INDUSTRY]', activeIndustry).replace('[TITLE]', activeTopic);
     body = body.replace('[INDUSTRY]', activeIndustry).replace('[SECTION_1]', indSection1).replace('[TREND]', indTrend);
 
@@ -1676,11 +1681,73 @@ async function runEmailDraft() {
         btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 animate-spin"></i> Harmonizing...`;
         setTimeout(() => {
             document.getElementById('eml-subject').innerHTML = `<span class="text-blue-400">✨ </span>${subject}`;
-            document.getElementById('eml-body').innerHTML = `<span class="block text-blue-500 font-bold italic mb-3 border-b border-blue-500/10 pb-2 text-[9px] tracking-widest uppercase font-sans">AI Strategic Overlay Active</span>${body}`;
+            // Added "Gemini" text here so your simulatePush detects the AI Refinement
+            document.getElementById('eml-body').innerHTML = `<span class="block text-blue-500 font-bold italic mb-3 border-b border-blue-500/10 pb-2 text-[9px] tracking-widest uppercase font-sans">AI Strategic Overlay Refined by Gemini 2.0</span>${body}`;
             btn.innerHTML = originalBtn;
             if (window.lucide) lucide.createIcons();
         }, 800);
     }
+}
+
+// --- Editing Helper ---
+function toggleEmailEdit() {
+    const body = document.getElementById('eml-body');
+    const subject = document.getElementById('eml-subject');
+    const indicator = document.getElementById('edit-indicator');
+    const btnSpan = document.querySelector('#edit-toggle-btn span');
+
+    const isEditing = body.contentEditable === "true";
+
+    if (isEditing) {
+        body.contentEditable = "false";
+        subject.contentEditable = "false";
+        indicator.classList.add('hidden');
+        btnSpan.innerText = "Edit Content";
+        body.classList.remove('bg-slate-900', 'border', 'border-blue-500/30');
+    } else {
+        body.contentEditable = "true";
+        subject.contentEditable = "true";
+        indicator.classList.remove('hidden');
+        btnSpan.innerText = "Save Changes";
+        body.classList.add('bg-slate-900', 'border', 'border-blue-500/30');
+        body.focus();
+    }
+}
+
+// --- Copy Helpers ---
+function copyLine(text, btn) {
+    navigator.clipboard.writeText(text);
+    const original = btn.innerHTML;
+    btn.innerHTML = `<i data-lucide="check" class="w-4 h-4 text-green-500"></i>`;
+    lucide.createIcons();
+    setTimeout(() => { btn.innerHTML = original; lucide.createIcons(); }, 2000);
+}
+
+function handleEmailCopy(btn) {
+    const subject = document.getElementById('eml-subject').innerText;
+    const body = document.getElementById('eml-body').innerText;
+    const fullText = `Subject: ${subject}\n\n${body}`;
+    copyLine(fullText, btn);
+}
+
+// --- Marketo Sync Helper ---
+function simulatePush() {
+    const btn = document.getElementById('push-btn');
+    btn.innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Syncing...`;
+    lucide.createIcons();
+    
+    setTimeout(() => {
+        btn.classList.remove('bg-emerald-600');
+        btn.classList.add('bg-slate-800');
+        
+        const isAIRefined = document.getElementById('eml-body').innerHTML.includes('Gemini');
+        const label = isAIRefined ? "AI-Optimized Asset #9921" : "Standard Asset #9921";
+        
+        btn.innerHTML = `<i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> Synced to Marketo ${label}`;
+        lucide.createIcons();
+        
+        alert(`Success: ${isAIRefined ? 'AI-enhanced' : 'Standard'} email draft pushed to Marketo.`);
+    }, 2000);
 }
 
 function toggleEmailEdit() {
@@ -1708,25 +1775,6 @@ function toggleEmailEdit() {
     }
 }
 
-function simulatePush() {
-    const btn = document.getElementById('push-btn');
-    btn.innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Syncing...`;
-    lucide.createIcons();
-    
-    setTimeout(() => {
-        btn.classList.remove('bg-emerald-600');
-        btn.classList.add('bg-slate-800');
-        
-        // Check if we have an AI refinement in the body
-        const isAIRefined = document.getElementById('eml-body').innerHTML.includes('Gemini');
-        const label = isAIRefined ? "AI-Optimized Asset #9921" : "Standard Asset #9921";
-        
-        btn.innerHTML = `<i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> Synced to Marketo ${label}`;
-        lucide.createIcons();
-        
-        alert(`Success: ${isAIRefined ? 'AI-enhanced' : 'Standard'} email draft pushed to Marketo.`);
-    }, 2000);
-}
 
 // Ensure this matches your existing DB keys (e.g., 'cloud-migration', 'edge-computing')
 // Add 'key' as a parameter so buttons can pass "energy" or "healthcare"
@@ -1976,3 +2024,4 @@ function clearStage() {
 }
 
 window.onload = init;
+
