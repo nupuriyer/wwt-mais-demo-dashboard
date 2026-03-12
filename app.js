@@ -1036,14 +1036,16 @@ function launchAgent(id, context = null) {
 
            if (id === 'email') {
     const activeBtn = document.querySelector('[id^="ind-btn-"].border-blue-500');
-    const activeIndustry = activeBtn ? activeBtn.innerText.trim() : "None Selected";
-    const activeTopic = document.getElementById('ind-title')?.value.replace('✨ ', '') || "No Active Strategy";
+    const activeIndustry = activeBtn ? activeBtn.innerText.trim() : "General";
+    const activeTopic = document.getElementById('ind-title')?.value.replace('✨ ', '') || "Current Strategic Framework";
 
     content.innerHTML = `
         <div class="max-w-4xl mx-auto space-y-6">
             <div class="flex items-center justify-between px-2">
                 <div class="flex items-center gap-4">
-                    <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                    <button onclick="clearStage()" class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors">
+                        <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                    </button>
                     <div class="flex items-center gap-3">
                         <h3 class="text-xl font-bold text-white tracking-tight">Email Campaign Agent</h3>
                         <span class="px-2 py-0.5 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[8px] font-black uppercase rounded tracking-widest">BETA</span>
@@ -1051,54 +1053,68 @@ function launchAgent(id, context = null) {
                 </div>
             </div>
 
-            <div class="bg-slate-950/50 border border-slate-800/60 rounded-2xl p-5 flex items-center justify-between shadow-2xl backdrop-blur-sm">
-                <div class="flex items-center gap-10">
-                    <div class="space-y-1.5">
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.15em]">Active Industry</p>
-                        <p id="sync-industry-tag" class="text-sm font-bold text-emerald-400 filter drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]">${activeIndustry}</p>
+            <div class="bg-slate-950/40 border border-slate-800/60 rounded-2xl p-5 flex items-center shadow-xl backdrop-blur-sm">
+                <div class="flex items-center gap-12">
+                    <div class="space-y-1">
+                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Active Industry</p>
+                        <p id="sync-industry-tag" class="text-sm font-bold text-emerald-400 uppercase tracking-tight">${activeIndustry}</p>
                     </div>
                     
-                    <div class="h-10 w-px bg-gradient-to-b from-transparent via-slate-700 to-transparent"></div>
+                    <div class="h-8 w-px bg-slate-800"></div>
                     
-                    <div class="space-y-1.5">
-                        <p class="text-[10px] font-black text-slate-500 uppercase tracking-[0.15em]">Synced Source</p>
+                    <div class="space-y-1">
+                        <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">Bridge Status</p>
                         <div class="flex items-center gap-2">
-                             <div class="relative flex items-center justify-center">
-                                <span class="absolute w-2 h-2 bg-blue-500 rounded-full animate-ping opacity-20"></span>
-                                <span class="relative w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                             </div>
-                             <p class="text-sm font-semibold text-slate-200">Strategy Architect <span class="text-slate-500 font-medium">v2.0</span></p>
+                             <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                             </span>
+                             <p class="text-xs font-bold text-slate-400 uppercase tracking-tighter">Live Connection Active</p>
                         </div>
                     </div>
                 </div>
-                <button class="px-4 py-2 bg-slate-900 border border-slate-700 text-[10px] font-black text-slate-300 uppercase rounded-xl hover:bg-slate-800 hover:text-white transition-all tracking-widest">
-                    Switch Source
-                </button>
             </div>
 
             <div class="bg-slate-900 p-8 rounded-3xl border border-slate-800/50 shadow-2xl space-y-5">
                 <div class="flex items-center justify-between px-1">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Selected Campaign Topic</label>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">Target Campaign Topic</label>
                 </div>
                 <div class="flex gap-4">
-                    <div class="relative flex-1">
-                        <input 
-                            id="active-topic-input" 
-                            type="text" 
-                            readonly
-                            value="${activeTopic}" 
-                            class="w-full bg-slate-950 border border-slate-800 px-6 py-4 rounded-2xl text-blue-400 font-semibold text-base outline-none border-blue-500/20 focus:border-blue-500/50 transition-all cursor-default"
-                        >
-                    </div>
-                    <button onclick="runEmailDraft()" class="px-8 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all flex items-center gap-3 group shadow-xl shadow-blue-900/40 active:scale-95">
+                    <input 
+                        id="active-topic-input" 
+                        type="text" 
+                        readonly
+                        value="${activeTopic}" 
+                        class="flex-1 bg-slate-950 border border-slate-800 px-6 py-4 rounded-2xl text-blue-400 font-semibold text-base outline-none cursor-default"
+                    >
+                    <button onclick="runEmailDraft()" class="px-8 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl transition-all flex items-center gap-3 group active:scale-95 shadow-lg shadow-blue-900/30">
                         <i data-lucide="wand-2" class="w-5 h-5 group-hover:rotate-12 transition-all"></i>
                         <span class="text-sm">Draft Special Send</span>
                     </button>
                 </div>
             </div>
 
-            <div id="email-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div id="email-result" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+                    <div class="bg-slate-900 px-6 py-3 border-b border-slate-800 flex justify-between items-center">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest font-sans">Draft Output</span>
+                        <div id="edit-indicator" class="hidden text-[9px] font-bold text-orange-400 uppercase tracking-widest animate-pulse font-sans">Editing Mode</div>
+                    </div>
+                    <div class="p-8 space-y-4 font-serif text-slate-300">
+                        <div class="flex items-center gap-3">
+                            <b class="text-slate-500 font-bold uppercase text-[10px] font-sans tracking-widest">Subject:</b>
+                            <span id="eml-subject" class="text-sm font-sans text-white"></span>
+                        </div>
+                        <hr class="border-slate-800/50">
+                        <div id="eml-body" class="whitespace-pre-wrap leading-relaxed italic text-lg p-2 rounded transition-colors"></div>
+                    </div>
+                    <div class="bg-slate-900/50 p-4 border-t border-slate-800 flex justify-end px-6">
+                         <button onclick="simulatePush()" id="push-btn" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-2">
+                            <i data-lucide="share-2" class="w-3 h-3"></i> Push to Marketo
+                         </button>
+                    </div>
                 </div>
+            </div>
         </div>`;
     
     if (window.lucide) lucide.createIcons();
@@ -1654,15 +1670,17 @@ async function runEmailDraft() {
     const resultArea = document.getElementById('email-result');
     const btn = document.querySelector('button[onclick="runEmailDraft()"]');
     
+    // Safety check for DB
     const template = emailDraftDB["industry-sync"];
     let subject = template.draft.subject;
     let body = template.draft.body;
 
     const activeIndustry = indNameTag ? indNameTag.innerText.trim() : "Industry Intelligence";
-    const activeTopic = topicInput ? topicInput.value : "Strategic Architecture";
+    const activeTopic = topicInput ? topicInput.value : "Solution Architecture";
 
-    const indTrend = document.getElementById('ind-trend')?.innerText || "current market shifts";
-    const indSection1 = document.querySelector('#ind-sections textarea')?.value || "comprehensive architectural validation and ATC testing.";
+    // Grab current content from Industry Agent elements
+    const indTrend = document.getElementById('ind-trend')?.innerText || "market dynamics";
+    const indSection1 = document.querySelector('#ind-sections textarea')?.value || "architecture validation and ATC labs.";
 
     subject = subject.replace('[INDUSTRY]', activeIndustry).replace('[TITLE]', activeTopic);
     body = body.replace('[INDUSTRY]', activeIndustry).replace('[SECTION_1]', indSection1).replace('[TREND]', indTrend);
@@ -1673,13 +1691,13 @@ async function runEmailDraft() {
 
     if (AI_ENABLED) {
         const originalBtn = btn.innerHTML;
-        btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 animate-spin"></i> Harmonizing ATC Context...`;
+        btn.innerHTML = `<i data-lucide="sparkles" class="w-4 h-4 animate-spin"></i> Harmonizing...`;
         setTimeout(() => {
             document.getElementById('eml-subject').innerHTML = `<span class="text-blue-400">✨ </span>${subject}`;
-            document.getElementById('eml-body').innerHTML = `<span class="block text-blue-500 font-black italic mb-3 border-b border-blue-500/10 pb-2 text-[9px] tracking-[0.2em] uppercase font-sans">AI Strategic Overlay (Strategy Sync Active)</span>${body}`;
+            document.getElementById('eml-body').innerHTML = `<span class="block text-blue-500 font-bold italic mb-3 border-b border-blue-500/10 pb-2 text-[9px] tracking-widest uppercase font-sans">AI Strategic Overlay Active</span>${body}`;
             btn.innerHTML = originalBtn;
             if (window.lucide) lucide.createIcons();
-        }, 1200);
+        }, 800);
     }
 }
 
@@ -1976,6 +1994,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
