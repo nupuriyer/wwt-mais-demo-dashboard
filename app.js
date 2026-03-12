@@ -967,7 +967,7 @@ function launchAgent(id, context = null) {
             </div>`;
     }
 
-        if (id === 'industry') {
+       if (id === 'industry') {
         content.innerHTML = `
             <div class="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 px-2">
@@ -1036,14 +1036,10 @@ function launchAgent(id, context = null) {
             </div>`;
 
         if (context) {
-            // Uses INDUSTRY_KEY_MAP to turn "Manufacturing" into "manufacturing"
             const activeKey = INDUSTRY_KEY_MAP[context.industry] || context.industry.toLowerCase();
             setTimeout(() => runIndustryAnalysis(activeKey, context), 50);
         }
     }
-    
-    if (window.lucide) lucide.createIcons();
-}
 
         if (id === 'readout') {
         content.innerHTML = `
@@ -1853,6 +1849,7 @@ function clearStage() {
 }
 
 window.onload = init;
+
 
 
 
